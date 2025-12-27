@@ -1,0 +1,20 @@
+.home-grid {
+    display: grid;
+    grid-template-columns: clamp(0, 5vw, 100px) 1fr clamp(0, 5vw, 100px);
+    grid-template-rows: clamp(80px, 10vh, 200px) 1fr clamp(80px, 10vh, 200px);
+    grid-template-areas:"header header header"
+                        ".      main   .     "
+                        "footer footer footer";
+}
+
+.app-header{
+    grid-area: "header";
+}
+
+.app-footer{
+    grid-area: "footer";
+}
+
+.main{
+    grid-area: "main";
+}

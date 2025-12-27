@@ -1,0 +1,17 @@
+:root{
+    /* basic colors */
+    --primary-color:rgb(238, 238, 238);
+    --background-color:rgb(255, 242, 222);
+    --image-background-color:rgb(255, 223, 223);
+
+    /* buttons */
+    --button-color:rgb(206, 206, 206);
+    --button-color-hover:rgb(119, 119, 119);
+
+
+    /* spacing and borders */
+    --border-radius1:1rem;
+    --border-radius2:2rem;
+    --spacing1:1rem;
+    --spacing2:2rem;
+}
