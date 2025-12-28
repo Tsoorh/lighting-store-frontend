@@ -1,6 +1,9 @@
 * {
     box-sizing: border-box;
+    font-family: 'roboto',sans-serif;
+    font-size: 1rem;
 }
+
 
 p,
 h1,
@@ -34,4 +37,10 @@ video,
 object {
     max-width: 100%;
     display: block;
+}
+
+select{
+    border:none;
+    background-color: var(--background-color);
+    border-radius: var(--border-radius1);
 }

@@ -1,15 +1,18 @@
+import { useLanguage } from "../../hooks/useLanguage"
 import type { FullProduct } from "../../model/product.model"
 
-type ProductPreviewProp={
-    product:FullProduct
+type ProductPreviewProp = {
+    product: FullProduct
 }
 
-export const ProductPreview = ({product}:ProductPreviewProp) => {
-    
+export const ProductPreview = ({ product }: ProductPreviewProp) => {
+    const { language } = useLanguage()
+
     return (
-        <div>
-            <h1>{}</h1>
-            <img src={`https://res.cloudinary.com/dhixlriwm/image/upload/${product.imgUrl[0]}.webp`} alt={product.imgUrl[0]}/>
+        <div className="product-preview">
+            <img src={product.imgsUrl[0] ? `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${product.imgsUrl[0]}.webp` : `https://res.cloudinary.com/dhixlriwm/image/upload/coming-soon.webp`} />
+            <p>{language === "en" ? product.name.en : product.name.he} | {language === "en" ?product.woodType[0].en:product.woodType[0].he} |</p>
+            <p>₪{product.price}</p>
         </div>
     )
 }

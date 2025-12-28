@@ -1,0 +1,24 @@
+.product-preview {
+    height: 14rem;
+    width: 14rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--border-radius1);
+    box-shadow: 0 0 2px 2px rgb(199, 199, 199) ;
+    background-color: var(--image-background-color);
+    >img {
+        height: 10rem;
+        width: 10rem;
+        background: var(--image-background-color);
+        border-radius: var(--border-radius1);
+    }
+}
+.product-preview:hover{
+    cursor: pointer;
+    background-color: #dadada;
+    >img{
+        background-color: #dadada;
+    }
+}

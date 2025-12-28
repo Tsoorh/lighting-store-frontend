@@ -1,17 +1,24 @@
-:root{
+:root {
     /* basic colors */
-    --primary-color:rgb(238, 238, 238);
-    --background-color:rgb(255, 242, 222);
-    --image-background-color:rgb(255, 223, 223);
+    --primary-color: rgb(255, 255, 255);
+    --background-color: rgb(255, 255, 254);
+    --image-background-color: rgb(255, 255, 255);
+    --header-bgc: rgb(255, 247, 240);
+    --guide-color1: rgba(255, 143, 91, 0.699);
 
     /* buttons */
-    --button-color:rgb(206, 206, 206);
-    --button-color-hover:rgb(119, 119, 119);
+    --button-color: rgb(206, 206, 206);
+    --button-color-hover: rgb(121, 121, 121);
 
 
     /* spacing and borders */
-    --border-radius1:1rem;
-    --border-radius2:2rem;
-    --spacing1:1rem;
-    --spacing2:2rem;
+    --border-radius1: 1rem;
+    --border-radius2: 2rem;
+    --spacing1: 1rem;
+    --spacing2: 2rem;
+
+    /* shadow */
+    --shadow-color: rgb(199, 199, 199)
 }
+
+

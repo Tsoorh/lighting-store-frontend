@@ -31,7 +31,7 @@ type SocketType = {
 
 export type FullProduct = Product & {
     category:string[]
-    imgUrl: string[]
+    imgsUrl: string[]
     radius: number
     size: ProductSize
     socketType:SocketType
