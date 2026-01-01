@@ -6,7 +6,7 @@
     padding: 1rem;
     position: sticky;
     top: 0;
-
+    height: 6rem;
     background: var(--header-bgc);
 }
 
@@ -16,15 +16,18 @@
     flex-direction: column;
     justify-content: center;
     cursor: pointer;
-
-    >p {
+    /* >p {
         text-align: center;
         font-size: 2rem;
         font-weight: 800;
         color: rgb(0, 0, 0);
         text-decoration: line-through 2px rgba(255, 143, 91, 0.699);
+    } */
+    >img{
+        padding: 0;
+        margin: 0;
+        max-height: 7rem;
     }
-
     >span {
         text-align: center;
         font-weight: 300;
@@ -33,6 +36,17 @@
 }
 
 .nav-bar {
+    >.menu-icon{
+        display: flex;
+        justify-content: center;
+        padding: 0.2rem;
+        border: 2px black solid;
+        border-radius: 5px;
+        &.active{
+            background-color: black;
+            color: white;
+        }
+    }
     >ul {
         display: flex;
         flex-direction: row;
@@ -41,11 +55,13 @@
             cursor: pointer;
             margin-right: 1rem;
         }
-
         >li:hover {
             color: rgb(100, 60, 0);
         }
 
 
+    }
+    >.nav-links,.links{
+        display: flex;
     }
 }

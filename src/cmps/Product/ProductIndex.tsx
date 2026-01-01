@@ -13,7 +13,6 @@ export const ProductIndex = ({ filterBy = {} }: productIndexProps) => {
     useEffect(() => {
         const loadProducts = async (): Promise<void> => {
             const productsFromDB = await productService.query(filterBy)
-            console.log("🚀 ~ loadProducts ~ productsFromDB:", productsFromDB)
             setProducts(productsFromDB)
         }
         loadProducts()
@@ -21,8 +20,8 @@ export const ProductIndex = ({ filterBy = {} }: productIndexProps) => {
     if (!products) return "No products to show"
     return (
         <div>
-            {products.map(product=>{
-               return <ProductPreview key={product._id} product={product}/>
+            {products.map(product => {
+                return <ProductPreview key={product._id} product={product} />
             })}
         </div>
     )
