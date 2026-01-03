@@ -1,16 +1,21 @@
 import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
-type propName = {
-    iconName: string
-}
-type IconType = {
-    [key: string]: JSX.Element
-}
+type IconName = string;
 
-export const Icons = ({ iconName }: propName): JSX.Element | null => {
-    const normalize = iconName?.toLowerCase() || ''
-    const icons: IconType = {
-        menu: <MenuIcon />
-    }
-    return icons[normalize] || null
-}
+type IconsProps = {
+    iconName?: IconName;
+};
+
+export const Icons = ({ iconName }: IconsProps): JSX.Element | null => {
+    const key = (iconName ?? '').toLowerCase();
+
+    const icons: Record<string, JSX.Element> = {
+        menu: <MenuIcon aria-hidden="true" />,
+        close: <CloseIcon aria-label="true" />,
+        dropdown: <KeyboardArrowDownIcon fontSize="small" aria-hidden="true" />,
+    };
+
+    return icons[key] ?? null;
+};

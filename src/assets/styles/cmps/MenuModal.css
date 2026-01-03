@@ -1,0 +1,42 @@
+.menu-modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 70vw;
+    box-shadow: 0 0 6px 6px rgb(112, 112, 112);
+    background-color: #fff;
+    display: grid;
+    grid-template-rows: 10vh 1fr;
+    justify-items: end;
+    >h1{
+        grid-column: 1/-1;
+        margin: 0;
+        align-self: stretch;
+        justify-self: stretch;
+        display: grid;
+        place-items: center;
+        background-color: #fafafa;
+    }
+    >.nav-links{
+        margin-right: 2rem;
+
+    }
+}
+
+.exit-btn {
+    border-radius: 50%;
+    padding: 0;
+    margin: 0;
+    height: 2rem;
+    width: 2rem;
+    position: absolute;
+    left: 1rem;
+    top: 0.5rem;
+    border: none;
+    display: grid;
+    place-items: center;
+    &:hover{
+        background-color: #a8a8a8;
+    }
+}

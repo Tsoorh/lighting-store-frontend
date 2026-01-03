@@ -6,7 +6,7 @@ export type FilterBy = {
     category?:string
 }
 
-type hebrewEnglishObj = {
+export type hebrewEnglishObj = {
     he:string
     en:string
 }

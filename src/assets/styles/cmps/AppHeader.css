@@ -16,6 +16,7 @@
     flex-direction: column;
     justify-content: center;
     cursor: pointer;
+
     /* >p {
         text-align: center;
         font-size: 2rem;
@@ -23,11 +24,12 @@
         color: rgb(0, 0, 0);
         text-decoration: line-through 2px rgba(255, 143, 91, 0.699);
     } */
-    >img{
+    >img {
         padding: 0;
         margin: 0;
         max-height: 7rem;
     }
+
     >span {
         text-align: center;
         font-weight: 300;
@@ -36,32 +38,65 @@
 }
 
 .nav-bar {
-    >.menu-icon{
+    >.menu-icon {
         display: flex;
         justify-content: center;
         padding: 0.2rem;
         border: 2px black solid;
         border-radius: 5px;
-        &.active{
+
+        &.active {
             background-color: black;
             color: white;
         }
     }
+
     >ul {
         display: flex;
         flex-direction: row;
         align-items: center;
+
         >li {
             cursor: pointer;
             margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            position: relative;
         }
+
         >li:hover {
             color: rgb(100, 60, 0);
         }
 
 
     }
-    >.nav-links,.links{
+
+    >.nav-links,
+    .links {
         display: flex;
+    }
+}
+
+.sub-menu {
+    position: absolute;
+    top: 1.5rem;
+    right: 0;
+    min-width: max-content;
+    padding: 0 1.5rem;
+    background-color: var(--header-bgc);
+    box-shadow: 0 0 2px 2px rgb(231, 231, 231);
+    >ul {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+
+        >li {
+            padding: 0.5rem 0;
+            font-size: small;
+            cursor: pointer;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
     }
 }
