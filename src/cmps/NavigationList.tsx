@@ -6,6 +6,7 @@ import type { NavbarProperties } from "./AppHeader"
 import { Icons } from "./Icons"
 import { useState } from "react"
 import type { SubMenu } from "./AppHeader"
+import { useWindowWidth } from "../hooks/useWindowWidth"
 
 type NavLinks = {
     navLinks: NavbarProperties
@@ -14,10 +15,10 @@ type NavLinks = {
 export const NavigationList = ({ navLinks }: NavLinks) => {
     const [subMenuDetails, setSubMenuDetails] = useState<SubMenu | null>(null)
     const { language, changeLanguage } = useLanguage()
-    const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null)
+    const [closeTimeout, setCloseTimeout] = useState<ReturnType<typeof setTimeout> | null>(null)
+    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
     const navigate = useNavigate()
-
-
+    const width = useWindowWidth()
 
     const handleChangeLanguage = (event: SelectChangeEvent) => {
         const value = event.target.value as Language;
@@ -28,55 +29,90 @@ export const NavigationList = ({ navLinks }: NavLinks) => {
         if (closeTimeout) clearTimeout(closeTimeout)
         if (subMenu) setSubMenuDetails(subMenu)
     }
+
     const onLeave = () => {
         const timeout = setTimeout(() => setSubMenuDetails(null), 150)
         setCloseTimeout(timeout)
     }
-    const onHandleClick = (address: string | undefined, subMenu: SubMenu | undefined) => {
-        if (!subMenu && address) navigate(address)
+
+    const onHandleClick = (address: string | undefined, subMenu: SubMenu | undefined, isMobile?: boolean) => {
+        if (!subMenu && address) {
+            navigate(address)
+            setSubMenuDetails(null)
+        }
         if (subMenu) setSubMenuDetails(subMenu)
+        if (isMobile) setIsMenuOpen(prev => !prev)
     }
 
     const isEnglish = language === 'en'
-    return (
-        <ul className="nav-links" style={{ flexDirection: isEnglish ? 'row' : 'row-reverse' }}>
-            {navLinks.map(link => {
-                return <li
-                    onClick={() => onHandleClick(link?.address, link?.subMenu)}
-                    onMouseEnter={() => onEnter(link?.subMenu)}
-                    onMouseLeave={onLeave}
-                    key={link.title.en}>
-                    {isEnglish ? link.title.en : link.title.he}
-                    {link?.iconName && <Icons iconName={link.iconName} />}
-                    {link.subMenu && subMenuDetails &&
-                        <div
-                            className="sub-menu"
-                            onMouseEnter={() => onEnter(link.subMenu)}
-                            onMouseLeave={onLeave}
-                        >
-                            <ul >
-                                {subMenuDetails.map(link => {
-                                    return (
-                                        <li
-                                            key={link.title.en}
-                                            onClick={() => {
-                                                navigate(link.address)
-                                                setSubMenuDetails(null)
+    const isMobile = (width <= 768)
 
-                                            }} 
+    return (
+        <ul className="nav-links" style={!isMobile ? { flexDirection: isEnglish ? 'row' : 'row-reverse' } : {alignItems: isEnglish? 'start': 'end'}}>
+            {navLinks.map(link => {
+                return (
+                    <>
+                        <li
+                            onClick={() => (link?.subMenu && onHandleClick(link?.address, link?.subMenu, isMobile))}
+                            onMouseEnter={() => !isMobile && onEnter(link?.subMenu)}
+                            onMouseLeave={!isMobile ? onLeave : undefined}
+                            key={link.title.en}>
+                            {isEnglish ? link.title.en : link.title.he}
+                            {link?.iconName && <Icons iconName={link.iconName} />}
+
+                            {/* DESKTOP SUBMENU */}
+                            {link.subMenu && subMenuDetails && !isMobile &&
+                                <div
+                                    className="sub-menu"
+                                    onMouseEnter={() => onEnter(link.subMenu)}
+                                    onMouseLeave={onLeave}
+                                >
+                                    <ul>
+                                        {subMenuDetails.map(child => (
+                                            <li
+                                                key={child.title.en}
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    navigate(child.address)
+                                                    setSubMenuDetails(null)
+                                                }}
+                                                style={{ textAlign: isEnglish ? 'start' : 'end' }}
+                                            >
+                                                {isEnglish ? child.title.en : child.title.he}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+
+                        </li>
+                        {/* MOBILE SUBMENU */}
+                        {link.subMenu && subMenuDetails && isMobile && isMenuOpen &&
+                            <li className="sub-menu-small">
+                                <ul>
+                                    {subMenuDetails.map(child => (
+                                        <li
+                                            key={child.title.en}
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                navigate(child.address)
+                                                setSubMenuDetails(null)
+                                            }}
                                             style={{ textAlign: isEnglish ? 'start' : 'end' }}
                                         >
-                                            {isEnglish ? link.title.en : link.title.he}
-                                        </li>)
-                                })}
-                            </ul>
-                        </div>
-                    }
-                </li>
-
+                                            {isEnglish ? child.title.en : child.title.he}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </li>
+                        }
+                    </>
+                )
             })}
+
+            {/* Language selector */}
             <li style={!isEnglish ? { order: -1 } : {}}>
-                <FormControl sx={{ m: 0, minWidth: 67 }} size="small" >
+                <FormControl sx={{ m: 0, minWidth: 67 }} size="small">
                     <Select
                         sx={{
                             fontSize: "small",
@@ -95,8 +131,7 @@ export const NavigationList = ({ navLinks }: NavLinks) => {
                         <MenuItem sx={{ fontSize: "small" }} value={"he"}>עב</MenuItem>
                     </Select>
                 </FormControl>
-            </li>
-
-        </ul>
+            </li >
+        </ul >
     )
 }

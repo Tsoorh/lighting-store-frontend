@@ -70,9 +70,7 @@
 
 
     }
-
-    >.nav-links,
-    .links {
+    .nav-links{
         display: flex;
     }
 }
@@ -89,7 +87,6 @@
         display: flex;
         flex-direction: column;
         justify-content: space-around;
-
         >li {
             padding: 0.5rem 0;
             font-size: small;
@@ -100,3 +97,27 @@
         }
     }
 }
+
+.sub-menu-small{
+    color: rgb(85, 85, 85);
+    background-color: #f8f8f8;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    min-height: max-content ;
+    width: 100%;
+    >ul{
+        display: flex;
+        flex-direction: column;
+        align-self: start;
+        padding-left: 1rem;
+        >li{
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+            &:hover{
+                color: black;
+            }
+        }
+    }
+}
+

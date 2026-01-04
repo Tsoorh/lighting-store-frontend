@@ -9,7 +9,8 @@
     display: grid;
     grid-template-rows: 10vh 1fr;
     justify-items: end;
-    >h1{
+
+    >h1 {
         grid-column: 1/-1;
         margin: 0;
         align-self: stretch;
@@ -18,8 +19,23 @@
         place-items: center;
         background-color: #fafafa;
     }
-    >.nav-links{
-        margin-right: 2rem;
+
+    >.nav-links {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        >li {
+            height: 2rem;
+            display: flex;
+            justify-content:space-between;
+            padding: 0 2rem;
+            align-items: center;
+            /* box-shadow: 0 0 2px -1px rgb(66, 66, 66); */
+            cursor: pointer;
+            &:hover{
+                color: rgb(85, 85, 85);
+            }
+        }
 
     }
 }
@@ -36,7 +52,8 @@
     border: none;
     display: grid;
     place-items: center;
-    &:hover{
+
+    &:hover {
         background-color: #a8a8a8;
     }
 }

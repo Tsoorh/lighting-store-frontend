@@ -16,19 +16,16 @@ export const MenuModal = ({ navLinks, closeMenu }: MenuModalProps) => {
 
     const isEnglish = language === 'en'
     return (
-        // <div className={`menu-modal ${isOpen ? `open-modal` : ``}`}>
-        // <div className={`full-screen-bgc`} onClick={onCloseModal}>
         <Backdrop
             sx={(theme) => ({ zIndex: theme.zIndex.drawer + 1 })}
             open={true}
             onClick={closeMenu}
         >
-            <div className="menu-modal" >
-                <button className="exit-btn"><Icons iconName={"close"}/></button>
+            <div className="menu-modal" onClick={(e) => e.stopPropagation()}>
+                <button className="exit-btn" onClick={closeMenu}><Icons iconName={"close"} /></button>
                 <h1>{isEnglish ? 'Menu' : 'תפריט'}</h1>
                 <NavigationList navLinks={navLinks} />
             </div>
         </Backdrop>
-        // </div>
     )
 }
