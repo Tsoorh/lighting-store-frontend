@@ -9,10 +9,11 @@ import type { SubMenu } from "./AppHeader"
 import { useWindowWidth } from "../hooks/useWindowWidth"
 
 type NavLinks = {
-    navLinks: NavbarProperties
+    navLinks: NavbarProperties,
+    closeMenu?: () => void
 }
 
-export const NavigationList = ({ navLinks }: NavLinks) => {
+export const NavigationList = ({ navLinks, closeMenu }: NavLinks) => {
     const [subMenuDetails, setSubMenuDetails] = useState<SubMenu | null>(null)
     const { language, changeLanguage } = useLanguage()
     const [closeTimeout, setCloseTimeout] = useState<ReturnType<typeof setTimeout> | null>(null)
@@ -39,6 +40,7 @@ export const NavigationList = ({ navLinks }: NavLinks) => {
         if (!subMenu && address) {
             navigate(address)
             setSubMenuDetails(null)
+            if (closeMenu) closeMenu()
         }
         if (subMenu) setSubMenuDetails(subMenu)
         if (isMobile) setIsMenuOpen(prev => !prev)
@@ -46,14 +48,13 @@ export const NavigationList = ({ navLinks }: NavLinks) => {
 
     const isEnglish = language === 'en'
     const isMobile = (width <= 768)
-
     return (
-        <ul className="nav-links" style={!isMobile ? { flexDirection: isEnglish ? 'row' : 'row-reverse' } : {alignItems: isEnglish? 'start': 'end'}}>
+        <ul className="nav-links" style={!isMobile ? { flexDirection: isEnglish ? 'row' : 'row-reverse' } : { alignItems: isEnglish ? 'start' : 'end' }}>
             {navLinks.map(link => {
                 return (
                     <>
                         <li
-                            onClick={() => (link?.subMenu && onHandleClick(link?.address, link?.subMenu, isMobile))}
+                            onClick={() => (onHandleClick(link?.address, link?.subMenu, isMobile))}
                             onMouseEnter={() => !isMobile && onEnter(link?.subMenu)}
                             onMouseLeave={!isMobile ? onLeave : undefined}
                             key={link.title.en}>

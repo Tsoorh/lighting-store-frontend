@@ -24,7 +24,7 @@ export const MenuModal = ({ navLinks, closeMenu }: MenuModalProps) => {
             <div className="menu-modal" onClick={(e) => e.stopPropagation()}>
                 <button className="exit-btn" onClick={closeMenu}><Icons iconName={"close"} /></button>
                 <h1>{isEnglish ? 'Menu' : 'תפריט'}</h1>
-                <NavigationList navLinks={navLinks} />
+                <NavigationList navLinks={navLinks} closeMenu={closeMenu}/>
             </div>
         </Backdrop>
     )

@@ -6,7 +6,7 @@
     padding: 1rem;
     position: sticky;
     top: 0;
-    height: 6rem;
+    height: 5.5rem;
     background: var(--header-bgc);
 }
 
@@ -41,10 +41,10 @@
     >.menu-icon {
         display: flex;
         justify-content: center;
-        padding: 0.2rem;
+        padding: 0.1rem;
         border: 2px black solid;
         border-radius: 5px;
-
+        
         &.active {
             background-color: black;
             color: white;

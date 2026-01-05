@@ -1,0 +1,25 @@
+.category-layout{
+    display: grid;
+    grid-template-rows: minmax(0,30vh,100) 1fr;
+    overflow-x: hidden;
+    >.category-image{
+        display: grid;
+        grid-template-columns: 30vw 70vw;
+        min-height: 25rem;
+        display: flex;
+        align-items: center;
+    }
+    .product-list{
+        display: grid;
+        grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+        place-items: center;
+    }
+}
+
+@media (max-width: 768px) {
+.category-layout{
+    .category-image{
+    }
+}
+    
+}

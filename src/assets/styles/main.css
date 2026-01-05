@@ -10,7 +10,7 @@
 
 
 /* pages */
-
+@import "./pages/ProductCategory.css";
 
 /* cmps */
 @import "./cmps/AppHeader.css";

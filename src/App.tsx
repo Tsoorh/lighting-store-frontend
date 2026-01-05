@@ -5,6 +5,7 @@ import { AppHeader } from './cmps/AppHeader'
 import { HomePage } from './pages/HomePage'
 import { ProductIndex } from './cmps/Product/ProductIndex'
 import { ProductDetails } from './cmps/Product/ProductDetails'
+import { ProductCategory } from './pages/ProductCategory'
 
 function App() {
 
@@ -16,7 +17,8 @@ function App() {
           <Routes>
             <Route path="" element={<HomePage />} />
             <Route path="/product" element={<ProductIndex />} />
-            <Route path="/product/productId" element={<ProductDetails />} />
+            <Route path="/product/:productId" element={<ProductDetails />} />
+            <Route path="/product/category/:categoryName" element={<ProductCategory/>} />
           </Routes>
         </main>
         <AppFooter />

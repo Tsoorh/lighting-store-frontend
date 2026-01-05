@@ -32,10 +32,10 @@ export const AppHeader = () => {
         {
             title: { en: 'Lighting', he: 'תאורה' }, iconName: 'dropdown', subMenu: [
                 { title: { en: 'All Lighting', he: 'כל התאורה' }, address: '/product' },
-                { title: { en: 'Wall', he: 'מנורות קיר' }, address: '/product/wall' },
-                { title: { en: 'Hanging', he: 'מנורות תלייה' }, address: '/product/hanging' },
-                { title: { en: 'Ceiling', he: 'מנורות תקרה' }, address: '/product/ceiling' },
-                { title: { en: 'Accessories', he: 'אביזרים' }, address: '/product/accessories' },
+                { title: { en: 'Wall', he: 'מנורות קיר' }, address: '/product/category/wall' },
+                { title: { en: 'Hanging', he: 'מנורות תלייה' }, address: '/product/category/hanging' },
+                { title: { en: 'Ceiling', he: 'מנורות תקרה' }, address: '/product/category/ceiling' },
+                { title: { en: 'Accessories', he: 'אביזרים' }, address: '/product/category/accessories' },
             ]
         },
         { title: { en: 'Contact', he: 'צור קשר' }, address: '/contact' }
