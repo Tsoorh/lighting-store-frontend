@@ -62,4 +62,4 @@ This is the Frontend repository. You can find the Server-side logic here:
 
 ## 👤 Author
 **Tsoor Hartuv** - Full Stack Developer
-linkedin.com/in/tsoor-hartov-ab27651b2 | https://github.com/Tsoorh 
+https://linkedin.com/in/tsoorhartov/ | https://github.com/Tsoorh 
