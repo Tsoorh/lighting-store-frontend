@@ -1,73 +1,65 @@
-# React + TypeScript + Vite
+# 💡 Lighting Store E-Commerce Platform (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the **Frontend Client** for a comprehensive E-commerce solution built for a lighting retail company.
+This project was developed end-to-end using **React** and **TypeScript**, focusing on scalability, type safety, and clean architecture.
 
-Currently, two official plugins are available:
+> **Note:** This project focuses on **logic, architecture, and backend integration**. The UI/UX is currently in a functional wireframe state and is pending final design implementation.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🔗 Related Repositories
+This is the Frontend repository. You can find the Server-side logic here:
+* **Backend Repository:** https://github.com/Tsoorh/tiran-backhend
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠 Tech Stack
 
-## Expanding the ESLint configuration
+* **Framework:** React 18
+* **Language:** TypeScript 
+* **Build Tool:** Vite
+* **State Management:**  React Context 
+* **Routing:** React Router DOM
+* **HTTP Client:**  Axios 
+* **Styling:** CSS Modules 
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 Key Features
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+* **Type-Safe Development:** Full TypeScript integration sharing interfaces/types with the backend logic where applicable.
+* **Component Architecture:** Modular and reusable component structure.
+* **API Integration:** Robust communication with the Node.js backend (handling loading states, errors, and data fetching).
+* **Custom Hooks:** Encapsulated logic for complex functionalities.
+* **Performance:** Optimized build using Vite.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## ⚙️ Installation & Setup
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/Tsoorh/tiran-frontend-fixed
+    cd tiran-frontend-fixed
+    ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
+
+3.  **Environment Setup**
+    Create a `.env` file in the root directory and add your backend URL:
+    ```env
+    VITE_API_URL=http://localhost:3000/api
+    ```
+
+4.  **Run the application**
+    ```bash
+    npm run dev
+    ```
+
+---
+
+## 👤 Author
+**Tsoor Hartuv** - Full Stack Developer
+linkedin.com/in/tsoor-hartov-ab27651b2 | https://github.com/Tsoorh 
