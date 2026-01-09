@@ -1,0 +1,120 @@
+.product-details {
+    display: grid;
+    grid-template-columns: minmax(0, 100px) 90% minmax(0, 100px);
+
+    >.product-card {
+        grid-column: 2 / 3;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+
+        /* background-color: #fff9ec; */
+
+        /* border: 0.2rem solid rgba(245, 245, 245, 0.397); */
+        color: rgb(63, 63, 63);
+
+        >img {
+            grid-column: 2/3;
+            max-height: 30rem;
+            width: auto;
+        }
+
+        >div.info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+
+            grid-column: 1/2;
+            grid-row: 1/2;
+
+            >.name {
+                font-family: serif;
+                font-size: clamp(1.5rem, 35px, 3rem);
+                font-weight: 400;
+                padding-block-start: 1rem;
+            }
+
+            >.price {
+                font-weight: 600;
+                font-size: 1.2rem;
+            }
+
+            >.description {
+                background-color: var(--header-bgc);
+                padding: 0.7rem;
+                border-radius: 5px;
+            }
+
+            .wood-types {
+                display: flex;
+                gap: 2rem;
+
+                >.wood {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+
+                    >img {
+                        cursor: pointer;
+                        border: 2px solid rgba(0, 0, 0, 0.164);
+                        padding: 3px;
+                        margin-block-end: 0.1rem;
+                        border-radius: 5px;
+                        height: 3rem;
+                        width: 3rem;
+                        transition: width 0.6s ease, height 0.6s ease;
+                        &:hover {
+                            height: 5rem;
+                            width: 5rem;
+                        }
+                    }
+                }
+            }
+
+            >a{
+                text-align: center;
+                cursor: pointer;
+                padding: 0.6rem;
+                border-radius: 5px;
+                color: white;
+                font-weight: 600;
+                border: none;
+                background-color: black;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                >svg{
+                margin-inline-start: 0.5rem;
+                }
+                &:hover{
+                    text-decoration: none;
+                    color: var(--header-bgc);
+                    box-shadow: 0 0 8px 8px var(--header-bgc);
+                }
+            }
+
+            .technical-details{
+                display: flex;
+                margin-block-end: 0.5rem;
+                >p{
+                    padding-inline-start: 0.5rem;
+                    padding-inline-end: 0.5rem;
+                }
+                >span:not(:last-of-type){
+                    padding-inline-end: 0.5rem;
+                    
+                    &::after{
+                        content: ", ";
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+.note {
+    width: fit-content;
+    padding: 0.4rem;
+    border-radius: 5px;
+    background-color: var(--header-bgc);
+}

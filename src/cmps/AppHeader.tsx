@@ -31,7 +31,7 @@ export const AppHeader = () => {
         { title: { en: 'Home', he: 'בית' }, address: '/' },
         {
             title: { en: 'Lighting', he: 'תאורה' }, iconName: 'dropdown', subMenu: [
-                { title: { en: 'All Lighting', he: 'כל התאורה' }, address: '/product' },
+                { title: { en: 'All Lighting', he: 'כל התאורה' }, address: '/product/category/all' },
                 { title: { en: 'Wall', he: 'מנורות קיר' }, address: '/product/category/wall' },
                 { title: { en: 'Hanging', he: 'מנורות תלייה' }, address: '/product/category/hanging' },
                 { title: { en: 'Ceiling', he: 'מנורות תקרה' }, address: '/product/category/ceiling' },
@@ -56,7 +56,7 @@ export const AppHeader = () => {
     return (
         <header className="app-header">
             <div className="logo" onClick={() => navigate('/')}>
-                {/* <p>TIRAN LASRY</p> */}
+
                 <img src={Logo} alt="Tiran-Logo" />
                 {/* <span className="slogen">Lighting Design Studio</span> */}
             </div>

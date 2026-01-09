@@ -30,10 +30,9 @@ type SocketType = {
 }
 
 export type FullProduct = Product & {
-    category:string[]
+    category:hebrewEnglishObj[]
     imgsUrl: string[]
-    radius: number
-    size: ProductSize
+    size: ProductSize[]
     socketType:SocketType
     material:hebrewEnglishObj[]
     woodType:hebrewEnglishObj[]

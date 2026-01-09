@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { productService } from "../services/product.service"
 import type { FullProduct } from "../model/product.model"
-import { ProductPreview } from "../cmps/Product/ProductPreview"
+import { ProductList } from "../cmps/Product/ProductList"
 
 export const ProductCategory = () => {
     const { categoryName } = useParams()
@@ -19,18 +19,16 @@ export const ProductCategory = () => {
         }
     }, [categoryName])
 
+
     if (!products) return "No products"
     return (
         <div className="category-layout">
             <div className="category-image">
                 <h1>{categoryName?.toUpperCase()} LIGHTS</h1>
-                <img src={`https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${categoryName}.webp`} alt={categoryName} />
+                {/* <img src={`https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${categoryName}.webp`} alt={categoryName} /> */}
+                <img src={`../../public/images/${categoryName}-cover.jpeg`} alt={categoryName} />
             </div>
-            <div className="product-list">
-            {products.map(product=>{
-                return <ProductPreview product={product}/>
-            })}
-            </div>
+            <ProductList products={products}/>
         </div>
     )
 }

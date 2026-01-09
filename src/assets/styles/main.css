@@ -9,11 +9,13 @@
 @import "./base/typography.css";
 
 
-/* pages */
-@import "./pages/ProductCategory.css";
-
 /* cmps */
 @import "./cmps/AppHeader.css";
 @import "./cmps/ProductPreview.css";
+@import "./cmps/ProductList.css";
+@import "./cmps/ProductDetails.css";
 @import "./cmps/MenuModal.css";
 
+
+/* pages */
+@import "./pages/ProductCategory.css";

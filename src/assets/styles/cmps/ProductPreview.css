@@ -1,23 +1,15 @@
 .product-preview {
     height: 18rem;
-    width: 15rem;
+    width: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding-top: 1rem;
-    /* box-shadow: 0 0 2px 2px rgb(231, 231, 231) ; */
     background-color: var(--image-background-color);
     cursor: pointer;
     transition: opacity 0.3s ease-in;
-    z-index: -1;
     
-    &:hover {
-        >img {
-            height: 12rem;
-            width: 12rem;
-        }
-    }
-
+    
     >img {
         background-image: url('../../../../public/images/bgc/empty-industrial-room-interior-design.jpg');
         background-size: cover;
@@ -27,9 +19,16 @@
         transition: height 0.4s ease, width 0.4s ease;
     }
 
+    &:hover {
+        >img {
+            background-size: cover;
+            height: 11rem;
+            width: 11rem;
+        }
+    }
+    
     >span {
-        padding-left: 2.5rem;
-        margin-top: 0.2rem;
+        margin-block-start: 0.2rem;
         align-self: self-start;
     }
 }
@@ -46,10 +45,7 @@ img.visible {
             width: 12rem;
         }
         
-        >span {
-            /* align-self: center; */
-            padding-left: 1.5rem;
-        }
+        
 
         &:hover {
             >img {
