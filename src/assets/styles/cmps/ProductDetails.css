@@ -164,7 +164,6 @@
                 flex-direction: row;
                 gap: 3rem;
                 >li{
-                    transform: opacity 1s ease in;
                 }
             }
         }
