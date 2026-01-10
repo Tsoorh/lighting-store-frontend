@@ -48,6 +48,7 @@ export const NavigationList = ({ navLinks, closeMenu }: NavLinks) => {
 
     const isEnglish = language === 'en'
     const isMobile = (width <= 768)
+    const orderLangSelector = !isEnglish && !isMobile ? { order: -1 } : {}
     return (
         <ul className="nav-links" style={!isMobile ? { flexDirection: isEnglish ? 'row' : 'row-reverse' } : { alignItems: isEnglish ? 'start' : 'end' }}>
             {navLinks.map(link => {
@@ -89,7 +90,7 @@ export const NavigationList = ({ navLinks, closeMenu }: NavLinks) => {
                         </li>
                         {/* MOBILE SUBMENU */}
                         {link.subMenu && subMenuDetails && isMobile && isMenuOpen &&
-                            <li className="sub-menu-small">
+                            <li className="sub-menu-small" style={{ flexDirection: isEnglish ? 'row' : 'row-reverse' }}>
                                 <ul>
                                     {subMenuDetails.map(child => (
                                         <li
@@ -97,7 +98,7 @@ export const NavigationList = ({ navLinks, closeMenu }: NavLinks) => {
                                             onClick={(e) => {
                                                 e.stopPropagation()
                                                 navigate(child.address)
-                                                setSubMenuDetails(null)
+                                                if (closeMenu) closeMenu()
                                             }}
                                             style={{ textAlign: isEnglish ? 'start' : 'end' }}
                                         >
@@ -112,7 +113,7 @@ export const NavigationList = ({ navLinks, closeMenu }: NavLinks) => {
             })}
 
             {/* Language selector */}
-            <li style={!isEnglish ? { order: -1 } : {}}>
+            <li className={isMobile?'mobile-align':''} style={orderLangSelector}>
                 <FormControl sx={{ m: 0, minWidth: 67 }} size="small">
                     <Select
                         sx={{

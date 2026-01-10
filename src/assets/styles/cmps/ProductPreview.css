@@ -27,9 +27,26 @@
         }
     }
     
-    >span {
+    >span,button {
         margin-block-start: 0.2rem;
         align-self: self-start;
+    }
+    .btn-preview{
+        border: none;
+        padding: 0.3rem;
+        border-radius: 5px;
+        background-color: #000000;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+        &:hover{
+            background-color: #6e6e6e;
+            color: black;
+            transition: background-color 0.5s ease;
+            cursor: pointer;
+        }
     }
 }
 

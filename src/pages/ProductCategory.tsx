@@ -14,13 +14,13 @@ export const ProductCategory = () => {
                 const filterBy = { category: categoryName }
                 const productsFromDB = await productService.query(filterBy)
                 if (productsFromDB && productsFromDB.length > 0) setProducts(productsFromDB)
+                else (setProducts(undefined))
             }
             getProducts()
         }
     }, [categoryName])
 
 
-    if (!products) return "No products"
     const categoryUpper = categoryName?.toUpperCase()
     const isAccessories = categoryUpper === 'ACCESSORIES' ? '' : 'LIGHTS'
     return (
@@ -30,7 +30,7 @@ export const ProductCategory = () => {
                 {/* <img src={`https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${categoryName}.webp`} alt={categoryName} /> */}
                 <img src={`../../public/images/${categoryName}-cover.jpeg`} alt={categoryName} />
             </div>
-            <ProductList products={products} />
+            {products ? <ProductList products={products} /> : 'No products yet'}
         </div>
     )
 }

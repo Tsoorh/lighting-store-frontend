@@ -19,20 +19,22 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
         setIsVisible(isIntersecting)
     })
 
-    const onHandleClick = ()=>{
+    const onHandleClick = () => {
         navigate(`/product/${product._id}`)
     }
-
+    const isEnglish = language === "en"
     const isMobile = width <= 400
+    const alignLang = isEnglish ? 'self-start' : 'self-end'
     // style={{ opacity: isVisible ? 1 : 0 }}
     return (
-        <div className="product-preview" onClick={onHandleClick} ref={ref}>
+        <div className="product-preview" onClick={onHandleClick} ref={ref} >
             <img
                 className={isMobile && isVisible ? 'visible' : ''}
                 src={product.imgsUrl[0] ? `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${product.imgsUrl[0]}.webp` : `https://res.cloudinary.com/dhixlriwm/image/upload/coming-soon.webp`}
             />
-            <span><b>{language === "en" ? product.name.en : product.name.he}</b></span>
-            <span>₪{product.price}</span>
+            <span style={{ alignSelf: alignLang }}><b>{isEnglish ? product.name.en : product.name.he}</b></span>
+            <span style={{ alignSelf: alignLang }}>₪{product.price}</span>
+            {/* <button className="btn-preview" style={{ alignSelf: alignLang }}>{isEnglish?'More details':'לפרטים נוספים'}</button> */}
         </div>
     )
 }

@@ -18,13 +18,6 @@
     justify-content: center;
     cursor: pointer;
 
-    /* >p {
-        text-align: center;
-        font-size: 2rem;
-        font-weight: 800;
-        color: rgb(0, 0, 0);
-        text-decoration: line-through 2px rgba(255, 143, 91, 0.699);
-    } */
     >img {
         padding: 0;
         margin: 0;
@@ -45,7 +38,7 @@
         padding: 0.1rem;
         border: 2px black solid;
         border-radius: 5px;
-        
+
         &.active {
             background-color: black;
             color: white;
@@ -71,7 +64,8 @@
 
 
     }
-    .nav-links{
+
+    .nav-links {
         display: flex;
     }
 }
@@ -84,14 +78,17 @@
     padding: 0 1.5rem;
     background-color: var(--header-bgc);
     box-shadow: 0 0 2px 2px rgb(231, 231, 231);
+
     >ul {
         display: flex;
         flex-direction: column;
         justify-content: space-around;
+
         >li {
             padding: 0.5rem 0;
             font-size: small;
             cursor: pointer;
+
             &:hover {
                 text-decoration: underline;
             }
@@ -99,26 +96,28 @@
     }
 }
 
-.sub-menu-small{
+.sub-menu-small {
     color: rgb(85, 85, 85);
     background-color: #f8f8f8;
     display: flex;
     flex-direction: column;
     padding: 1rem;
-    min-height: max-content ;
+    min-height: max-content;
     width: 100%;
-    >ul{
+
+    >ul {
         display: flex;
         flex-direction: column;
         align-self: start;
-        padding-left: 1rem;
-        >li{
+        padding-inline: 1rem;
+
+        >li {
             font-size: 0.9rem;
             margin: 0.5rem 0;
-            &:hover{
+
+            &:hover {
                 color: black;
             }
         }
     }
 }
-

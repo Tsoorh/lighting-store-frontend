@@ -5,6 +5,7 @@ import type { FullProduct, hebrewEnglishObj } from "../../model/product.model"
 import { productService } from "../../services/product.service"
 import { useLanguage } from "../../hooks/useLanguage"
 import { Icons } from "../Icons"
+import { ProductSuggestion } from "./ProductSuggestion"
 
 export const ProductDetails = () => {
     const { productId } = useParams()
@@ -45,43 +46,47 @@ export const ProductDetails = () => {
     const descriptionLabel = isEnglish ? product.description.en : product.description.he
     const linkLabel = isEnglish ? `Custom Order` : `הזמנה בייצור אישי `
     const materialsLabel = isEnglish ? 'Materials -' : '- חומרים'
-    const balbLabel = isEnglish ? 'Bulb type -' : ' - סוג נורה'
+    const bulbLabel = isEnglish ? 'Bulb type -' : ' - סוג נורה'
     const voltLabel = isEnglish ? 'Voltage -' : ' - הספק'
+    const alignLanguage = { alignItems: isEnglish ? 'flex-start' : 'flex-end' }
+    const iconsLanguageAlign = isEnglish ? `technical-details-en` : `technical-details-he`
+    const sizeLabel = isEnglish ? 'Size -' : '- מידות'
+    const woodLabel = isEnglish ? "Wood types:" : ": סוגי עץ זמינים"
     return (
         <div className="product-details">
             <div className="product-card">
                 {product.imgsUrl.map((imgUrl, idx) => {
                     return <img key={idx} src={`https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${imgUrl}.webp`} alt={product.name.en + idx} />
                 })}
-                <div className="info">
+                <div className="info" style={alignLanguage}>
                     <h1 className="name">{nameLabel}</h1>
                     <p className="price note shadow">₪{product.price}</p>
                     <p className="">{descriptionLabel}</p>
 
-                    <h2>Wood types:</h2>
+                    <h2>{woodLabel}</h2>
                     <div className="wood-types">
                         {isWalnut && <div className="wood">
                             <img src="/images/walnut.jpg" />
-                            <span>walnut</span>
+                            <span>{isEnglish ? "walnut" : "אגוז"}</span>
                         </div>}
                         {isOak && <div className="wood">
                             <img src="/images/oak.jpg" />
-                            <span>oak</span>
+                            <span>{isEnglish ? "oak" : "אלון"}</span>
                         </div>
                         }
                     </div>
                     <a href='https://wa.me/972524000102'>{linkLabel} <Icons iconName="whatsapp" /></a>
-                    <div className="details-icons">
-                        <div className="technical-details">
+                    <div className="details-icons " >
+                        <div className={iconsLanguageAlign}>
                             <Icons iconName='material' />
                             <p>{materialsLabel}</p>
                             {product.material.map((m, idx) => {
                                 return <span key={idx}>{isEnglish ? m.en : m.he}</span>
                             })}
                         </div>
-                        <div className="technical-details">
+                        <div className={iconsLanguageAlign}>
                             <Icons iconName='size' />
-                            <p>{isEnglish ? 'Size -' : '- מידות'}</p>
+                            <p>{sizeLabel}</p>
                             {product.size.map((s, idx) => {
                                 return <>
                                     <span key={idx + 'r'}>{isEnglish ? `radius ${s.radius} cm` : `רדיוס ${s.radius} ס"מ`}</span>
@@ -89,32 +94,22 @@ export const ProductDetails = () => {
                                 </>
                             })}
                         </div>
-                        <div className="technical-details">
+                        <div className={iconsLanguageAlign}>
                             <Icons iconName='bulb' />
-                            <p>{balbLabel}</p>
+                            <p>{bulbLabel}</p>
                             <span>{product.socketType.screwType}</span>
                         </div>
-                        <div className="technical-details">
+                        <div className={iconsLanguageAlign}>
                             <Icons iconName='bolt' />
                             <p>{voltLabel}</p>
                             <span>{product.socketType.lightType}</span>
                         </div>
                     </div>
-
-                    {/* 
-                    {product.woodType.map((wood, idx) => {
-                        return <p className="note shadow" key={idx}>{isEnglish ? wood.en : wood.he}</p>
-                    })}
-
-                    <span className="note shadow">{product.socketType.lightType}</span>
-                    <div className="notes">
-                        {product.category.map((c, idx) => {
-                            return <p className="note shadow" key={idx}>{isEnglish ? c.en : c.he} </p>
-                        })}
-                        <p className="note shadow">{product.socketType.lightType}</p>
-                    </div>  */}
                 </div>
             </div>
-        </div>
+            <div className="suggestion">
+                <ProductSuggestion category={product.category[0].en} />
+            </div>
+        </div >
     )
 }
