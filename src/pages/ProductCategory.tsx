@@ -21,14 +21,16 @@ export const ProductCategory = () => {
 
 
     if (!products) return "No products"
+    const categoryUpper = categoryName?.toUpperCase()
+    const isAccessories = categoryUpper === 'ACCESSORIES' ? '' : 'LIGHTS'
     return (
         <div className="category-layout">
             <div className="category-image">
-                <h1>{categoryName?.toUpperCase()} LIGHTS</h1>
+                <h1>{categoryUpper} {isAccessories}</h1>
                 {/* <img src={`https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${categoryName}.webp`} alt={categoryName} /> */}
                 <img src={`../../public/images/${categoryName}-cover.jpeg`} alt={categoryName} />
             </div>
-            <ProductList products={products}/>
+            <ProductList products={products} />
         </div>
     )
 }

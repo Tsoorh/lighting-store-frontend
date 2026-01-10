@@ -28,6 +28,7 @@
             grid-template-columns: 1fr;
             >h1{
                 position: absolute;
+                z-index: 1;
             }
             >img{
                 width: 100%;

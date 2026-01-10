@@ -37,8 +37,16 @@ export const ProductDetails = () => {
     const isWalnut = product?.woodType.some(wood =>
         checkWoodType(wood, 'walnut')
     )
-    const isEnglish = language === 'en'
+
     if (!product) return <SkeletonProductDetails />
+
+    const isEnglish = language === 'en'
+    const nameLabel = isEnglish ? product.name.en : product.name.he
+    const descriptionLabel = isEnglish ? product.description.en : product.description.he
+    const linkLabel = isEnglish ? `Custom Order` : `הזמנה בייצור אישי `
+    const materialsLabel = isEnglish ? 'Materials -' : '- חומרים'
+    const balbLabel = isEnglish ? 'Bulb type -' : ' - סוג נורה'
+    const voltLabel = isEnglish ? 'Voltage -' : ' - הספק'
     return (
         <div className="product-details">
             <div className="product-card">
@@ -46,9 +54,9 @@ export const ProductDetails = () => {
                     return <img key={idx} src={`https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${imgUrl}.webp`} alt={product.name.en + idx} />
                 })}
                 <div className="info">
-                    <h1 className="name">{isEnglish ? product.name.en : product.name.he}</h1>
+                    <h1 className="name">{nameLabel}</h1>
                     <p className="price note shadow">₪{product.price}</p>
-                    <p className="">{isEnglish ? product.description.en : product.description.he}</p>
+                    <p className="">{descriptionLabel}</p>
 
                     <h2>Wood types:</h2>
                     <div className="wood-types">
@@ -62,11 +70,11 @@ export const ProductDetails = () => {
                         </div>
                         }
                     </div>
-                    <a href='https://wa.me/972524000102'>{isEnglish ? `Custom Order` : `הזמנה בייצור אישי `} <Icons iconName="whatsapp"/></a>
+                    <a href='https://wa.me/972524000102'>{linkLabel} <Icons iconName="whatsapp" /></a>
                     <div className="details-icons">
                         <div className="technical-details">
                             <Icons iconName='material' />
-                            <p>{isEnglish ? 'Materials -' : '- חומרים'}</p>
+                            <p>{materialsLabel}</p>
                             {product.material.map((m, idx) => {
                                 return <span key={idx}>{isEnglish ? m.en : m.he}</span>
                             })}
@@ -83,12 +91,12 @@ export const ProductDetails = () => {
                         </div>
                         <div className="technical-details">
                             <Icons iconName='bulb' />
-                            <p>{isEnglish ? 'Bulb type -' : ' - סוג נורה'}</p>
+                            <p>{balbLabel}</p>
                             <span>{product.socketType.screwType}</span>
                         </div>
                         <div className="technical-details">
                             <Icons iconName='bolt' />
-                            <p>{isEnglish ? 'Voltage -' : ' - הספק'}</p>
+                            <p>{voltLabel}</p>
                             <span>{product.socketType.lightType}</span>
                         </div>
                     </div>
