@@ -6,9 +6,7 @@ export const HomePage = () => {
             <div className="hanging-sec"></div>
             <div className="ceiling-sec"></div>
             <div className="accessories-sec"></div>
-            <div className="products-sec">
-                
-            </div>
+            <div className="products-sec"></div>
         </div>
     )
 }

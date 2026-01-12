@@ -1,0 +1,32 @@
+.main-layout {
+    display: grid;
+    grid-template-rows: repeat(6,60vh) ;
+    .welcome-sec {
+        background-color: yellow;
+    }
+    
+    .wall-sec {
+        background-color: green;
+        
+    }
+    
+    .hanging-sec {
+        background-color: blue;
+        
+    }
+    
+    .ceiling-sec {
+        background-color: pink;
+        
+    }
+    
+    .accessories-sec {
+        background-color: black;
+        
+    }
+    
+    .products-sec {
+        background-color: red;
+
+    }
+}

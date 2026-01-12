@@ -5,9 +5,11 @@ import { productService } from "../../services/product.service"
 import { ProductPreview } from "./ProductPreview"
 import { Icons } from "../Icons"
 import { useWindowWidth } from "../../hooks/useWindowWidth"
+import { useParams } from "react-router-dom"
 
 
 export const ProductSuggestion = ({ category }: { category: string }) => {
+    const { productId } = useParams()
     const [products, setProducts] = useState<FullProductsOrNull | undefined>()
     const [position, setPosition] = useState<number>(0)
     const [numOfSugg, setNumOfSugg] = useState<number>(4)
@@ -32,11 +34,15 @@ export const ProductSuggestion = ({ category }: { category: string }) => {
             const getProducts = async () => {
                 const filterBy = { category: category }
                 const productsFromDB = await productService.query(filterBy)
-                setProducts(productsFromDB)
+                let productsToSet = null;
+                if (productsFromDB) {
+                    productsToSet = productsFromDB.filter(p => !(p._id === productId))
+                }
+                setProducts(productsToSet)
             }
             getProducts()
         }
-    }, [category])
+    }, [category, productId])
 
 
     const onHandleClick = (ev: React.MouseEvent<HTMLButtonElement>) => {

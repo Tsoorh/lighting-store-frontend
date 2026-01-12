@@ -11,9 +11,10 @@ import { useWindowWidth } from "../hooks/useWindowWidth"
 type NavLinks = {
     navLinks: NavbarProperties,
     closeMenu?: () => void
+    handleSearch?: () => void
 }
 
-export const NavigationList = ({ navLinks, closeMenu }: NavLinks) => {
+export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) => {
     const [subMenuDetails, setSubMenuDetails] = useState<SubMenu | null>(null)
     const { language, changeLanguage } = useLanguage()
     const [closeTimeout, setCloseTimeout] = useState<ReturnType<typeof setTimeout> | null>(null)
@@ -46,11 +47,20 @@ export const NavigationList = ({ navLinks, closeMenu }: NavLinks) => {
         if (isMobile) setIsMenuOpen(prev => !prev)
     }
 
+
     const isEnglish = language === 'en'
     const isMobile = (width <= 768)
-    const orderLangSelector = !isEnglish && !isMobile ? { order: -1 } : {}
+    const orderLangSelectorRight = !isEnglish && !isMobile ? { order: -1 } : {}
+    const orderLangSelectorLeft = !isEnglish && !isMobile ? { order: 1 } : {}
+    const orderLangSelectorLefter = !isEnglish && !isMobile ? { order: 2 } : { order: -2 }
     return (
         <ul className="nav-links" style={!isMobile ? { flexDirection: isEnglish ? 'row' : 'row-reverse' } : { alignItems: isEnglish ? 'start' : 'end' }}>
+            {!isMobile &&
+                <li style={orderLangSelectorLeft} onClick={() => { window.location.href = 'https://wa.me/972524000102?text=%D7%94%D7%99%D7%99%2C%20%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%93%D7%A8%D7%9A%20%D7%93%D7%A3%20%D7%94%D7%91%D7%99%D7%AA%20%D7%91%D7%90%D7%AA%D7%A8%20%D7%A9%D7%9C%20%D7%98%D7%99%D7%A8%D7%9F.%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A7%D7%91%D7%9C%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D%20%D7%A0%D7%95%D7%A1%D7%A4%D7%99%D7%9D' }}>
+                    <Icons iconName="whatsapp" /></li>
+            }
+            {!isMobile && <li style={orderLangSelectorLefter} onClick={handleSearch}><Icons iconName="search" /></li>
+            }
             {navLinks.map(link => {
                 return (
                     <>
@@ -112,8 +122,9 @@ export const NavigationList = ({ navLinks, closeMenu }: NavLinks) => {
                 )
             })}
 
+
             {/* Language selector */}
-            <li className={isMobile?'mobile-align':''} style={orderLangSelector}>
+            <li className={isMobile ? 'mobile-align' : ''} style={orderLangSelectorRight}>
                 <FormControl sx={{ m: 0, minWidth: 67 }} size="small">
                     <Select
                         sx={{
@@ -133,7 +144,8 @@ export const NavigationList = ({ navLinks, closeMenu }: NavLinks) => {
                         <MenuItem sx={{ fontSize: "small" }} value={"he"}>עב</MenuItem>
                     </Select>
                 </FormControl>
-            </li >
+            </li>
+
         </ul >
     )
 }

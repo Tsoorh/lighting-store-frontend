@@ -1,31 +1,25 @@
 // import { useEffect } from "react"
 import { Backdrop } from "@mui/material"
-import type { NavbarProperties } from "./AppHeader"
-import { NavigationList } from "./NavigationList"
-import { useLanguage } from "../hooks/useLanguage"
-import { Icons } from "./Icons"
-
+// import type { NavbarProperties } from "./AppHeader"
+// import { NavigationList } from "./NavigationList"
+// import { useLanguage } from "../hooks/useLanguage"
+// import { Icons } from "./Icons"
 
 type MenuModalProps = {
-    navLinks: NavbarProperties
+    // navLinks: NavbarProperties
     closeMenu: () => void
+    children: JSX.Element
 }
 
-export const MenuModal = ({ navLinks, closeMenu }: MenuModalProps) => {
-    const { language } = useLanguage()
+export const MenuModal = ({ children, closeMenu }: MenuModalProps) => {
 
-    const isEnglish = language === 'en'
     return (
         <Backdrop
             sx={(theme) => ({ zIndex: theme.zIndex.drawer + 1 })}
             open={true}
             onClick={closeMenu}
         >
-            <div className="menu-modal" onClick={(e) => e.stopPropagation()}>
-                <button className="exit-btn" onClick={closeMenu}><Icons iconName={"close"} /></button>
-                <h1>{isEnglish ? 'Menu' : 'תפריט'}</h1>
-                <NavigationList navLinks={navLinks} closeMenu={closeMenu}/>
-            </div>
+            {children}
         </Backdrop>
     )
 }

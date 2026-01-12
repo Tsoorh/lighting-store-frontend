@@ -7,6 +7,7 @@ import BoltIcon from '@mui/icons-material/Bolt';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import SearchIcon from '@mui/icons-material/Search';
 
 type IconName = string;
 
@@ -27,7 +28,8 @@ export const Icons = ({ iconName }: IconsProps): JSX.Element | null => {
         bolt:<BoltIcon fontSize='small' aria-label='true'/>,
         whatsapp:<WhatsAppIcon aria-label='true'/>,
         left:<KeyboardArrowLeftIcon aria-label='true'/>,
-        right:<KeyboardArrowRightIcon aria-label='true'/>
+        right:<KeyboardArrowRightIcon aria-label='true'/>,
+        search: <SearchIcon aria-label='true'/>
     };
 
     return icons[key] ?? null;
