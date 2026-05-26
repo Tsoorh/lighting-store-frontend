@@ -5,7 +5,7 @@
     bottom: 0;
     width: 70vw;
     box-shadow: 0 0 6px 6px rgb(112, 112, 112);
-    background-color: #fff;
+    background-color: var(--background-color);
     display: grid;
     grid-template-rows: 10vh 1fr;
     justify-items: end;
@@ -17,7 +17,7 @@
         justify-self: stretch;
         display: grid;
         place-items: center;
-        background-color: #fafafa;
+        background-color: var(--background-color);
     }
 
     >.nav-links {

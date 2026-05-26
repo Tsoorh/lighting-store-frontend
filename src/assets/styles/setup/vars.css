@@ -1,10 +1,10 @@
 :root {
     /* basic colors */
-    --primary-color: rgb(255, 255, 255);
+    /* --primary-color: rgb(255, 255, 255); */
     --background-color: #FAF8F5;
-    --image-background-color: rgb(255, 255, 255);
+    /* --image-background-color: rgb(255, 255, 255); */
     --header-bgc: #FAF8F5;
-    --guide-color1: rgba(255, 143, 91, 0.699);
+    /* --guide-color1: rgba(255, 143, 91, 0.699); */
 
     /* buttons */
     --button-color: rgb(206, 206, 206);

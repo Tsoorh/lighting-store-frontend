@@ -1,3 +1,7 @@
+.main-layout {
+    background-color: var(--background-color);
+}
+
 .entry-vid {
     position: relative;
     width: 100%;
@@ -80,6 +84,117 @@
     font-weight: 300;
 }
 
+.works-sec {
+    background-color: var(--background-color);
+    margin-top: 64px; /* המרווח בין הסקשנים */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0 20px; /* למנוע היצמדות לשוליים במסכים קטנים מ-1280 */
+    box-sizing: border-box;
+}
+
+.section-title {
+    width: 100%;
+    max-width: 1280px;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 300;
+    font-size: 32px;
+    line-height: 1.3;
+    color: rgba(30, 28, 25, 1);
+    text-align: right;
+    margin: 0 0 32px 0; /* מרווח פנימי עד לגריד עצמו */
+    direction: rtl;
+}
+
+.works-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    width: 100%;
+    max-width: 1280px;
+}
+
+.work-item {
+    position: relative;
+    aspect-ratio: 1;
+    background-color: #f5f5f5; /* Placeholder זמני עד שנוסיף את המוצרים */
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.work-item::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 300ms ease-out;
+    z-index: 1;
+    pointer-events: none; /* כדי לא להפריע ללחיצות */
+}
+
+.work-item:hover::after {
+    opacity: 1;
+}
+
+.work-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.work-item-title {
+    position: absolute;
+    top: 53px;
+    left: 0;
+    width: 100%;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 1.3;
+    text-align: center;
+    color: rgba(126, 133, 136, 1);
+    z-index: 2;
+    transition: color 300ms ease-out, transform 300ms ease-out;
+}
+
+.work-item-title.white-text {
+    color: #FFFFFF;
+}
+
+.work-item:hover .work-item-title {
+    color: #FFFFFF; /* גורם גם לכותרת האפורה להפוך ללבנה */
+    transform: translateY(-10px); /* עולה מעט כדי לפנות מקום לטקסט */
+}
+
+.work-item-desc {
+    position: absolute;
+    top: 106px;
+    left: 50%;
+    width: 100%;
+    max-width: 258px;
+    transform: translate(-50%, 20px);
+    opacity: 0;
+    color: #FFFFFF;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.3;
+    text-align: center;
+    direction: rtl;
+    z-index: 2;
+    transition: opacity 300ms ease-out, transform 300ms ease-out;
+    pointer-events: none;
+}
+
+.work-item:hover .work-item-desc {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
 /* התאמה למסכים קטנים (מובייל וטאבלט) שבהם האחוזים יהפכו את האובייקטים לקטנים מדי */
 @media (max-width: 768px) {
     .entry-logo {
@@ -98,5 +213,12 @@
     .entry-vid-text {
         width: 80%;
         left: 10%;
+    }
+    .section-title {
+        font-size: 26px; /* הקטנה פרופורציונלית למסך קטן */
+    }
+    .works-grid {
+        grid-template-columns: 1fr; /* תצוגה של מוצר אחד בשורה במסכים קטנים */
+        gap: 20px;
     }
 }
