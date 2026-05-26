@@ -2,7 +2,7 @@
 import Logo from '/images/TIRAN-LOGO1.svg';
 import { Icons } from "./Icons";
 import { useWindowWidth } from "../hooks/useWindowWidth";
-import { type FullProductsOrNull, type hebrewEnglishObj } from '../model/product.model';
+import type { FullProductsOrNull, hebrewEnglishObj } from '../model/product.model';
 import { NavigationList } from './NavigationList';
 import { useEffect, useState, type ChangeEvent } from 'react';
 import { MenuModal } from './MenuModal';
@@ -27,19 +27,19 @@ export type NavbarProperties = {
 export const AppHeader = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isOnSearch, setIsOnSearch] = useState(false)
-    const [inputSearch, setInputSearch] = useState<string>('')
+    const [inputSearch, setInputSearch] = useState('')
     const width = useWindowWidth()
     const navigate = useNavigate()
     const { language } = useLanguage()
-    const debouncedSearch = useDebounce<string>(inputSearch, 500);
-    const [resultProduct, setResultProduct] = useState<FullProductsOrNull | undefined>(null)
+    const debouncedSearch = useDebounce(inputSearch, 500);
+    const [resultProduct, setResultProduct] = useState<FullProductsOrNull>(null)
 
     const isMobile = width <= 768;
 
     const navbarProperties: NavbarProperties = [
         { title: { en: 'Home', he: 'בית' }, address: '/' },
         {
-            title: { en: 'Lighting', he: 'תאורה' }, iconName: 'dropdown', subMenu: [
+            title: { en: 'Lighting', he: 'גופי תאורה' }, iconName: 'dropdown', subMenu: [
                 { title: { en: 'All Lighting', he: 'כל התאורה' }, address: '/product/category/all' },
                 { title: { en: 'Wall', he: 'מנורות קיר' }, address: '/product/category/wall' },
                 { title: { en: 'Hanging', he: 'מנורות תלייה' }, address: '/product/category/hanging' },
@@ -47,7 +47,7 @@ export const AppHeader = () => {
                 { title: { en: 'Accessories', he: 'אביזרים' }, address: '/product/category/accessories' },
             ]
         },
-        { title: { en: 'Contact', he: 'צור קשר' }, address: '/contact' }
+        { title: { en: 'Contact', he: 'יצירת קשר' }, address: '/contact' }
 
     ]
 

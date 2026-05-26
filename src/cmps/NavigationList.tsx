@@ -2,10 +2,9 @@ import { FormControl, MenuItem, Select, type SelectChangeEvent } from "@mui/mate
 import { useNavigate } from "react-router-dom"
 import { useLanguage } from "../hooks/useLanguage"
 import type { Language } from "../services/LanguageContext"
-import type { NavbarProperties } from "./AppHeader"
+import type { NavbarProperties, SubMenu } from "./AppHeader"
 import { Icons } from "./Icons"
 import { useState } from "react"
-import type { SubMenu } from "./AppHeader"
 import { useWindowWidth } from "../hooks/useWindowWidth"
 
 type NavLinks = {
@@ -18,7 +17,7 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
     const [subMenuDetails, setSubMenuDetails] = useState<SubMenu | null>(null)
     const { language, changeLanguage } = useLanguage()
     const [closeTimeout, setCloseTimeout] = useState<ReturnType<typeof setTimeout> | null>(null)
-    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
     const navigate = useNavigate()
     const width = useWindowWidth()
 

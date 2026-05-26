@@ -1,9 +1,9 @@
 :root {
     /* basic colors */
     --primary-color: rgb(255, 255, 255);
-    --background-color: rgb(255, 255, 254);
+    --background-color: #FAF8F5;
     --image-background-color: rgb(255, 255, 255);
-    --header-bgc: rgb(255, 247, 240);
+    --header-bgc: #FAF8F5;
     --guide-color1: rgba(255, 143, 91, 0.699);
 
     /* buttons */

@@ -11,8 +11,8 @@ import { useParams } from "react-router-dom"
 export const ProductSuggestion = ({ category }: { category: string }) => {
     const { productId } = useParams()
     const [products, setProducts] = useState<FullProductsOrNull | undefined>()
-    const [position, setPosition] = useState<number>(0)
-    const [numOfSugg, setNumOfSugg] = useState<number>(4)
+    const [position, setPosition] = useState(0)
+    const [numOfSugg, setNumOfSugg] = useState(4)
     const width = useWindowWidth()
 
 
