@@ -71,23 +71,22 @@
 .sub-menu {
     position: absolute;
     top: 40px;
-    right: -12rem;
     width: 100vw;
-    padding: 0 13.3rem;
+    /* padding: 0 8.3rem; */
     font-size: 18px;
     background-color: var(--header-bgc);
     /* box-shadow: 0 0 2px 2px rgb(231, 231, 231); */
-
+    
     >ul {
         display: flex;
         flex-direction: column;
         justify-content: space-around;
-
+        
         >li {
             padding: 0.5rem 0;
             font-size: small;
             cursor: pointer;
-
+            
             &:hover {
                 text-decoration: underline;
             }
@@ -102,9 +101,12 @@
 }
 
 .sub-menu.he{
+    padding: 0 8.3rem;
+    right: -7rem;
 }
 .sub-menu.en{
-
+    padding: 0 9.3rem;
+    left: -8rem;
 }
 .sub-menu-small {
     color: rgb(85, 85, 85);
@@ -131,4 +133,3 @@
         }
     }
 }
-

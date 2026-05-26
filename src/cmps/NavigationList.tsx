@@ -4,7 +4,7 @@ import { useLanguage } from "../hooks/useLanguage"
 import type { Language } from "../services/LanguageContext"
 import type { NavbarProperties, SubMenu } from "./AppHeader"
 import { Icons } from "./Icons"
-import { useState } from "react"
+import React, { useState, Fragment } from "react"
 import { useWindowWidth } from "../hooks/useWindowWidth"
 
 type NavLinks = {
@@ -53,19 +53,19 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
         <ul className="nav-links " style={!isMobile ? { flexDirection: isEnglish ? 'row-reverse' : 'row-reverse' } : { alignItems: isEnglish ? 'start' : 'end' }}>
             {navLinks.map(link => {
                 return (
-                    <>
+                    <Fragment key={link.title.en}>
                         <li
                             onClick={() => (onHandleClick(link?.address, link?.subMenu, isMobile))}
                             onMouseEnter={() => !isMobile && onEnter(link?.subMenu)}
                             onMouseLeave={!isMobile ? onLeave : undefined}
-                            key={link.title.en}>
+                        >
                             {isEnglish ? link.title.en : link.title.he}
                             {link?.iconName && <Icons iconName={link.iconName} />}
 
                             {/* DESKTOP SUBMENU */}
                             {link.subMenu && subMenuDetails && !isMobile &&
                                 <div
-                                    className="sub-menu"
+                                    className={`sub-menu ${isEnglish?`en`:`he`}`}
                                     onMouseEnter={() => onEnter(link.subMenu)}
                                     onMouseLeave={onLeave}
                                 >
@@ -78,7 +78,7 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
                                                     navigate(child.address)
                                                     setSubMenuDetails(null)
                                                 }}
-                                                style={{ textAlign: isEnglish ? 'start' : 'end' }}
+                                            style={{ textAlign: isEnglish ? 'left' : 'right' }}
                                             >
                                                 {isEnglish ? child.title.en : child.title.he}
                                             </li>
@@ -100,7 +100,7 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
                                                 navigate(child.address)
                                                 if (closeMenu) closeMenu()
                                             }}
-                                            style={{ textAlign: isEnglish ? 'start' : 'end' }}
+                                style={{ textAlign: isEnglish ? 'left' : 'right' }}
                                         >
                                             {isEnglish ? child.title.en : child.title.he}
                                         </li>
@@ -108,7 +108,7 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
                                 </ul>
                             </li>
                         }
-                    </>
+                    </Fragment>
                 )
             })}
 
