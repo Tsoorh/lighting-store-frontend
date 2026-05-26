@@ -41,7 +41,7 @@ export const AppHeader = () => {
         {
             title: { en: 'Lighting', he: 'גופי תאורה' }, iconName: 'dropdown', subMenu: [
                 { title: { en: 'Wall', he: 'גופי תאורה לקיר' }, address: '/product/category/wall' },
-                { title: { en: 'Hanging', he: 'גופי תאורה תלויים' }, address: '/product/category/hanging' },
+                { title: { en: 'Pendant', he: 'גופי תאורה תלויים' }, address: '/product/category/pendant' },
                 { title: { en: 'Ceiling', he: 'גופי תאורה צמודי תקרה' }, address: '/product/category/ceiling' },
                 { title: { en: 'Accessories', he: 'אביזרים' }, address: '/product/category/accessories' },
             ]

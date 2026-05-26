@@ -1,3 +1,7 @@
+html {
+    scroll-behavior: smooth;
+}
+
 .main-layout {
     background-color: var(--background-color);
 }
