@@ -449,18 +449,10 @@ html {
     letter-spacing: 0.06em;
 }
 
-.experience-points-img {
-    width: 100%;
-    height: 96px;
-    display: flex;
-    justify-content: center;
+.experience-points {
+    
 }
 
-.experience-points-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
 
 .experience-bottom {
     width: 100%;

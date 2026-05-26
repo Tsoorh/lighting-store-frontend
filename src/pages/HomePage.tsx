@@ -98,7 +98,14 @@ export const HomePage = () => {
             </section>
             
             <section className="experience-sec">
-                <div className="experience-top"></div>
+                <div className="experience-top">
+                    <h2 className="experience-title">
+                        <span className="experience-title-medium">ניסיון של חיים. </span>
+                        <span className="experience-title-light">יצירה של רגע.</span>
+                    </h2>
+                    <div className="experience-points">
+                    </div>
+                </div>
                 <div className="experience-bottom"></div>
             </section>
 
