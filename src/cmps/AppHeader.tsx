@@ -141,7 +141,7 @@ export const AppHeader = () => {
                                 </li>
                             })}
                         </ul>:
-                        <p>Start Searching...</p>
+                        <p>{isEnglish?`Start Searching...`:`...התחל בחיפוש`}</p>
                         }
                     </div>
                 </div>
