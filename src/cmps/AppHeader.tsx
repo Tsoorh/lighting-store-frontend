@@ -1,5 +1,5 @@
 
-import Logo from '/images/TIRAN-LOGO1.svg';
+import Logo from '/images/Figma/Tiran_T_Grey_Logo.png';
 import { Icons } from "./Icons";
 import { useWindowWidth } from "../hooks/useWindowWidth";
 import type { FullProductsOrNull, hebrewEnglishObj } from '../model/product.model';
