@@ -18,11 +18,10 @@
     cursor: pointer;
 
     >img {
-        /* padding: 0; */
-        /* margin: 0; */
+        padding: 0;
+        margin: 0;
         height: 44px;
         width: 53px;
-        /* max-height: 7rem; */
     }
 
     >span {
@@ -36,13 +35,9 @@
     >.menu-icon {
         display: flex;
         justify-content: center;
-        padding: 0.1rem;
-        border: 2px black solid;
-        border-radius: 5px;
-
         &.active {
             background-color: black;
-            color: white;
+            /* color: white; */
         }
     }
 
@@ -50,18 +45,19 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 1rem;
+        gap: 20px;
 
         >li {
             cursor: pointer;
-            margin-right: 1rem;
             display: flex;
             align-items: center;
             position: relative;
+            /* font-size: 18px; */
+            font-weight: 300;
         }
 
         >li:hover {
-            color: rgb(100, 60, 0);
+            font-weight: 500;
         }
 
 
@@ -74,12 +70,13 @@
 
 .sub-menu {
     position: absolute;
-    top: 1.5rem;
-    right: 0;
-    min-width: max-content;
-    padding: 0 1.5rem;
+    top: 40px;
+    right: -12rem;
+    width: 100vw;
+    padding: 0 13.3rem;
+    font-size: 18px;
     background-color: var(--header-bgc);
-    box-shadow: 0 0 2px 2px rgb(231, 231, 231);
+    /* box-shadow: 0 0 2px 2px rgb(231, 231, 231); */
 
     >ul {
         display: flex;
@@ -97,7 +94,18 @@
         }
     }
 }
+.he-dir{
+    direction: ltr;
+}
+.en-dir{
+    direction: rtl;
+}
 
+.sub-menu.he{
+}
+.sub-menu.en{
+
+}
 .sub-menu-small {
     color: rgb(85, 85, 85);
     background-color: #f8f8f8;

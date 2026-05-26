@@ -40,13 +40,13 @@ export const AppHeader = () => {
         { title: { en: 'Home', he: 'בית' }, address: '/' },
         {
             title: { en: 'Lighting', he: 'גופי תאורה' }, iconName: 'dropdown', subMenu: [
-                { title: { en: 'All Lighting', he: 'כל התאורה' }, address: '/product/category/all' },
-                { title: { en: 'Wall', he: 'מנורות קיר' }, address: '/product/category/wall' },
-                { title: { en: 'Hanging', he: 'מנורות תלייה' }, address: '/product/category/hanging' },
-                { title: { en: 'Ceiling', he: 'מנורות תקרה' }, address: '/product/category/ceiling' },
+                { title: { en: 'Wall', he: 'גופי תאורה לקיר' }, address: '/product/category/wall' },
+                { title: { en: 'Hanging', he: 'גופי תאורה תלויים' }, address: '/product/category/hanging' },
+                { title: { en: 'Ceiling', he: 'גופי תאורה צמודי תקרה' }, address: '/product/category/ceiling' },
                 { title: { en: 'Accessories', he: 'אביזרים' }, address: '/product/category/accessories' },
             ]
         },
+        { title: { en: 'About', he: 'אודות' }, address: '/About' },
         { title: { en: 'Contact', he: 'יצירת קשר' }, address: '/contact' }
 
     ]
@@ -101,7 +101,7 @@ export const AppHeader = () => {
 
     const isEnglish = language === 'en'
     return (
-        <header className="app-header">
+        <header className={`app-header ${isEnglish?`en-dir`:`he-dir`}`} style={isMobile?{'padding':'20px','gap':'10px'}:{}}>
             <div className="logo" onClick={() => navigate('/')}>
                 <img src={Logo} alt="Tiran-Logo" />
                 {/* <span className="slogen">Lighting Design Studio</span> */}

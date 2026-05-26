@@ -19,7 +19,7 @@ export const Icons = ({ iconName }: IconsProps): JSX.Element | null => {
     const key = (iconName ?? '').toLowerCase();
 
     const icons: Record<string, JSX.Element> = {
-        menu: <MenuIcon aria-hidden="true" />,
+        menu: <MenuIcon aria-hidden="true" style={{'height':'28px','width':'28px'}}/>,
         close: <CloseIcon aria-label="true" />,
         dropdown: <KeyboardArrowDownIcon fontSize="small" aria-hidden="true" />,
         size: <SquareFootIcon fontSize='small' aria-label='true'/>,

@@ -1,4 +1,4 @@
-@font-face {
+/* @font-face {
   font-family: 'Outfit';
   src: url('../../fonts/Outfit/Outfit-VariableFont_wght.ttf') format('truetype');
   font-weight: 100 900; 
@@ -18,4 +18,9 @@
   font-weight: 100 900; 
   font-style: italic;
   font-display: swap;
+} */
+
+@font-face {
+  font-family: 'Heebo';
+  src: url('../../fonts/Heebo/Heebo-VariableFont_wght.ttf') format('truetype');
 }

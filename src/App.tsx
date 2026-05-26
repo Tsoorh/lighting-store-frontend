@@ -3,6 +3,7 @@ import './assets/styles/main.css'
 import { AppFooter } from './cmps/AppFooter'
 import { AppHeader } from './cmps/AppHeader'
 import { HomePage } from './pages/HomePage'
+import { About } from './pages/About'
 import { ProductDetails } from './cmps/Product/ProductDetails'
 import { ProductCategory } from './pages/ProductCategory'
 
@@ -16,7 +17,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             {/* <Route path="/contact" element={<Contact />} /> */}
-            {/* <Route path="/about" element={<About />} /> */}
+            <Route path="/about" element={<About />} />
             <Route path="/product/:productId" element={<ProductDetails />} />
             <Route path="/product/category/:categoryName" element={<ProductCategory/>} />
           </Routes>
