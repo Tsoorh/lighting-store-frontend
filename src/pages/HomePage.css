@@ -1,0 +1,102 @@
+.entry-vid {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+}
+
+.entry-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.entry-vid-text {
+    position: absolute;
+    top: 75.06%; /* 608px / 810px */
+    left: 12.84%; /* 185px / 1440px */
+    width: 20.83%; /* 300px / 1440px */
+    font-size: clamp(14px, 1.25vw, 18px);
+    font-weight: 300;
+    font-family: 'Heebo', sans-serif;
+    color: #FFFFFF;
+    text-align: right;
+    direction: rtl;
+}
+
+.entry-logo {
+    position: absolute;
+    width: 37.91%; /* 546px / 1440px */
+    top: 15.18%; /* 123px / 810px */
+    left: 56.52%; /* 814px / 1440px */
+    opacity: 0.62;
+}
+
+.entry-line {
+    position: absolute;
+    width: 37.91%; /* 546px / 1440px */
+    top: 35.80%; /* 290px / 810px */
+    left: 56.52%; /* 814px / 1440px */
+    height: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.entry-line::before,
+.entry-line::after {
+    content: "";
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    top: -3px; /* מרכוז העיגול על גבי הקו שעוביו 1px */
+}
+
+.entry-line::before { left: 0; }
+.entry-line::after { right: 0; }
+
+.entry-cta {
+    
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    direction: rtl;
+    width: 11.18%; /* 161px / 1440px */
+    top: 40.98%; /* (290px line top + 42px gap) / 810px height */
+    right: 5.56%; /* 80px from right / 1440px */
+    color:  rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-family: 'Heebo', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.entry-cta:hover {
+    opacity: 0.8;
+}
+
+.entry-cta-text {
+    font-size: clamp(14px, 0.9vw, 18px); /* Based on 13px height */
+    font-weight: 300;
+}
+
+/* התאמה למסכים קטנים (מובייל וטאבלט) שבהם האחוזים יהפכו את האובייקטים לקטנים מדי */
+@media (max-width: 768px) {
+    .entry-logo {
+        width: 60%;
+        left: 20%; /* ממורכז יותר */
+    }
+    .entry-line {
+        width: 60%;
+        left: 20%;
+    }
+    .entry-cta {
+        width: 60%;
+        left: 20%;
+        right: auto;
+    }
+    .entry-vid-text {
+        width: 80%;
+        left: 10%;
+    }
+}

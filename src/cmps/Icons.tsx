@@ -8,6 +8,8 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import SearchIcon from '@mui/icons-material/Search';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 type IconName = string;
 
@@ -29,7 +31,9 @@ export const Icons = ({ iconName }: IconsProps): JSX.Element | null => {
         whatsapp:<WhatsAppIcon aria-label='true'/>,
         left:<KeyboardArrowLeftIcon aria-label='true'/>,
         right:<KeyboardArrowRightIcon aria-label='true'/>,
-        search: <SearchIcon aria-label='true'/>
+        search: <SearchIcon aria-label='true'/>,
+        back: <ArrowBackIcon aria-label='true'/>,
+        next: <ArrowForwardIcon  aria-label='true'/>
     };
 
     return icons[key] ?? null;

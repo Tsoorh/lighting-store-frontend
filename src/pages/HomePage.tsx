@@ -1,15 +1,27 @@
+import './HomePage.css'
+import { Icons } from '../cmps/Icons';
+
 export const HomePage = () => {
     return (
         <div className="main-layout">
-            <div className="entry-vid" style={{ width: '100%', height: '810px' }}>
+            <div className="entry-vid">
                 <video 
                     src="/images/Figma/Main_video.mp4" 
                     autoPlay 
                     loop 
                     muted 
                     playsInline
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    className="entry-video"
                 />
+                <img src="/images/Figma/bright_logo_horizontal.png" alt="Bright Logo" className="entry-logo" />
+                <div className="entry-line"></div>
+                <a href="/product/category/all" className="entry-cta">
+                    <span className="entry-cta-text">צפיה בעבודות</span>
+                    <Icons iconName='back' />
+                </a>
+                <div className="entry-vid-text">
+                    גופי תאורה בעבודת יד, המשלבים 45 שנות ניסיון בעולם התאורה עם מלאכה מדויקת ורגישות חומרית. מיועד לאדריכלים, מעצבי פנים ולחללים המחפשים נוכחות על זמנית.
+                </div>
             </div>
             <div className="wall-sec"></div>
             <div className="hanging-sec"></div>
