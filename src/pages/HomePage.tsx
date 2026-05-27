@@ -1,4 +1,4 @@
-import './HomePage.css'
+import '../assets/styles/pages/HomePage.css'
 import { Icons } from '../cmps/Icons';
 import { useNavigate } from 'react-router-dom';
 
