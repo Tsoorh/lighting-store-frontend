@@ -7,25 +7,31 @@ export const HomePage = () => {
 
     return (
         <div className="main-layout">
-            <div className="entry-vid">
-                <video 
-                    src="/images/Figma/Main_video.mp4" 
-                    autoPlay 
-                    loop 
-                    muted 
-                    playsInline
-                    className="cover-img"
-                />
-                <img src="/images/Figma/bright_logo_horizontal.png" alt="Bright Logo" className="entry-logo" />
-                <div className="entry-line"></div>
-                <a href="#works-section" className="entry-cta animated-link">
-                    <span className="entry-cta-text">צפיה בעבודות</span>
-                    <Icons iconName='back' />
-                </a>
+            <section className="hero-section">
+                <div className="entry-vid">
+                    <video 
+                        src="/images/Figma/Main_video.mp4" 
+                        autoPlay 
+                        loop 
+                        muted 
+                        playsInline
+                        className="cover-img"
+                    />
+                    <img src="/images/Figma/bright_logo_horizontal.png" alt="Bright Logo" className="entry-logo entry-logo-desktop" />
+                    <div className="entry-logo entry-logo-mobile">
+                        <img src="/images/Figma/T_tiran_slogen_logo.png" alt="Tiran Logo" />
+                        <img src="/images/Figma/Tiran_lasry_slogen.png" alt="Tiran Lasry Slogan" />
+                    </div>
+                    <div className="entry-line"></div>
+                    <a href="#works-section" className="entry-cta animated-link">
+                        <span className="entry-cta-text">צפיה בעבודות</span>
+                        <Icons iconName='back' />
+                    </a>
+                </div>
                 <div className="entry-vid-text">
                     גופי תאורה בעבודת יד, המשלבים 45 שנות ניסיון בעולם התאורה עם מלאכה מדויקת ורגישות חומרית. מיועד לאדריכלים, מעצבי פנים ולחללים המחפשים נוכחות על זמנית.
                 </div>
-            </div>
+            </section>
             <div className="works-sec page-section" id="works-section">
                 <h2 className="section-title">העבודות</h2>
                 <div className="works-grid">
@@ -104,15 +110,80 @@ export const HomePage = () => {
                         <span className="experience-title-light">יצירה של רגע.</span>
                     </h2>
                     <div className="experience-points">
+                        <div className="experience-point-item">
+                            <div className="experience-point-icon"><div className="experience-point-dot"></div></div>
+                            <div className="experience-point-text">דור שני לאנשי תאורה</div>
+                        </div>
+                        <div className="experience-point-item">
+                            <div className="experience-point-icon"><div className="experience-point-dot"></div></div>
+                            <div className="experience-point-text">שליטה מלאה בתכנון וייצור</div>
+                        </div>
+                        <div className="experience-point-item">
+                            <div className="experience-point-icon"><div className="experience-point-dot"></div></div>
+                            <div className="experience-point-text">פיתוח דגמים ייעודיים לפרויקטים</div>
+                        </div>
+                        <div className="experience-point-item">
+                            <div className="experience-point-icon"><div className="experience-point-dot"></div></div>
+                            <div className="experience-point-text">רמת גימור גבוהה במיוחד</div>
+                        </div>
                     </div>
                 </div>
-                <div className="experience-bottom"></div>
+                <div className="experience-bottom animated-link">
+                    <span className="experience-bottom-text">בקשה להצעת מחיר</span>
+                    <Icons iconName='back' />
+                </div>
             </section>
 
-            <div className="pendant-sec"></div>
-            <div className="ceiling-sec"></div>
-            <div className="accessories-sec"></div>
-            <div className="products-sec"></div>
+            <section className="contact-sec page-section">
+                <div className="contact-top">
+                    <div className="contact-top-right">
+                        <img src="/images/Figma/T_bright_logo.png" alt="Background Logo" className="cover-img" />
+                    </div>
+                    <div className="contact-top-left">
+                        <div className="contact-top-inner-right">
+                            <div className="contact-title-group">
+                                <h3 className="contact-title">יצירת קשר</h3>
+                                <div className="contact-socials">
+                                    <a href="https://wa.me/972524000102" target="_blank" rel="noopener noreferrer"><Icons iconName="whatsapp" /></a>
+                                    <a href="#" target="_blank" rel="noopener noreferrer"><Icons iconName="facebook" /></a>
+                                    <a href="#" target="_blank" rel="noopener noreferrer"><Icons iconName="instagram" /></a>
+                                </div>
+                            </div>
+                            <div className="contact-details">
+                                <span className="contact-detail-text">טירן לסרי</span>
+                                <span className="contact-detail-text">המזמרה 7, נס ציונה, ישראל</span>
+                                <div className="contact-contact-row">
+                                    <span className="contact-detail-text" dir="ltr">052-40-00-102</span>
+                                    <span className="contact-detail-text">Tiranlasry@gmail.com</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="contact-top-inner-left">
+                            <form className="contact-form">
+                                <div className="contact-form-row">
+                                    <div className="contact-form-col">
+                                        <input type="text" placeholder="שם" className="contact-form-input" />
+                                        <input type="tel" placeholder="טלפון" className="contact-form-input" />
+                                    </div>
+                                    <div className="contact-form-col">
+                                        <input type="email" placeholder="אימייל" className="contact-form-input" />
+                                        <input type="text" placeholder="פניה" className="contact-form-input" />
+                                    </div>
+                                </div>
+                                <button className="contact-submit-btn" type="submit" onClick={(e) => e.preventDefault()}>
+                                    <span>שליחה</span>
+                                    <Icons iconName="back" />
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div className="contact-bottom">
+                    <a href="#terms" className="contact-bottom-link terms-link">תנאי שימוש</a>
+                    <a href="#privacy" className="contact-bottom-link privacy-link">מדיניות פרטיות</a>
+                    <a href="#accessibility" className="contact-bottom-link accessibility-link">הצהרת נגישות</a>
+                </div>
+            </section>
         </div>
     )
 }

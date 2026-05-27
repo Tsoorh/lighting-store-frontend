@@ -101,7 +101,7 @@ export const AppHeader = () => {
 
     const isEnglish = language === 'en'
     return (
-        <header className={`app-header ${isEnglish?`en-dir`:`he-dir`}`} style={isMobile?{'padding':'20px','gap':'10px'}:{}}>
+        <header className={`app-header ${isEnglish?`en-dir`:`he-dir`}`}>
             <div className="logo" onClick={() => navigate('/')}>
                 <img src={Logo} alt="Tiran-Logo" />
                 {/* <span className="slogen">Lighting Design Studio</span> */}

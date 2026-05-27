@@ -35,6 +35,10 @@ html {
     background-color: var(--background-color);
 }
 
+.hero-section {
+    position: relative;
+}
+
 .entry-vid {
     position: relative;
     width: 100%;
@@ -60,6 +64,10 @@ html {
     top: 15.18%; /* 123px / 810px */
     left: 56.52%; /* 814px / 1440px */
     opacity: 0.62;
+}
+
+.entry-logo-mobile {
+    display: none;
 }
 
 .entry-line {
@@ -150,8 +158,10 @@ html {
     pointer-events: none; /* כדי לא להפריע ללחיצות */
 }
 
-.work-item:hover::after {
-    opacity: 1;
+@media (min-width: 769px) {
+    .work-item:hover::after {
+        opacity: 1;
+    }
 }
 
 .work-item img {
@@ -180,9 +190,11 @@ html {
     color: #FFFFFF;
 }
 
-.work-item:hover .work-item-title {
-    color: #FFFFFF; /* גורם גם לכותרת האפורה להפוך ללבנה */
-    transform: translateY(-10px); /* עולה מעט כדי לפנות מקום לטקסט */
+@media (min-width: 769px) {
+    .work-item:hover .work-item-title {
+        color: #FFFFFF; /* גורם גם לכותרת האפורה להפוך ללבנה */
+        transform: translateY(-10px); /* עולה מעט כדי לפנות מקום לטקסט */
+    }
 }
 
 .work-item-desc {
@@ -205,32 +217,71 @@ html {
     pointer-events: none;
 }
 
-.work-item:hover .work-item-desc {
-    opacity: 1;
-    transform: translate(-50%, 0);
+@media (min-width: 769px) {
+    .work-item:hover .work-item-desc {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
 }
 
 /* התאמה למסכים קטנים (מובייל וטאבלט) שבהם האחוזים יהפכו את האובייקטים לקטנים מדי */
 @media (max-width: 768px) {
+    .entry-vid {
+        height: 680px;
+        aspect-ratio: auto;
+        opacity: 1;
+    }
     .page-section {
         padding: 0 20px;
     }
     .entry-logo {
-        width: 60%;
-        left: 20%; /* ממורכז יותר */
+        width: 238px;
+        height: 201px;
+        top: 189px;
+        left: calc(50% - 119px); /* ממורכז באופן יחסי למסך במקום 76px קשיח */
+        opacity: 0.62;
+    }
+    .entry-logo-desktop {
+        display: none;
+    }
+    .entry-logo-mobile {
+        display: block;
+        /* Removed width/height 100% to prevent x-axis overflow / horizontal scroll */
+    }
+    .entry-logo-mobile img:first-child {
+        position: absolute;
+        width: 124.15px;
+        height: 101.74px;
+        top: 0px;
+        left: 56.93px;
+    }
+    .entry-logo-mobile img:last-child {
+        position: absolute;
+        width: 238px;
+        height: 70.66px;
+        top: 130.34px;
+        left: 0px;
     }
     .entry-line {
-        width: 60%;
-        left: 20%;
+        width: 238px;
+        left: calc(50% - 119px);
+        top: 429px; /* מיקום הקו: 189px (למעלה) + 201px (גובה לוגו) + 39px (רווח מבוקש) */
     }
     .entry-cta {
-        width: 60%;
-        left: 20%;
+        width: 238px;
+        left: calc(50% - 119px);
         right: auto;
+        top: 468px; /* ממוקם מתחת לקו */
+        justify-content: center;
+        gap: 16px;
     }
     .entry-vid-text {
-        width: 80%;
-        left: 10%;
+        position: static; /* מוציא את התיבה מהווידאו וממקם אותה מתחתיו */
+        width: 100%;
+        background-color: rgba(30, 28, 25, 1);
+        padding: 30px 45px;
+        box-sizing: border-box;
+        opacity: 1;
     }
     .section-title {
         font-size: 26px; /* הקטנה פרופורציונלית למסך קטן */
@@ -319,7 +370,6 @@ html {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 64px;
 }
 
 .gallery-grid {
@@ -418,6 +468,7 @@ html {
     flex-direction: column;
     align-items: center;
     direction: rtl;
+    margin-bottom: 64px;
 }
 
 .experience-top {
@@ -437,43 +488,301 @@ html {
     font-family: 'Heebo', sans-serif;
     font-size: 32px;
     line-height: 1.3;
+    vertical-align: middle;
+    white-space: nowrap;
+    letter-spacing: 0.06em;
 }
 
 .experience-title-medium {
     font-weight: 500;
-    letter-spacing: 0.06em;
+    font-size: 32px;
 }
 
 .experience-title-light {
     font-weight: 300;
-    letter-spacing: 0.06em;
+    font-size: 32px;
 }
 
 .experience-points {
-    
+    display: flex;
+    width: 100%;
+    max-width: 662px;
+    height: 96px;
+    gap: 60px;
+    justify-content: center;
 }
 
+.experience-point-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 111px;
+    height: 96px;
+    gap: 20px;
+}
+
+.experience-point-icon {
+    width: 30px;
+    height: 30px;
+    position: relative;
+}
+
+.experience-point-dot {
+    width: 8px;
+    height: 8px;
+    background-color: rgba(184, 180, 174, 1);
+    border-radius: 50%;
+    position: absolute;
+    top: 11px;
+    left: 10.5px;
+}
+
+.experience-point-text {
+    text-align: center;
+    color: rgba(255, 255, 255, 1);
+    font-family: 'Heebo', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 1.3;
+    width: 151px;
+    height: 46px;
+    vertical-align: middle;
+    letter-spacing: 0;
+}
 
 .experience-bottom {
     width: 100%;
     max-width: 194px;
     height: 27px;
+    gap: 42px;
+    color: rgba(255, 255, 255, 1);
+}
+
+.experience-bottom-text {
+    font-family: 'Heebo', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 1.3;
+}
+
+/* Contact Section */
+.contact-sec {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 60px 80px;
+    gap: 60px;
+    border-top: 1px solid rgba(184, 180, 174, 1);
+    direction: rtl;
+    box-sizing: border-box;
+}
+
+.contact-top {
+    display: flex;
+    width: 100%;
+    max-width: 1280px;
+    gap: clamp(20px, 3vw, 40px);
+}
+
+.contact-top-right {
+    width: clamp(100px, 18%, 240px);
+    opacity: 0.07;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-top-right .cover-img {
+    object-fit: contain;
+}
+
+.contact-top-left {
+    display: flex;
+    flex: 1;
+    gap: clamp(20px, 5vw, 60px);
+}
+
+.contact-top-inner-right {
+    display: flex;
+    flex-direction: column;
+    flex: 0.4;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.contact-title {
+    margin: 0;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 300;
+    font-size: 32px;
+    line-height: 1.3;
+    letter-spacing: 0.06em;
+    color: rgba(30, 28, 25, 1);
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.contact-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.contact-socials {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.contact-socials a {
+    color: rgba(30, 28, 25, 1);
+    display: flex;
+    transition: opacity 0.3s ease;
+}
+
+.contact-socials a:hover {
+    opacity: 0.7;
+}
+
+.contact-details {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 315px;
+    gap: 20px;
+}
+
+.contact-detail-text {
+    font-family: 'Heebo', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 1.3;
+    letter-spacing: 0;
+    color: rgba(30, 28, 25, 1);
+    text-align: right;
+    vertical-align: middle;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.contact-contact-row {
+    display: flex;
+    gap: clamp(8px, 1.5vw, 20px);
+    width: 100%;
+    max-width: 315px;
+    align-items: center;
+}
+
+.contact-top-inner-left {
+    display: flex;
+    flex-direction: column;
+    flex: 0.6;
+    gap: 40px;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    width: 100%;
+}
+
+.contact-form-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: clamp(20px, 4vw, 60px);
+}
+
+.contact-form-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 40px;
+}
+
+.contact-form-input {
+    width: 100%;
+    height: 33px;
+    padding-bottom: 10px;
+    border: none;
+    border-bottom: 0.5px solid rgba(30, 28, 25, 1);
+    background-color: transparent;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 1.3;
+    color: rgba(30, 28, 25, 1);
+    text-align: right;
+    box-sizing: border-box;
+}
+
+.contact-form-input:focus {
+    outline: none;
+}
+
+.contact-form-input::placeholder {
+    color: rgba(30, 28, 25, 1);
+    opacity: 0.7;
+}
+
+.contact-submit-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 33px;
+    padding-bottom: 10px;
+    border: none;
+    border-bottom: 0.5px solid rgba(30, 28, 25, 1);
+    background-color: transparent;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 1.3;
+    color: rgba(30, 28, 25, 1);
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.contact-bottom {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    max-width: 1280px;
+    gap: 20px;
 }
 
 /* התאמה למסכים קטנים (מובייל וטאבלט) */
 @media (max-width: 768px) {
+    .gradient-sec {
+        height: auto;
+        aspect-ratio: 1 / 1;
+    }
+
     .gallery-grid {
         grid-template-columns: 1fr;
-        grid-auto-rows: 250px; /* גובה מוקטן למסך קטן */
     }
     
     .gallery-item:nth-child(n) {
         grid-column: 1 / -1; /* כל התמונות יתפסו שורה מלאה */
-        aspect-ratio: auto; /* ביטול יחס הפרופורציה כדי לאפשר לגובה הקבוע למטה לשלוט במובייל */
+        aspect-ratio: 358 / 179;
+        height: auto;
+    }
+
+    .gallery-item.gallery-about-card {
+        aspect-ratio: 1 / 1;
+        padding-left: 37px;
+        padding-right: 37px;
+        gap: 30px;
     }
     
     .gallery-about-title {
-        margin-bottom: 24px;
+        margin: 0;
     }
 
     .experience-sec {
@@ -485,11 +794,78 @@ html {
         height: auto;
     }
     
-    .experience-title {
-        font-size: clamp(20px, 4vw, 32px);
-    }
-    
     .experience-points-img {
         height: auto;
+    }
+
+    .contact-sec {
+        padding: 40px 20px;
+        gap: 40px;
+    }
+
+    .contact-top {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .contact-top-right {
+        display: flex;
+        width: 130px;
+        height: 130px;
+        margin: 0; /* Left/Right auto removed so it aligns natively RTL (to the right) */
+    }
+
+    .contact-top-left {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .contact-top-inner-right {
+        gap: 20px;
+    }
+
+    .contact-title, 
+    .contact-detail-text {
+        white-space: normal; /* מאפשר לטקסט ארוך לגלוש לשורה חדשה */
+    }
+
+    .contact-contact-row {
+        flex-wrap: wrap; /* מאפשר לטלפון ולאימייל להישבר נכון */
+    }
+
+    .contact-form {
+        gap: 30px;
+    }
+
+    .contact-form-row {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .contact-form-col {
+        width: 100%;
+        gap: 30px;
+    }
+
+    .contact-bottom {
+        height: auto;
+        flex-wrap: wrap;
+        justify-content: center; /* מרכוז הקישורים במובייל */
+        gap: 15px;
+    }
+}
+
+/* התאמה ל-678px עבור נקודות הניסיון (2 למעלה, 2 למטה) */
+@media (max-width: 678px) {
+    .experience-points {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 40px 20px;
+        height: auto;
+        justify-items: center;
+    }
+
+    .experience-title > span {
+        display: block;
     }
 }
