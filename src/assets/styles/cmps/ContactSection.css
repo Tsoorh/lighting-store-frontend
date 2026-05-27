@@ -1,0 +1,249 @@
+/* Contact Section */
+.contact-sec {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 60px 80px;
+    gap: 60px;
+    border-top: 1px solid rgba(184, 180, 174, 1);
+    direction: rtl;
+    box-sizing: border-box;
+
+    @media (max-width: 768px) {
+        padding: 40px 20px;
+        gap: 40px;
+    }
+}
+
+.contact-top {
+    display: flex;
+    width: 100%;
+    max-width: 1280px;
+    gap: clamp(20px, 3vw, 40px);
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+.contact-top-right {
+    width: clamp(100px, 18%, 240px);
+    opacity: 0.07;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .cover-img {
+        object-fit: contain;
+    }
+
+    @media (max-width: 768px) {
+        width: 130px;
+        height: 130px;
+        margin: 0;
+    }
+}
+
+.contact-top-left {
+    display: flex;
+    flex: 1;
+    gap: clamp(20px, 5vw, 60px);
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 40px;
+    }
+}
+
+.contact-top-inner-right {
+    display: flex;
+    flex-direction: column;
+    flex: 0.4;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 30px;
+
+    @media (max-width: 768px) {
+        gap: 20px;
+    }
+}
+
+.contact-title {
+    margin: 0;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 300;
+    font-size: 32px;
+    line-height: 1.3;
+    letter-spacing: 0.06em;
+    color: rgba(30, 28, 25, 1);
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+
+    @media (max-width: 768px) {
+        white-space: normal;
+    }
+}
+
+.contact-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.contact-socials {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    a {
+        color: rgba(30, 28, 25, 1);
+        display: flex;
+        transition: opacity 0.3s ease;
+
+        &:hover {
+            opacity: 0.7;
+        }
+    }
+}
+
+.contact-details {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 315px;
+    gap: 20px;
+}
+
+.contact-detail-text {
+    font-family: 'Heebo', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 1.3;
+    letter-spacing: 0;
+    color: rgba(30, 28, 25, 1);
+    text-align: right;
+    vertical-align: middle;
+    margin: 0;
+    white-space: nowrap;
+
+    @media (max-width: 768px) {
+        white-space: normal;
+    }
+}
+
+.contact-contact-row {
+    display: flex;
+    gap: clamp(8px, 1.5vw, 20px);
+    width: 100%;
+    max-width: 315px;
+    align-items: center;
+
+    @media (max-width: 768px) {
+        flex-wrap: wrap;
+    }
+}
+
+.contact-top-inner-left {
+    display: flex;
+    flex-direction: column;
+    flex: 0.6;
+    gap: 40px;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    width: 100%;
+
+    @media (max-width: 768px) {
+        gap: 30px;
+    }
+}
+
+.contact-form-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: clamp(20px, 4vw, 60px);
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 30px;
+    }
+}
+
+.contact-form-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 40px;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        gap: 30px;
+    }
+}
+
+.contact-form-input {
+    width: 100%;
+    height: 33px;
+    padding-bottom: 10px;
+    border: none;
+    border-bottom: 0.5px solid rgba(30, 28, 25, 1);
+    background-color: transparent;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 1.3;
+    color: rgba(30, 28, 25, 1);
+    text-align: right;
+    box-sizing: border-box;
+
+    &:focus {
+        outline: none;
+    }
+
+    &::placeholder {
+        color: rgba(30, 28, 25, 1);
+        opacity: 0.7;
+    }
+}
+
+.contact-submit-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 33px;
+    padding-bottom: 10px;
+    border: none;
+    border-bottom: 0.5px solid rgba(30, 28, 25, 1);
+    background-color: transparent;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 1.3;
+    color: rgba(30, 28, 25, 1);
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.contact-bottom {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    max-width: 1280px;
+    gap: 20px;
+
+    @media (max-width: 768px) {
+        height: auto;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+}
