@@ -37,7 +37,7 @@ export const Icons = ({ iconName }: IconsProps): JSX.Element | null => {
         right:<KeyboardArrowRightIcon aria-label='true'/>,
         search: <SearchIcon aria-label='true'/>,
         back: <ArrowBackIcon sx={{fontSize:12,fontWeight: 100}} aria-label='true'/>,
-        next: <ArrowForwardIcon  aria-label='true'/>
+        next: <ArrowForwardIcon sx={{fontSize:12,fontWeight: 100}} aria-label='true'/>
     };
 
     return icons[key] ?? null;

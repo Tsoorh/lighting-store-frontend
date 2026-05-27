@@ -2,12 +2,15 @@ import '../assets/styles/pages/HomePage.css'
 import { Icons } from '../cmps/Icons';
 import { useNavigate } from 'react-router-dom';
 import { ContactSection } from '../cmps/ContactSection';
+import { useLanguage } from '../hooks/useLanguage';
 
 export const HomePage = () => {
     const navigate = useNavigate()
+    const { language } = useLanguage()
+    const isEn = language === 'en'
 
     return (
-        <div className="main-layout">
+        <div className="main-layout" dir={isEn ? 'ltr' : 'rtl'}>
             <section className="hero-section">
                 <div className="entry-vid">
                     <video 
@@ -25,38 +28,41 @@ export const HomePage = () => {
                     </div>
                     <div className="entry-line"></div>
                     <a href="#works-section" className="entry-cta animated-link">
-                        <span className="entry-cta-text">צפיה בעבודות</span>
-                        <Icons iconName='back' />
+                        <span className="entry-cta-text">{isEn ? 'View Projects' : 'צפיה בעבודות'}</span>
+                        <Icons iconName={isEn ? 'next' : 'back'} />
                     </a>
                 </div>
                 <div className="entry-vid-text">
-                    גופי תאורה בעבודת יד, המשלבים 45 שנות ניסיון בעולם התאורה עם מלאכה מדויקת ורגישות חומרית. מיועד לאדריכלים, מעצבי פנים ולחללים המחפשים נוכחות על זמנית.
+                    {isEn 
+                        ? 'Handcrafted lighting fixtures, combining 45 years of experience in the lighting world with precise craftsmanship and material sensitivity. Designed for architects, interior designers, and spaces seeking a timeless presence.'
+                        : 'גופי תאורה בעבודת יד, המשלבים 45 שנות ניסיון בעולם התאורה עם מלאכה מדויקת ורגישות חומרית. מיועד לאדריכלים, מעצבי פנים ולחללים המחפשים נוכחות על זמנית.'}
                 </div>
             </section>
             <div className="works-sec page-section" id="works-section">
-                <h2 className="section-title">העבודות</h2>
+                <h2 className="section-title">{isEn ? 'Projects' : 'העבודות'}</h2>
                 <div className="works-grid">
                     <div className="work-item" onClick={() => navigate('/product/category/ceiling')}>
                         <img src="/images/Figma/CAT_CEILING.jpg" alt="ceiling" />
-                        <span className="work-item-title white-text">גופי תאורה צמודי תקרה</span>
-                        <p className="work-item-desc">גופי תאורה צמודי תקרה המשלבים הבנה טכנית עמוקה עם אסתטיקה מוקפדת.</p>
+                        <span className="work-item-title white-text">{isEn ? 'Ceiling Lighting' : 'גופי תאורה צמודי תקרה'}</span>
+                        <p className="work-item-desc">{isEn ? 'Ceiling mounted fixtures combining deep technical understanding with meticulous aesthetics.' : 'גופי תאורה צמודי תקרה המשלבים הבנה טכנית עמוקה עם אסתטיקה מוקפדת.'}</p>
                     </div>
                     <div className="work-item" onClick={() => navigate('/product/category/wall')}>
                         <img src="/images/Figma/CAT_WALL.jpg" alt="wall" />
-                        <span className="work-item-title white-text">גופי תאורה לקיר</span>
-                        <p className="work-item-desc">פתרונות תאורה פונקציונליים עם שפה עיצובית נקייה ושילוב חומרי מדויק.</p>
+                        <span className="work-item-title white-text">{isEn ? 'Wall Lighting' : 'גופי תאורה לקיר'}</span>
+                        <p className="work-item-desc">{isEn ? 'Functional lighting solutions with a clean design language and precise material integration.' : 'פתרונות תאורה פונקציונליים עם שפה עיצובית נקייה ושילוב חומרי מדויק.'}</p>
                     </div>
                     <div className="work-item" onClick={() => navigate('/product/category/pendant')}>
                         <img src="/images/Figma/CAT_PENDANT.jpg" alt="pendant" />
-                        <span className="work-item-title">גופי תאורה תלויים</span>
-                        <p className="work-item-desc">גופי תאורה תלויים בעלי נוכחות פיסולית, המשלבים עץ מלא ומתכת ומתאימים לחללים פרטיים ומסחריים.</p>
+                        <span className="work-item-title">{isEn ? 'Pendant Lighting' : 'גופי תאורה תלויים'}</span>
+                        <p className="work-item-desc">{isEn ? 'Pendant lighting fixtures with sculptural presence, combining solid wood and metal, suitable for private and commercial spaces.' : 'גופי תאורה תלויים בעלי נוכחות פיסולית, המשלבים עץ מלא ומתכת ומתאימים לחללים פרטיים ומסחריים.'}</p>
                     </div>
                 </div>
             </div>
+
             <section className="gradient-sec">
                 <div className="gradient-text-wrapper">
-                    <span className="gradient-text-light">פרטים קטנים. </span>
-                    <span className="gradient-text-medium">נוכחות גדולה.</span>
+                    <span className="gradient-text-light">{isEn ? 'Small details. ' : 'פרטים קטנים. '}</span>
+                    <span className="gradient-text-medium">{isEn ? 'Big presence.' : 'נוכחות גדולה.'}</span>
                 </div>
                 
                 <div className="gradient-divider"></div>
@@ -67,10 +73,11 @@ export const HomePage = () => {
                     rel="noopener noreferrer" 
                     className="gradient-cta animated-link"
                 >
-                    <span>צור קשר לגבי פרויקט</span>
-                    <Icons iconName='back' />
+                    <span>{isEn ? 'Contact us about a project' : 'צור קשר לגבי פרויקט'}</span>
+                    <Icons iconName={isEn ? 'next' : 'back'} />
                 </a>
             </section>
+
             <section className="gallery-sec page-section">
                 <div className="gallery-grid">
                     <div className="gallery-item">
@@ -78,11 +85,11 @@ export const HomePage = () => {
                     </div>
                     <div className="gallery-item gallery-about-card">
                         <h3 className="gallery-about-title">
-                            דור שני לתאורה.<br />בחירה באמנות.
+                            {isEn ? <>Second generation in lighting.<br />Choosing art.</> : <>דור שני לתאורה.<br />בחירה באמנות.</>}
                         </h3>
                         <div className="gallery-about-link animated-link" onClick={() => navigate('/about')}>
-                            <span>אודותיי</span>
-                            <Icons iconName='back' />
+                            <span>{isEn ? 'About Me' : 'אודותיי'}</span>
+                            <Icons iconName={isEn ? 'next' : 'back'} />
                         </div>
                     </div>
                     <div className="gallery-item">
@@ -99,39 +106,39 @@ export const HomePage = () => {
                     </div>
                 </div>
                 <div className="gallery-collab-link animated-link" onClick={() => navigate('/contact')}>
-                    <Icons iconName='back' />
-                    <span>שיתוף פעולה מקצועי</span>
+                    <span>{isEn ? 'Professional Collaboration' : 'שיתוף פעולה מקצועי'}</span>
+                    <Icons iconName={isEn ? 'next' : 'back'} />
                 </div>
             </section>
             
             <section className="experience-sec">
                 <div className="experience-top">
                     <h2 className="experience-title">
-                        <span className="experience-title-medium">ניסיון של חיים. </span>
-                        <span className="experience-title-light">יצירה של רגע.</span>
+                        <span className="experience-title-medium">{isEn ? 'A lifetime of experience. ' : 'ניסיון של חיים. '}</span>
+                        <span className="experience-title-light">{isEn ? 'Creation of a moment.' : 'יצירה של רגע.'}</span>
                     </h2>
                     <div className="experience-points">
                         <div className="experience-point-item">
                             <div className="experience-point-icon"><div className="experience-point-dot"></div></div>
-                            <div className="experience-point-text">דור שני לאנשי תאורה</div>
+                            <div className="experience-point-text">{isEn ? 'Second generation lighting professionals' : 'דור שני לאנשי תאורה'}</div>
                         </div>
                         <div className="experience-point-item">
                             <div className="experience-point-icon"><div className="experience-point-dot"></div></div>
-                            <div className="experience-point-text">שליטה מלאה בתכנון וייצור</div>
+                            <div className="experience-point-text">{isEn ? 'Full control over design and production' : 'שליטה מלאה בתכנון וייצור'}</div>
                         </div>
                         <div className="experience-point-item">
                             <div className="experience-point-icon"><div className="experience-point-dot"></div></div>
-                            <div className="experience-point-text">פיתוח דגמים ייעודיים לפרויקטים</div>
+                            <div className="experience-point-text">{isEn ? 'Development of custom models for projects' : 'פיתוח דגמים ייעודיים לפרויקטים'}</div>
                         </div>
                         <div className="experience-point-item">
                             <div className="experience-point-icon"><div className="experience-point-dot"></div></div>
-                            <div className="experience-point-text">רמת גימור גבוהה במיוחד</div>
+                            <div className="experience-point-text">{isEn ? 'Exceptionally high finish level' : 'רמת גימור גבוהה במיוחד'}</div>
                         </div>
                     </div>
                 </div>
                 <div className="experience-bottom animated-link">
-                    <span className="experience-bottom-text">בקשה להצעת מחיר</span>
-                    <Icons iconName='back' />
+                    <span className="experience-bottom-text">{isEn ? 'Request a Quote' : 'בקשה להצעת מחיר'}</span>
+                    <Icons iconName={isEn ? 'next' : 'back'} />
                 </div>
             </section>
 

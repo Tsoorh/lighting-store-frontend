@@ -1,0 +1,193 @@
+.about-layout {
+    background-color: var(--background-color, #F7F5F0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+    padding-top: 64px;
+    padding-bottom: 64px;
+}
+
+.about-part-a {
+    width: 100%;
+    max-width: 1440px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 0 80px;
+    box-sizing: border-box;
+}
+
+.about-bio-section, .about-studio-section {
+    display: flex;
+    width: 100%;
+    gap: 32px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@media (max-width: 1024px) {
+    .about-bio-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .about-studio-section {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+    }
+
+    .about-part-a {
+        padding: 0 20px;
+    }
+}
+
+/* --- Bio Section --- */
+.about-bio-content {
+    width: 100%;
+    max-width: 624px;
+    display: flex;
+    align-items: stretch;
+    padding: 0 clamp(20px, 4vw, 60px);
+    box-sizing: border-box;
+    gap: clamp(20px, 4vw, 60px);
+}
+
+.about-bio-image {
+    width: 100%;
+    max-width: 624px;
+    height: auto;
+    aspect-ratio: 624 / 856;
+    object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .about-bio-content {
+        padding: 40px 20px;
+    }
+}
+
+/* The vertical line inside Bio Box */
+.about-bio-divider-vertical {
+    position: relative;
+    width: 1px;
+    background: rgba(30, 28, 25, 0.3);
+    flex-shrink: 0;
+}
+
+.about-bio-divider-vertical::before,
+.about-bio-divider-vertical::after {
+    content: "";
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background-color: rgba(30, 28, 25, 0.6);
+    border-radius: 50%;
+    inset-inline-start: -2px;
+}
+
+.about-bio-divider-vertical::before { top: 0; }
+.about-bio-divider-vertical::after { bottom: 0; }
+
+.about-bio-text-wrapper {
+    width: 100%;
+    max-width: 498px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: rgba(30, 28, 25, 1);
+    text-align: start;
+}
+
+.about-bio-title {
+    font-family: 'Heebo', sans-serif;
+    font-weight: 500;
+    font-size: clamp(16px, 1.5vw + 4px, 18px);
+    line-height: 1;
+}
+
+.about-bio-body {
+    font-family: 'Heebo', sans-serif;
+    font-weight: 300;
+    font-size: clamp(16px, 1.5vw + 4px, 18px);
+    line-height: 1.3;
+    white-space: pre-wrap;
+}
+
+/* --- Studio Section --- */
+.about-studio-gallery {
+    width: 100%;
+    max-width: 624px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+}
+
+.about-studio-gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.about-studio-content {
+    width: 100%;
+    max-width: 624px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 clamp(20px, 4vw, 60px);
+    box-sizing: border-box;
+    gap: clamp(20px, 4vw, 40px);
+}
+
+/* Horizontal divider for Studio section */
+.about-studio-divider-horizontal {
+    position: relative;
+    width: 100%;
+    height: 1px;
+    background: rgba(30, 28, 25, 0.3);
+    flex-shrink: 0;
+}
+
+.about-studio-divider-horizontal::before,
+.about-studio-divider-horizontal::after {
+    content: "";
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background-color: rgba(30, 28, 25, 0.6);
+    border-radius: 50%;
+    top: -2px;
+}
+
+.about-studio-divider-horizontal::before { inset-inline-start: 0; }
+.about-studio-divider-horizontal::after { inset-inline-end: 0; }
+
+@media (max-width: 768px) {
+    .about-studio-content {
+        padding: 40px 20px;
+    }
+}
+
+.about-studio-text {
+    width: 100%;
+    max-width: 498px;
+    color: rgba(30, 28, 25, 1);
+    font-family: 'Heebo', sans-serif;
+    font-weight: 300;
+    font-size: clamp(16px, 1.5vw + 4px, 18px);
+    line-height: 1.3;
+    text-align: start;
+    white-space: pre-wrap;
+}
+
+/* Gradient Section overrides */
+.about-layout .gradient-sec {
+    margin-top: 0;
+    margin-bottom: 0;
+}
