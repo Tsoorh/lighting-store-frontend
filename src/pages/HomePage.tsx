@@ -28,7 +28,7 @@ export const HomePage = () => {
                     </div>
                     <div className="entry-line"></div>
                     <a href="#works-section" className="entry-cta animated-link">
-                        <span className="entry-cta-text">{isEn ? 'View Projects' : 'צפיה בעבודות'}</span>
+                        <span className="entry-cta-text">{isEn ? 'View Collection' : 'צפיה בגופי התאורה'}</span>
                         <Icons iconName={isEn ? 'next' : 'back'} />
                     </a>
                 </div>
@@ -39,7 +39,7 @@ export const HomePage = () => {
                 </div>
             </section>
             <div className="works-sec page-section" id="works-section">
-                <h2 className="section-title">{isEn ? 'Projects' : 'העבודות'}</h2>
+                <h2 className="section-title">{isEn ? 'Collection' : 'גופי התאורה'}</h2>
                 <div className="works-grid">
                     <div className="work-item" onClick={() => navigate('/product/category/ceiling')}>
                         <img src="/images/Figma/CAT_CEILING.jpg" alt="ceiling" />
