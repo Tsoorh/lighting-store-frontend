@@ -1,9 +1,8 @@
+import { useRef } from "react"
 import { useLanguage } from "../../hooks/useLanguage"
-import { useObserver } from "../../hooks/useObserver"
-import { useState } from "react"
 import type { FullProduct } from "../../model/product.model"
-import { useWindowWidth } from "../../hooks/useWindowWidth"
 import { useNavigate } from "react-router-dom"
+import { Icons } from "../Icons"
 
 type ProductPreviewProp = {
     product: FullProduct
@@ -11,30 +10,57 @@ type ProductPreviewProp = {
 
 export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const { language } = useLanguage()
-    const [isVisible, setIsVisible] = useState(false)
-    const width = useWindowWidth()
     const navigate = useNavigate()
-
-    const ref = useObserver((isIntersecting) => {
-        setIsVisible(isIntersecting)
-    })
+    const scrollRef = useRef<HTMLDivElement>(null)
 
     const onHandleClick = () => {
         navigate(`/product/${product._id}`)
     }
+
     const isEnglish = language === "en"
-    const isMobile = width <= 400
-    const alignLang = isEnglish ? 'self-start' : 'self-end'
-    // style={{ opacity: isVisible ? 1 : 0 }}
+
+    // מנקים תווים נסתרים, רווחים וירידות שורות מכל השמות
+    const cleanUrls = product.imgsUrl.map(url => url.replace(/[\r\n\s]+/g, ''))
+    const cPhotos = cleanUrls.filter(url => url.startsWith('C_'))
+    const displayPhotos = cPhotos.length > 0 ? cPhotos : cleanUrls
+    const photosToRender = displayPhotos.length > 0 ? displayPhotos : ['coming-soon']
+
+    const getImageUrl = (imgName: string) => {
+        const cleanName = imgName.replace(/\.[^/.]+$/, "")
+        if (cleanName === 'coming-soon') return `https://res.cloudinary.com/dhixlriwm/image/upload/coming-soon.webp`
+        if (cleanName.startsWith('C_')) return `https://res.cloudinary.com/dhixlriwm/image/upload/${cleanName}.webp`
+        return `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${cleanName}.webp`
+    }
+
+    const scroll = (direction: 'left' | 'right', ev: React.MouseEvent) => {
+        ev.stopPropagation()
+        if (scrollRef.current) {
+            const { clientWidth } = scrollRef.current
+            const scrollAmount = direction === 'left' ? -clientWidth : clientWidth
+            scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+        }
+    }
+
     return (
-        <div className="product-preview" onClick={onHandleClick} ref={ref} >
-            <img
-                className={isMobile && isVisible ? 'visible' : ''}
-                src={product.imgsUrl[0] ? `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${product.imgsUrl[0]}.webp` : `https://res.cloudinary.com/dhixlriwm/image/upload/coming-soon.webp`}
-            />
-            <span style={{ alignSelf: alignLang }}><b>{isEnglish ? product.name.en : product.name.he}</b></span>
-            <span style={{ alignSelf: alignLang }}>₪{product.price}</span>
-            {/* <button className="btn-preview" style={{ alignSelf: alignLang }}>{isEnglish?'More details':'לפרטים נוספים'}</button> */}
+        <div className="product-preview" onClick={onHandleClick}>
+            <div className="product-preview-image-container">
+                {photosToRender.length > 1 && (
+                    <>
+                        <button className="nav-btn prev" onClick={(e) => scroll('left', e)}><Icons iconName="left" /></button>
+                        <button className="nav-btn next" onClick={(e) => scroll('right', e)}><Icons iconName="right" /></button>
+                    </>
+                )}
+                <div className="product-preview-images" ref={scrollRef}>
+                    {photosToRender.map((img, idx) => (
+                        <div className="img-wrapper" key={idx}>
+                            <img src={getImageUrl(img)} alt={isEnglish ? product.name.en : product.name.he} loading="lazy" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <span className={`product-name ${isEnglish ? 'ltr' : 'rtl'}`}>
+                {isEnglish ? product.name.en : product.name.he}
+            </span>
         </div>
     )
 }

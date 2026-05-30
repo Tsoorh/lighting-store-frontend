@@ -56,7 +56,12 @@ export const ProductDetails = () => {
         <div className="product-details">
             <div className="product-card">
                 {product.imgsUrl.map((imgUrl, idx) => {
-                    return <img key={idx} src={`https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${imgUrl}.webp`} alt={product.name.en + idx} />
+                    const cleanName = imgUrl.replace(/[\r\n\s]+/g, "").replace(/\.[^/.]+$/, "")
+                    const finalUrl = cleanName.startsWith('C_') 
+                        ? `https://res.cloudinary.com/dhixlriwm/image/upload/${cleanName}.webp`
+                        : `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${cleanName}.webp`
+
+                    return <img key={idx} src={finalUrl} alt={product.name.en + idx} />
                 })}
                 <div className="info" style={alignLanguage}>
                     <h1 className="name">{nameLabel}</h1>

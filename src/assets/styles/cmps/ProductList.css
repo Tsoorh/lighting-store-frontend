@@ -1,5 +1,83 @@
-    .product-list{
-        display: grid;
-        grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
-        place-items: center;
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 32px;
+    row-gap: 64px;
+    width: 100%;
+}
+
+@media (max-width: 1024px) {
+    .product-list {
+        grid-template-columns: repeat(2, 1fr);
     }
+}
+
+@media (max-width: 768px) {
+    .product-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* עיצוב ואנימציה אישית ל-Pagination */
+.pagination-wrapper nav ul {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    align-items: center;
+    justify-content: center;
+    position: relative; /* חובה עבור מיקום הרקע שזז */
+}
+
+.pagination-wrapper nav li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: Heebo, sans-serif;
+    font-size: 16px;
+    color: #333;
+    transition: background-color 0.2s ease;
+    z-index: 1;
+}
+
+.pagination-wrapper nav li:hover:not([data-active="true"]) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* מסתירים את הטקסט בעמוד הפעיל כדי שהטקסט של הרקע (הקורסור) יוצג בצורה חלקה ללא כפילות */
+.pagination-wrapper nav li[data-active="true"] {
+    color: transparent;
+}
+
+/* סיבוב החץ הבא כך שיפנה ימינה במקום שמאלה */
+.pagination-wrapper [data-slot="next"] svg {
+    transform: rotate(180deg);
+}
+
+/* הרקע השחור שזז באנימציה על גבי העמוד שנבחר */
+.pagination-wrapper [data-slot="cursor"] {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    margin-top: -18px; /* חצי מהגובה כדי למרכז אנכית */
+    width: 36px;
+    height: 36px;
+    border-radius: 5px;
+    background-color: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Heebo, sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    z-index: 2;
+    pointer-events: none;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
