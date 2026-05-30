@@ -6,6 +6,7 @@ import { ProductPreview } from "./ProductPreview"
 import { Icons } from "../Icons"
 import { useWindowWidth } from "../../hooks/useWindowWidth"
 import { useParams } from "react-router-dom"
+import { useLanguage } from "../../hooks/useLanguage"
 
 
 export const ProductSuggestion = ({ category }: { category: string }) => {
@@ -14,6 +15,8 @@ export const ProductSuggestion = ({ category }: { category: string }) => {
     const [position, setPosition] = useState(0)
     const [numOfSugg, setNumOfSugg] = useState(4)
     const width = useWindowWidth()
+    const { language } = useLanguage()
+    const isEnglish = language === 'en'
 
 
 
@@ -55,16 +58,22 @@ export const ProductSuggestion = ({ category }: { category: string }) => {
         }
     }
 
-    if (!products) return <p>No products to suggest</p>
+    if (!products) return <p>{isEnglish ? 'No products to suggest' : 'אין מוצרים נוספים'}</p>
     return (
-        <div>
-            <button className="shadow" name="left" onClick={onHandleClick} disabled={position === 0}><Icons iconName="left" /></button>
-            <ul>
-                {products.map((product, idx) => {
-                    if (idx >= position && idx <= position + numOfSugg) return <li key={product._id} ><ProductPreview product={product} /></li>
-                })}
-            </ul>
-            <button className="shadow" name="right" onClick={onHandleClick} disabled={position === (products?.length - numOfSugg - 1)}><Icons iconName="right" /></button>
+        <div className={`product-suggestion-sec ${isEnglish ? 'ltr' : 'rtl'}`}>
+            <div className="suggestion-header">
+                <h2>{isEnglish ? 'Continue Discovering' : 'המשיכו לגלות'}</h2>
+            </div>
+            
+            <div className="suggestion-carousel-container">
+                <button className="shadow nav-btn" name="left" onClick={onHandleClick} disabled={position === 0}><Icons iconName="left" /></button>
+                <ul className="suggestion-list">
+                    {products.map((product, idx) => {
+                        if (idx >= position && idx <= position + numOfSugg) return <li key={product._id} ><ProductPreview product={product} /></li>
+                    })}
+                </ul>
+                <button className="shadow nav-btn" name="right" onClick={onHandleClick} disabled={position === (products?.length - numOfSugg - 1)}><Icons iconName="right" /></button>
+            </div>
         </div>
     )
 }

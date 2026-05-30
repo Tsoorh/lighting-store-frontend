@@ -28,7 +28,7 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const getImageUrl = (imgName: string) => {
         const cleanName = imgName.replace(/\.[^/.]+$/, "")
         if (cleanName === 'coming-soon') return `https://res.cloudinary.com/dhixlriwm/image/upload/coming-soon.webp`
-        if (cleanName.startsWith('C_')) return `https://res.cloudinary.com/dhixlriwm/image/upload/${cleanName}.webp`
+        if (cleanName.startsWith('C_') || cleanName.startsWith('H_')) return `https://res.cloudinary.com/dhixlriwm/image/upload/${cleanName}.webp`
         return `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${cleanName}.webp`
     }
 
