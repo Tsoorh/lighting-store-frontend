@@ -20,6 +20,7 @@ export const ContactSection = () => {
                                 <a href="https://wa.me/972524000102" target="_blank" rel="noopener noreferrer"><Icons iconName="whatsapp" /></a>
                                 <a href="#" target="_blank" rel="noopener noreferrer"><Icons iconName="facebook" /></a>
                                 <a href="#" target="_blank" rel="noopener noreferrer"><Icons iconName="instagram" /></a>
+                                <a href="mailto:Tiranlasry@gmail.com" target="_blank" rel="noopener noreferrer"><Icons iconName="gmail" /></a>
                             </div>
                         </div>
                         <div className="contact-details">
@@ -35,12 +36,12 @@ export const ContactSection = () => {
                         <form className="contact-form">
                             <div className="contact-form-row">
                                 <div className="contact-form-col">
-                                    <input type="text" placeholder={isEn ? 'Name' : 'שם'} className="contact-form-input" />
-                                    <input type="tel" placeholder={isEn ? 'Phone' : 'טלפון'} className="contact-form-input" />
+                                    <input type="text" dir={isEn ? 'ltr' : 'rtl'} placeholder={isEn ? 'Name' : 'שם'} className="contact-form-input" />
+                                    <input type="tel" dir={isEn ? 'ltr' : 'rtl'} placeholder={isEn ? 'Phone' : 'טלפון'} className="contact-form-input" />
                                 </div>
                                 <div className="contact-form-col">
-                                    <input type="email" placeholder={isEn ? 'Email' : 'אימייל'} className="contact-form-input" />
-                                    <input type="text" placeholder={isEn ? 'Message' : 'פניה'} className="contact-form-input" />
+                                    <input type="email" dir={isEn ? 'ltr' : 'rtl'} placeholder={isEn ? 'Email' : 'אימייל'} className="contact-form-input" />
+                                    <input type="text" dir={isEn ? 'ltr' : 'rtl'} placeholder={isEn ? 'Message' : 'פניה'} className="contact-form-input" />
                                 </div>
                             </div>
                             <button className="contact-submit-btn" type="submit" onClick={(e) => e.preventDefault()}>

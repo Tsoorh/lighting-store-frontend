@@ -12,6 +12,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
+import EmailIcon from '@mui/icons-material/Email';
 
 type IconName = string;
 
@@ -33,6 +34,7 @@ export const Icons = ({ iconName }: IconsProps): JSX.Element | null => {
         whatsapp:<WhatsAppIcon aria-label='true'/>,
         facebook:<FacebookIcon aria-label='true'/>,
         instagram:<InstagramIcon aria-label='true'/>,
+        gmail:<EmailIcon aria-label='true'/>,
         left:<KeyboardArrowLeftIcon aria-label='true'/>,
         right:<KeyboardArrowRightIcon aria-label='true'/>,
         search: <SearchIcon aria-label='true'/>,
