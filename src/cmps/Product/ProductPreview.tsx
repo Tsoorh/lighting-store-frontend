@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useLanguage } from "../../hooks/useLanguage"
 import type { FullProduct } from "../../model/product.model"
 import { useNavigate } from "react-router-dom"
@@ -12,6 +12,7 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const { language } = useLanguage()
     const navigate = useNavigate()
     const scrollRef = useRef<HTMLDivElement>(null)
+    const [currentIndex, setCurrentIndex] = useState(0)
 
     const onHandleClick = () => {
         navigate(`/product/${product._id}`)
@@ -37,8 +38,22 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
         return `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${cleanName}.webp`
     }
 
+    const handleScroll = () => {
+        if (!scrollRef.current) return
+        const { scrollLeft, clientWidth } = scrollRef.current
+        if (clientWidth === 0) return
+        const newIndex = Math.round(Math.abs(scrollLeft) / clientWidth)
+        if (newIndex !== currentIndex) {
+            setCurrentIndex(newIndex)
+        }
+    }
+
+    const canScrollLeft = currentIndex > 0
+    const canScrollRight = currentIndex < photosToRender.length - 1
+
     const scroll = (direction: 'left' | 'right', ev: React.MouseEvent) => {
         ev.stopPropagation()
+        if ((direction === 'left' && !canScrollLeft) || (direction === 'right' && !canScrollRight)) return
         if (scrollRef.current) {
             const { clientWidth } = scrollRef.current
             const scrollAmount = direction === 'left' ? -clientWidth : clientWidth
@@ -51,11 +66,15 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
             <div className="product-preview-image-container">
                 {photosToRender.length > 1 && (
                     <>
-                        <button className="nav-btn prev" onClick={(e) => scroll('left', e)}><Icons iconName="left" /></button>
-                        <button className="nav-btn next" onClick={(e) => scroll('right', e)}><Icons iconName="right" /></button>
+                        <button className={`nav-btn prev ${!canScrollLeft ? 'inactive' : ''}`} onClick={(e) => scroll('left', e)}>
+                            <Icons iconName="left" />
+                        </button>
+                        <button className={`nav-btn next ${!canScrollRight ? 'inactive' : ''}`} onClick={(e) => scroll('right', e)}>
+                            <Icons iconName="right" />
+                        </button>
                     </>
                 )}
-                <div className="product-preview-images" ref={scrollRef}>
+                <div className="product-preview-images" ref={scrollRef} onScroll={handleScroll}>
                     {photosToRender.map((img, idx) => (
                         <div className="img-wrapper" key={idx}>
                             <img src={getImageUrl(img)} alt={isEnglish ? product.name.en : product.name.he} loading="lazy" />

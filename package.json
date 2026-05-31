@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
+    "@emailjs/browser": "^4.4.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@heroui/react": "^2.8.7",
@@ -18,6 +19,7 @@
     "@mui/material": "^7.3.6",
     "axios": "^1.16.1",
     "country-flags-svg": "^2.0.0-beta.1",
+    "emailjs": "^5.0.1",
     "framer-motion": "^12.25.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

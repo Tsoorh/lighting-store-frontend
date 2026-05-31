@@ -54,6 +54,15 @@
     background: rgba(255, 255, 255, 1);
 }
 
+.product-preview-image-container:hover .nav-btn.inactive {
+    opacity: 0.3;
+}
+
+.nav-btn.inactive, .nav-btn.inactive:hover {
+    cursor: default;
+    background: rgba(255, 255, 255, 0.8);
+}
+
 .nav-btn.prev {
     left: 8px;
 }
@@ -98,4 +107,20 @@
 
 .product-preview .product-name.ltr {
     text-align: left;
+}
+
+/* התאמה למובייל - הצגת החצים באופן קבוע (כי אין אפקט Hover בטלפון) */
+@media (max-width: 768px) {
+    /* ביטול הגדלת תמונה בלחיצה מהטלפון */
+    .product-preview:hover .product-preview-images .img-wrapper img {
+        transform: none;
+    }
+
+    .nav-btn {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.6);
+    }
+    .product-preview-image-container .nav-btn.inactive {
+        opacity: 0.3;
+    }
 }

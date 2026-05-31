@@ -136,10 +136,10 @@ export const HomePage = () => {
                         </div>
                     </div>
                 </div>
-                <div className="experience-bottom animated-link">
+                <a href="mailto:tiranlasry@gmail.com" className="experience-bottom animated-link">
                     <span className="experience-bottom-text">{isEn ? 'Request a Quote' : 'בקשה להצעת מחיר'}</span>
                     <Icons iconName={isEn ? 'next' : 'back'} />
-                </div>
+                </a>
             </section>
 
             <ContactSection />

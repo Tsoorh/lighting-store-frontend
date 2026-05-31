@@ -254,3 +254,47 @@
         padding: 0 0 16px 0;
     }
 }
+
+@media (max-width: 768px) {
+    .product-details-page {
+        padding-top: 70px; /* התאמה לגובה ההדר במובייל */
+        gap: 60px; /* ריווח קטן יותר במובייל בין המקטעים */
+    }
+
+    .product-top-section {
+        padding: 0 20px;
+        gap: 24px;
+    }
+
+    .product-title-wrapper h1 {
+        font-size: 28px;
+    }
+
+    .product-info-content {
+        gap: 40px;
+    }
+
+    .suggestion {
+        padding: 0 20px;
+        margin-bottom: 40px;
+    }
+
+    .suggestion-header {
+        margin-bottom: 30px;
+    }
+
+    .suggestion-header h2 {
+        font-size: 24px;
+    }
+
+    .suggestion-list {
+        gap: 16px;
+        height: auto;
+    }
+
+    .suggestion-list > li {
+        width: 75vw;
+        flex: 0 0 75vw;
+        height: auto;
+    }
+}
