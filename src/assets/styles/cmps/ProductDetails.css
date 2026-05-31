@@ -1,10 +1,11 @@
 .product-details-page {
     width: 100%;
-    display: grid;
+    display: flex;
     flex-direction: column;
     gap: 100px;
     padding-top: 104px; /* Offset for header */
     background-color: var(--header-bgc);
+    overflow-x: hidden;
 }
 
 .product-top-section {
@@ -14,6 +15,7 @@
     display: flex;
     gap: 32px;
     padding: 0 40px;
+    box-sizing: border-box;
 }
 
 /* LTR/RTL Flex directions */
@@ -83,13 +85,14 @@
     display: flex;
     gap: 16px;
     padding-top: 20px;
+    flex-wrap: wrap;
 }
 
 .term-box {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    flex: 1;
+    flex: 1 1 140px;
 }
 
 .product-details-page.rtl .term-box {
@@ -196,6 +199,7 @@
     margin: 0 auto;
     padding: 0 80px;
     margin-bottom: 60px;
+    box-sizing: border-box;
 }
 
 .suggestion-header {
@@ -219,20 +223,18 @@
 }
 
 .suggestion-list {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 32px;
     list-style: none;
     padding: 0;
     margin: 0;
     width: 100%;
-    height: 454px;
 }
 
 .suggestion-list > li {
-    width: 405.33px;
-    height: 454px;
-    flex: 0 0 405.33px;
+    width: 100%;
+    height: auto;
 }
 
 /* Responsive Breakpoints */
@@ -252,6 +254,9 @@
         border: none;
         border-bottom: 1px solid rgba(184, 180, 174, 1);
         padding: 0 0 16px 0;
+    }
+    .suggestion-list {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
