@@ -85,14 +85,13 @@
     display: flex;
     gap: 16px;
     padding-top: 20px;
-    flex-wrap: wrap;
 }
 
 .term-box {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    flex: 1 1 140px;
+    flex: 1;
 }
 
 .product-details-page.rtl .term-box {
@@ -237,23 +236,24 @@
     height: auto;
 }
 
+/* On desktop, limit to 3 suggestions to maintain the 3-col grid */
+@media (min-width: 1001px) {
+    .suggestion-list > li:nth-child(n+4) {
+        display: none;
+    }
+}
+
 /* Responsive Breakpoints */
 @media (max-width: 1000px) {
     .product-top-section {
         flex-direction: column !important; /* Stack vertically on small screens */
     }
+    .product-gallery-container {
+        order: -1; /* Puts gallery above info container */
+    }
     .product-details-page.rtl .product-info-container,
     .product-details-page.ltr .product-info-container {
         padding: 0;
-    }
-    .product-sec4 {
-        flex-direction: column;
-    }
-    .product-details-page.rtl .term-box,
-    .product-details-page.ltr .term-box {
-        border: none;
-        border-bottom: 1px solid rgba(184, 180, 174, 1);
-        padding: 0 0 16px 0;
     }
     .suggestion-list {
         grid-template-columns: repeat(2, 1fr);
@@ -275,6 +275,14 @@
         font-size: 28px;
     }
 
+    .term-box h4 {
+        font-size: 14px;
+    }
+
+    .product-sections .term-box p {
+        font-size: 13px;
+    }
+
     .product-info-content {
         gap: 40px;
     }
@@ -294,12 +302,9 @@
 
     .suggestion-list {
         gap: 16px;
-        height: auto;
     }
 
     .suggestion-list > li {
-        width: 75vw;
-        flex: 0 0 75vw;
-        height: auto;
+        width: 100%;
     }
 }

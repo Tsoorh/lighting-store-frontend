@@ -23,7 +23,7 @@ export const ProductSuggestion = ({ category }: { category: string }) => {
                 if (productsFromDB) {
                     const filteredProducts = productsFromDB.filter(p => p._id !== productId)
                     const shuffledProducts = filteredProducts.sort(() => 0.5 - Math.random())
-                    productsToSet = shuffledProducts.slice(0, 3)
+                    productsToSet = shuffledProducts.slice(0, 4)
                 }
                 setProducts(productsToSet)
             }

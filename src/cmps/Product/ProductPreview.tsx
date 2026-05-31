@@ -53,6 +53,7 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
 
     const scroll = (direction: 'left' | 'right', ev: React.MouseEvent) => {
         ev.stopPropagation()
+        ev.preventDefault()
         if ((direction === 'left' && !canScrollLeft) || (direction === 'right' && !canScrollRight)) return
         if (scrollRef.current) {
             const { clientWidth } = scrollRef.current

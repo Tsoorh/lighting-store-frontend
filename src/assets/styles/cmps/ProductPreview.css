@@ -46,19 +46,27 @@
     transition: opacity 0.3s ease, background-color 0.2s ease;
 }
 
-.product-preview-image-container:hover .nav-btn {
-    opacity: 1;
+/* הוספת hover רק למכשירים תומכים בעכבר כדי למנוע את באג "הלחיצה הכפולה" במובייל */
+@media (hover: hover) {
+    .product-preview-image-container:hover .nav-btn {
+        opacity: 1;
+    }
+    .nav-btn:hover {
+        background: rgba(255, 255, 255, 1);
+    }
+    .product-preview-image-container:hover .nav-btn.inactive {
+        opacity: 0.3;
+    }
+    .nav-btn.inactive:hover {
+        cursor: default;
+        background: rgba(255, 255, 255, 0.8);
+    }
+    .product-preview:hover .product-preview-images .img-wrapper img {
+        transform: scale(1.1);
+    }
 }
 
-.nav-btn:hover {
-    background: rgba(255, 255, 255, 1);
-}
-
-.product-preview-image-container:hover .nav-btn.inactive {
-    opacity: 0.3;
-}
-
-.nav-btn.inactive, .nav-btn.inactive:hover {
+.nav-btn.inactive {
     cursor: default;
     background: rgba(255, 255, 255, 0.8);
 }
@@ -89,10 +97,6 @@
     transition: transform 0.4s ease;
 }
 
-.product-preview:hover .product-preview-images .img-wrapper img {
-    transform: scale(1.1);
-}
-
 .product-preview .product-name {
     font-family: Heebo, sans-serif;
     font-weight: 400;
@@ -111,16 +115,11 @@
 
 /* התאמה למובייל - הצגת החצים באופן קבוע (כי אין אפקט Hover בטלפון) */
 @media (max-width: 768px) {
-    /* ביטול הגדלת תמונה בלחיצה מהטלפון */
-    .product-preview:hover .product-preview-images .img-wrapper img {
-        transform: none;
-    }
-
-    .nav-btn {
-        opacity: 1;
-        background: rgba(255, 255, 255, 0.6);
+    .product-preview-image-container .nav-btn {
+        opacity: 1 !important;
+        background: rgba(255, 255, 255, 0.8) !important;
     }
     .product-preview-image-container .nav-btn.inactive {
-        opacity: 0.3;
+        opacity: 0.3 !important;
     }
 }

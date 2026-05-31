@@ -6,6 +6,7 @@ import { productService } from "../../services/product.service"
 import { useLanguage } from "../../hooks/useLanguage"
 import { Icons } from "../Icons"
 import { ProductSuggestion } from "./ProductSuggestion"
+import { ContactSection } from "../ContactSection"
 
 export const ProductDetails = () => {
     const { productId } = useParams()
@@ -15,6 +16,8 @@ export const ProductDetails = () => {
     const { language } = useLanguage()
 
     useEffect(() => {
+        window.scrollTo(0, 0)
+        
         const loadProduct = async (): Promise<void> => {
             if (!productId) return
             try {
@@ -153,6 +156,8 @@ export const ProductDetails = () => {
             <div className="suggestion">
                 <ProductSuggestion category={product.category[0].en} />
             </div>
+            
+            <ContactSection />
         </div >
     )
 }
