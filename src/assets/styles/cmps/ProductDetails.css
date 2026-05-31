@@ -129,6 +129,7 @@
     font-size: 18px;
     text-decoration: none;
     transition: background-color 0.3s ease;
+    margin-top: auto;
 }
 
 .quote-btn:hover {
@@ -146,9 +147,10 @@
 
 .gallery-top {
     width: 100%;
+    max-width: 704px;
+    max-height: 704px;
     aspect-ratio: 1 / 1;
     background: #f4f4f4;
-    border-radius: 5px;
     overflow: hidden;
 }
 
@@ -162,13 +164,16 @@
     display: flex;
     gap: 10px;
     width: 100%;
+    max-width: 702px;
+    max-height: 168px;
 }
 
 .thumbnail-wrapper {
     flex: 1;
     aspect-ratio: 1 / 1;
+    max-width: 168px;
+    max-height: 168px;
     cursor: pointer;
-    border-radius: 5px;
     overflow: hidden;
     border: 2px solid transparent;
     transition: border-color 0.2s ease;
@@ -189,12 +194,12 @@
     width: 1440px;
     max-width: 100%;
     margin: 0 auto;
-    padding: 0 40px;
+    padding: 0 80px;
     margin-bottom: 60px;
 }
 
 .suggestion-header {
-    margin-bottom: 40px;
+    margin-bottom: 60px;
 }
 
 .suggestion-header h2 {
@@ -207,44 +212,27 @@
 }
 
 .suggestion-carousel-container {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    place-items: center;
-    gap: 1rem;
+    position: relative;
     width: 100%;
-}
-
-.suggestion-carousel-container > button {
-    border-radius: 50%;
-    height: 3rem;
-    width: 3rem;
-    background-color: var(--header-bgc);
-    border: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.suggestion-carousel-container > button:hover:not(:disabled) {
-    background-color: #e0e0e0;
-}
-
-.suggestion-carousel-container > button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    max-width: 1280px;
+    margin: 0 auto;
 }
 
 .suggestion-list {
     display: flex;
     flex-direction: row;
-    gap: 3rem;
+    gap: 32px;
     list-style: none;
     padding: 0;
     margin: 0;
     width: 100%;
-    justify-content: center;
+    height: 454px;
+}
+
+.suggestion-list > li {
+    width: 405.33px;
+    height: 454px;
+    flex: 0 0 405.33px;
 }
 
 /* Responsive Breakpoints */

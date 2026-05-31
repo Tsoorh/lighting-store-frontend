@@ -11,7 +11,6 @@
 .product-preview-image-container {
     position: relative;
     width: 100%;
-    border-radius: 5px;
 }
 
 .product-preview-images {
@@ -21,7 +20,6 @@
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
-    border-radius: 5px;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -73,7 +71,6 @@
     /* background-image: url('../../../../public/images/bgc/empty-industrial-room-interior-design.jpg'); */
     /* background-size: cover; */
     background-position: center;
-    border-radius: 5px;
 }
 
 .product-preview-images .img-wrapper img {

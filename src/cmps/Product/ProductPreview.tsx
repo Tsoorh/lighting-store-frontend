@@ -22,7 +22,12 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     // מנקים תווים נסתרים, רווחים וירידות שורות מכל השמות
     const cleanUrls = product.imgsUrl.map(url => url.replace(/[\r\n\s]+/g, ''))
     const cPhotos = cleanUrls.filter(url => url.startsWith('C_'))
-    const displayPhotos = cPhotos.length > 0 ? cPhotos : cleanUrls
+    const hPhotos = cleanUrls.filter(url => url.startsWith('H_'))
+    const numPhotos = cleanUrls.filter(url => !url.startsWith('C_') && !url.startsWith('H_'))
+    
+    let displayPhotos = cPhotos.length > 0 ? cPhotos : hPhotos
+    if (displayPhotos.length === 0) displayPhotos = numPhotos
+
     const photosToRender = displayPhotos.length > 0 ? displayPhotos : ['coming-soon']
 
     const getImageUrl = (imgName: string) => {

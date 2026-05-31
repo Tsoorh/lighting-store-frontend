@@ -83,7 +83,7 @@ export const HomePage = () => {
                     <div className="gallery-item">
                         <img src="/images/Figma/Tiran_Frame.png" alt="Tiran frame" className="cover-img" />
                     </div>
-                    <div className="gallery-item gallery-about-card">
+                    <div className="gallery-item gallery-about-card" dir={isEn ? 'ltr' : 'rtl'}>
                         <h3 className="gallery-about-title">
                             {isEn ? <>Second generation in lighting.<br />Choosing art.</> : <>דור שני לתאורה.<br />בחירה באמנות.</>}
                         </h3>
