@@ -63,7 +63,7 @@
     flex: 0.4;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 30px;
+    gap: 20px;
 
     @media (max-width: 768px) {
         gap: 20px;
@@ -114,7 +114,7 @@
     flex-direction: column;
     width: 100%;
     max-width: 315px;
-    gap: 20px;
+    gap: 15px;
 }
 
 .contact-detail-text {

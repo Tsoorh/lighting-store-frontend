@@ -4,6 +4,7 @@ import { AppFooter } from './cmps/AppFooter'
 import { AppHeader } from './cmps/AppHeader'
 import { HomePage } from './pages/HomePage'
 import { About } from './pages/About'
+import { Contact } from './pages/Contact'
 import { ProductDetails } from './cmps/Product/ProductDetails'
 import { ProductCategory } from './pages/ProductCategory'
 
@@ -16,7 +17,7 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            {/* <Route path="/contact" element={<Contact />} /> */}
+            <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
             <Route path="/product/:productId" element={<ProductDetails />} />
             <Route path="/product/category/:categoryName" element={<ProductCategory/>} />
