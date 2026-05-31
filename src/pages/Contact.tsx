@@ -9,7 +9,7 @@ export const Contact = () => {
     const isEn = language === 'en';
 
     return (
-        <section className="contact-page" dir={isEn ? 'ltr' : 'rtl'}>
+        <section className="contact-page page-section" dir={isEn ? 'ltr' : 'rtl'}>
             <div className="contact-page-top-wrapper theme-dark">
                 <div className="contact-page-top">
                     <div className="contact-page-top-right">
