@@ -7,6 +7,7 @@ import { useLanguage } from "../../hooks/useLanguage"
 import { Icons } from "../Icons"
 import { ProductSuggestion } from "./ProductSuggestion"
 import { ContactSection } from "../ContactSection"
+import { authService } from "../../services/auth.service"
 
 export const ProductDetails = () => {
     const { productId } = useParams()
@@ -14,6 +15,7 @@ export const ProductDetails = () => {
     const [gallery, setGallery] = useState<string[]>([])
     const [mainImage, setMainImage] = useState<string>('')
     const { language } = useLanguage()
+    const user = authService.getLoggedinUser()
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -78,6 +80,12 @@ export const ProductDetails = () => {
                     <div className="product-info-content">
                         <div className="product-title-wrapper">
                             <h1>{nameLabel}</h1>
+                            {product.price !== undefined && (
+                                <h2 className="product-price">
+                                    ₪{product.price}
+                                    {user?.role === 'supplier' && <span style={{fontSize: '16px', color: '#7e8588', marginInlineStart: '8px'}}>{isEnglish ? '(Supplier Price)' : '(מחיר ספק)'}</span>}
+                                </h2>
+                            )}
                         </div>
 
                         <div className="product-sections">

@@ -10,6 +10,7 @@ import { ProductCategory } from './pages/ProductCategory'
 import { TermsOfUse } from './pages/TermsOfUse'
 import { PrivacyPolicy } from './pages/PrivacyPolicy'
 import { AccessibilityStatement } from './pages/AccessibilityStatement'
+import { LoginRegister } from './pages/LoginRegister'
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginRegister />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
             <Route path="/product/:productId" element={<ProductDetails />} />

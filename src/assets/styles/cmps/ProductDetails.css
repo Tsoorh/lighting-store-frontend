@@ -49,6 +49,14 @@
     color: rgba(30, 28, 25, 1);
 }
 
+.product-price {
+    font-family: 'Heebo', sans-serif;
+    font-weight: 500;
+    font-size: 24px;
+    color: rgba(30, 28, 25, 1);
+    margin: 8px 0 0 0;
+}
+
 .product-sections {
     display: flex;
     flex-direction: column;

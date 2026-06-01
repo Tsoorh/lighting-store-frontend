@@ -15,7 +15,7 @@ export type Product = {
     _id?: string
     name: hebrewEnglishObj
     description: hebrewEnglishObj
-    price: number
+    price?: number
 }
 
 export type ProductParams = { productId: string }

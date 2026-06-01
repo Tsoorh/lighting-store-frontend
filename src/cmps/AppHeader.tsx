@@ -11,6 +11,8 @@ import { useLanguage } from '../hooks/useLanguage';
 import { Input } from '@mui/material';
 import { useDebounce } from '../hooks/useDebounce';
 import { productService } from '../services/product.service';
+import { authService } from '../services/auth.service';
+import type { Miniuser } from '../model/user.model';
 
 export type SubMenu = {
     title: hebrewEnglishObj
@@ -33,6 +35,7 @@ export const AppHeader = () => {
     const { language } = useLanguage()
     const debouncedSearch = useDebounce(inputSearch, 500);
     const [resultProduct, setResultProduct] = useState<FullProductsOrNull>(null)
+    const [user, setUser] = useState<Miniuser | null>(authService.getLoggedinUser())
 
     const isMobile = width <= 768;
 
@@ -50,6 +53,12 @@ export const AppHeader = () => {
         { title: { en: 'Contact', he: 'יצירת קשר' }, address: '/contact' }
 
     ]
+
+    useEffect(() => {
+        const onUserChanged = () => setUser(authService.getLoggedinUser())
+        window.addEventListener('user-changed', onUserChanged)
+        return () => window.removeEventListener('user-changed', onUserChanged)
+    }, [])
 
     useEffect(() => {
         if (isMenuOpen) {
@@ -99,6 +108,15 @@ export const AppHeader = () => {
 
     }
 
+    const onLogout = async () => {
+        try {
+            await authService.logout()
+            navigate('/')
+        } catch (err) {
+            console.error('Failed to logout', err)
+        }
+    }
+
     const isEnglish = language === 'en'
     return (
         <header className={`app-header ${isEnglish?`en-dir`:`he-dir`}`}>
@@ -113,6 +131,23 @@ export const AppHeader = () => {
                 <img src={Logo} alt="Tiran-Logo" />
             </div>
             <nav className="nav-bar">
+                {user ? (
+                    <div className="user-logged-in" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginInlineEnd: isMobile ? '12px' : '24px', fontSize: '14px', fontFamily: 'Heebo, sans-serif' }}>
+                        <span style={{ color: 'rgba(126, 133, 136, 1)' }}>{isEnglish ? `Hi, ${user.fullname}` : `שלום, ${user.fullname}`}</span>
+                        <button onClick={onLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', color: 'inherit', fontFamily: 'inherit' }}>
+                            {isEnglish ? 'Logout' : 'התנתק'}
+                        </button>
+                    </div>
+                ) : (
+                    <button 
+                        className="user-btn" 
+                        onClick={() => navigate('/login')} 
+                        aria-label={isEnglish ? 'Login' : 'התחברות'} 
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginInlineEnd: isMobile ? '12px' : '24px', display: 'flex', alignItems: 'center', color: 'inherit' }}
+                    >
+                        <Icons iconName="user" />
+                    </button>
+                )}
                 {isMobile ? <button className={`menu-icon ${isMenuOpen ? `active` : ``}`} onClick={handleOpenMenu} aria-expanded={isMenuOpen} aria-label={isEnglish ? 'Menu' : 'תפריט'} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}> <Icons iconName="menu" /> </button> :
                     <NavigationList navLinks={navbarProperties} handleSearch={handleSearch} />
                 }
@@ -143,7 +178,7 @@ export const AppHeader = () => {
                                         <img src={`https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${product.imgsUrl[0]}.webp`} alt={product.name.en} />
                                         <p>{isEnglish ? product.name.en : product.name.he}</p>
                                     </div>
-                                    <b>₪{product.price}</b>
+                                    {product.price !== undefined && <b>₪{product.price}</b>}
                                 </li>
                             })}
                         </ul>:

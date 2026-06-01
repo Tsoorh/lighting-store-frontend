@@ -113,6 +113,17 @@
     text-align: left;
 }
 
+.product-preview .product-price-preview {
+    font-family: Heebo, sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    color: rgba(126, 133, 136, 1);
+    width: 100%;
+    margin-top: -12px;
+}
+.product-preview .product-price-preview.rtl { text-align: right; }
+.product-preview .product-price-preview.ltr { text-align: left; }
+
 /* התאמה למובייל - הצגת החצים באופן קבוע (כי אין אפקט Hover בטלפון) */
 @media (max-width: 768px) {
     .product-preview-image-container .nav-btn {

@@ -3,6 +3,7 @@ import { useLanguage } from "../../hooks/useLanguage"
 import type { FullProduct } from "../../model/product.model"
 import { useNavigate } from "react-router-dom"
 import { Icons } from "../Icons"
+import { authService } from "../../services/auth.service"
 
 type ProductPreviewProp = {
     product: FullProduct
@@ -13,6 +14,7 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const navigate = useNavigate()
     const scrollRef = useRef<HTMLDivElement>(null)
     const [currentIndex, setCurrentIndex] = useState(0)
+    const user = authService.getLoggedinUser()
 
     const onHandleClick = () => {
         navigate(`/product/${product._id}`)
@@ -93,6 +95,12 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
             <span className={`product-name ${isEnglish ? 'ltr' : 'rtl'}`}>
                 {isEnglish ? product.name.en : product.name.he}
             </span>
+            {product.price !== undefined && (
+                <span className={`product-price-preview ${isEnglish ? 'ltr' : 'rtl'}`}>
+                    ₪{product.price}
+                    {user?.role === 'supplier' && <span style={{fontSize: '14px', marginInlineStart: '4px'}}>{isEnglish ? '(Supplier Price)' : '(מחיר ספק)'}</span>}
+                </span>
+            )}
         </div>
     )
 }

@@ -2,7 +2,7 @@ import Axios, { type AxiosRequestConfig, type Method } from 'axios'
 
 const BASE_URL = import.meta.env.NODE_ENV === 'production'
     ? '/api/'
-    : '//localhost:3000/api/'
+    : 'http://localhost:3000/api/'
 
 
 const axios = Axios.create({ withCredentials: true, baseURL: BASE_URL })
@@ -27,7 +27,7 @@ async function ajax<TResponse, TData = undefined>(endpoint: string, method: Meth
     const url = endpoint
     const params = (method === 'GET') ? data : null
 
-    const options: AxiosRequestConfig = { url, method, data, params }
+    const options: AxiosRequestConfig = { url, method, data, params, withCredentials: true }
 
     try {
         const res = await axios(options)

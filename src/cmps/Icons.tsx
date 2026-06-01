@@ -13,6 +13,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import EmailIcon from '@mui/icons-material/Email';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 
 type IconName = string;
 
@@ -39,7 +40,8 @@ export const Icons = ({ iconName }: IconsProps): JSX.Element | null => {
         right:<KeyboardArrowRightIcon aria-hidden='true'/>,
         search: <SearchIcon aria-hidden='true'/>,
         back: <ArrowBackIcon sx={{fontSize:12,fontWeight: 100}} aria-hidden='true'/>,
-        next: <ArrowForwardIcon sx={{fontSize:12,fontWeight: 100}} aria-hidden='true'/>
+        next: <ArrowForwardIcon sx={{fontSize:12,fontWeight: 100}} aria-hidden='true'/>,
+        user: <PersonOutlineIcon aria-hidden='true'/>
     };
 
     return icons[key] ?? null;

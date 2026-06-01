@@ -32,6 +32,9 @@
 }
 
 .nav-bar {
+    display: flex;
+    align-items: center;
+
     >.menu-icon {
         display: flex;
         justify-content: center;
