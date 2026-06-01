@@ -7,6 +7,9 @@ import { About } from './pages/About'
 import { Contact } from './pages/Contact'
 import { ProductDetails } from './cmps/Product/ProductDetails'
 import { ProductCategory } from './pages/ProductCategory'
+import { TermsOfUse } from './pages/TermsOfUse'
+import { PrivacyPolicy } from './pages/PrivacyPolicy'
+import { AccessibilityStatement } from './pages/AccessibilityStatement'
 
 function App() {
 
@@ -21,6 +24,9 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/product/:productId" element={<ProductDetails />} />
             <Route path="/product/category/:categoryName" element={<ProductCategory/>} />
+            <Route path="/terms" element={<TermsOfUse />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/accessibility" element={<AccessibilityStatement />} />
           </Routes>
         </main>
         <AppFooter />

@@ -2,6 +2,7 @@ import '../assets/styles/cmps/ContactSection.css';
 import { useLanguage } from '../hooks/useLanguage';
 import { ContactForm } from './ContactForm';
 import { ContactDetails } from './ContactDetails';
+import { Link } from 'react-router-dom';
 
 export const ContactSection = () => {
     const { language } = useLanguage()
@@ -23,9 +24,9 @@ export const ContactSection = () => {
                 </div>
             </div>
             <div className="contact-bottom">
-                <a href="#terms" className="contact-bottom-link terms-link">{isEn ? 'Terms of Use' : 'תנאי שימוש'}</a>
-                <a href="#privacy" className="contact-bottom-link privacy-link">{isEn ? 'Privacy Policy' : 'מדיניות פרטיות'}</a>
-                <a href="#accessibility" className="contact-bottom-link accessibility-link">{isEn ? 'Accessibility Statement' : 'הצהרת נגישות'}</a>
+                <Link to="/terms" className="contact-bottom-link terms-link">{isEn ? 'Terms of Use' : 'תנאי שימוש'}</Link>
+                <Link to="/privacy" className="contact-bottom-link privacy-link">{isEn ? 'Privacy Policy' : 'מדיניות פרטיות'}</Link>
+                <Link to="/accessibility" className="contact-bottom-link accessibility-link">{isEn ? 'Accessibility Statement' : 'הצהרת נגישות'}</Link>
             </div>
         </section>
     )
