@@ -41,17 +41,38 @@ export const HomePage = () => {
             <div className="works-sec page-section" id="works-section">
                 <h2 className="section-title">{isEn ? 'Collection' : 'גופי התאורה'}</h2>
                 <div className="works-grid">
-                    <div className="work-item" onClick={() => navigate('/product/category/ceiling')}>
+                    <div 
+                        className="work-item" 
+                        role="link" 
+                        tabIndex={0} 
+                        onClick={() => navigate('/product/category/ceiling')}
+                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate('/product/category/ceiling')}
+                        aria-label={isEn ? 'View Ceiling Lighting' : 'צפה בגופי תאורה צמודי תקרה'}
+                    >
                         <img src="/images/Figma/CAT_CEILING.jpg" alt="ceiling" />
                         <span className="work-item-title white-text">{isEn ? 'Ceiling Lighting' : 'גופי תאורה צמודי תקרה'}</span>
                         <p className="work-item-desc">{isEn ? 'Ceiling mounted fixtures combining deep technical understanding with meticulous aesthetics.' : 'גופי תאורה צמודי תקרה המשלבים הבנה טכנית עמוקה עם אסתטיקה מוקפדת.'}</p>
                     </div>
-                    <div className="work-item" onClick={() => navigate('/product/category/wall')}>
+                    <div 
+                        className="work-item" 
+                        role="link" 
+                        tabIndex={0} 
+                        onClick={() => navigate('/product/category/wall')}
+                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate('/product/category/wall')}
+                        aria-label={isEn ? 'View Wall Lighting' : 'צפה בגופי תאורה לקיר'}
+                    >
                         <img src="/images/Figma/CAT_WALL.jpg" alt="wall" />
                         <span className="work-item-title white-text">{isEn ? 'Wall Lighting' : 'גופי תאורה לקיר'}</span>
                         <p className="work-item-desc">{isEn ? 'Functional lighting solutions with a clean design language and precise material integration.' : 'פתרונות תאורה פונקציונליים עם שפה עיצובית נקייה ושילוב חומרי מדויק.'}</p>
                     </div>
-                    <div className="work-item" onClick={() => navigate('/product/category/pendant')}>
+                    <div 
+                        className="work-item" 
+                        role="link" 
+                        tabIndex={0} 
+                        onClick={() => navigate('/product/category/pendant')}
+                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate('/product/category/pendant')}
+                        aria-label={isEn ? 'View Pendant Lighting' : 'צפה בגופי תאורה תלויים'}
+                    >
                         <img src="/images/Figma/CAT_PENDANT.jpg" alt="pendant" />
                         <span className="work-item-title">{isEn ? 'Pendant Lighting' : 'גופי תאורה תלויים'}</span>
                         <p className="work-item-desc">{isEn ? 'Pendant lighting fixtures with sculptural presence, combining solid wood and metal, suitable for private and commercial spaces.' : 'גופי תאורה תלויים בעלי נוכחות פיסולית, המשלבים עץ מלא ומתכת ומתאימים לחללים פרטיים ומסחריים.'}</p>
@@ -87,7 +108,14 @@ export const HomePage = () => {
                         <h3 className="gallery-about-title">
                             {isEn ? <>Second generation in lighting.<br />Choosing art.</> : <>דור שני לתאורה.<br />בחירה באמנות.</>}
                         </h3>
-                        <div className="gallery-about-link animated-link" onClick={() => navigate('/about')}>
+                        <div 
+                            className="gallery-about-link animated-link" 
+                            role="link" 
+                            tabIndex={0} 
+                            onClick={() => navigate('/about')}
+                            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate('/about')}
+                            aria-label={isEn ? 'About Me' : 'אודותיי'}
+                        >
                             <span>{isEn ? 'About Me' : 'אודותיי'}</span>
                             <Icons iconName={isEn ? 'next' : 'back'} />
                         </div>
@@ -105,7 +133,14 @@ export const HomePage = () => {
                         <img src="/images/Figma/Wall_light.png" alt="Wall light" className="cover-img" />
                     </div>
                 </div>
-                <div className="gallery-collab-link animated-link" onClick={() => navigate('/contact')}>
+                <div 
+                    className="gallery-collab-link animated-link" 
+                    role="link" 
+                    tabIndex={0} 
+                    onClick={() => navigate('/contact')}
+                    onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate('/contact')}
+                    aria-label={isEn ? 'Professional Collaboration' : 'שיתוף פעולה מקצועי'}
+                >
                     <span>{isEn ? 'Professional Collaboration' : 'שיתוף פעולה מקצועי'}</span>
                     <Icons iconName={isEn ? 'next' : 'back'} />
                 </div>

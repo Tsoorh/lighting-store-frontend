@@ -55,7 +55,15 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
                 return (
                     <Fragment key={link.title.en}>
                         <li
+                            role="menuitem"
+                            tabIndex={0}
                             onClick={() => (onHandleClick(link?.address, link?.subMenu, isMobile))}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    onHandleClick(link?.address, link?.subMenu, isMobile);
+                                }
+                            }}
                             onMouseEnter={() => !isMobile && onEnter(link?.subMenu)}
                             onMouseLeave={!isMobile ? onLeave : undefined}
                         >
@@ -73,10 +81,19 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
                                         {subMenuDetails.map(child => (
                                             <li
                                                 key={child.title.en}
+                                                role="menuitem"
+                                                tabIndex={0}
                                                 onClick={(e) => {
                                                     e.stopPropagation()
                                                     navigate(child.address)
                                                     setSubMenuDetails(null)
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.stopPropagation()
+                                                        navigate(child.address)
+                                                        setSubMenuDetails(null)
+                                                    }
                                                 }}
                                             style={{ textAlign: isEnglish ? 'left' : 'right' }}
                                             >
@@ -95,10 +112,19 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
                                     {subMenuDetails.map(child => (
                                         <li
                                             key={child.title.en}
+                                            role="menuitem"
+                                            tabIndex={0}
                                             onClick={(e) => {
                                                 e.stopPropagation()
                                                 navigate(child.address)
                                                 if (closeMenu) closeMenu()
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.stopPropagation()
+                                                    navigate(child.address)
+                                                    if (closeMenu) closeMenu()
+                                                }
                                             }}
                                 style={{ textAlign: isEnglish ? 'left' : 'right' }}
                                         >
@@ -127,7 +153,7 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
                         className="select-lang"
                         value={language}
                         onChange={(e) => handleChangeLanguage(e)}
-                        inputProps={{ 'aria-label': 'Without label' }}
+                        inputProps={{ 'aria-label': isEnglish ? 'Select Language' : 'בחר שפה' }}
                         displayEmpty
                     >
                         <MenuItem sx={{ fontSize: "small" }} value={"en"}>EN</MenuItem>
@@ -136,10 +162,26 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
                 </FormControl>
             </li>
             {!isMobile &&
-                <li  onClick={() => { window.location.href = 'https://wa.me/972524000102?text=%D7%94%D7%99%D7%99%2C%20%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%93%D7%A8%D7%9A%20%D7%93%D7%A3%20%D7%94%D7%91%D7%99%D7%AA%20%D7%91%D7%90%D7%AA%D7%A8%20%D7%A9%D7%9C%20%D7%98%D7%99%D7%A8%D7%9F.%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A7%D7%91%D7%9C%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D%20%D7%A0%D7%95%D7%A1%D7%A4%D7%99%D7%9D' }}>
-                    <Icons iconName="whatsapp" /></li>
+                <li>
+                    <a href="https://wa.me/972524000102?text=%D7%94%D7%99%D7%99%2C%20%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%93%D7%A8%D7%9A%20%D7%93%D7%A3%20%D7%94%D7%91%D7%99%D7%AA%20%D7%91%D7%90%D7%AA%D7%A8%20%D7%A9%D7%9C%20%D7%98%D7%99%D7%A8%D7%9F.%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A7%D7%91%D7%9C%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D%20%D7%A0%D7%95%D7%A1%D7%A4%D7%99%D7%9D" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       aria-label={isEnglish ? "Contact on WhatsApp" : "צור קשר בוואטסאפ"}
+                       style={{ display: 'flex', color: 'inherit' }}
+                    >
+                        <Icons iconName="whatsapp" />
+                    </a>
+                </li>
             }
-            {!isMobile && <li onClick={handleSearch}><Icons iconName="search" /></li>
+            {!isMobile && <li 
+                role="button" 
+                tabIndex={0} 
+                aria-label={isEnglish ? "Search" : "חיפוש"} 
+                onClick={handleSearch}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleSearch?.()}
+            >
+                <Icons iconName="search" />
+            </li>
             }
 
         </ul >

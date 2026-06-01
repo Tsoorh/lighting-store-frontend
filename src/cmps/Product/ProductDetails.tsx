@@ -143,8 +143,12 @@ export const ProductDetails = () => {
                         {gallery.map((imgUrl, idx) => (
                             <div 
                                 key={idx} 
+                                role="button"
+                                tabIndex={0}
+                                aria-label={`${isEnglish ? 'View image' : 'הצג תמונה'} ${idx + 1}`}
                                 className={`thumbnail-wrapper ${mainImage === imgUrl ? 'active' : ''}`}
                                 onClick={() => setMainImage(imgUrl)}
+                                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setMainImage(imgUrl)}
                             >
                                 <img src={imgUrl} alt={`${nameLabel} thumb ${idx}`} />
                             </div>

@@ -102,12 +102,18 @@ export const AppHeader = () => {
     const isEnglish = language === 'en'
     return (
         <header className={`app-header ${isEnglish?`en-dir`:`he-dir`}`}>
-            <div className="logo" onClick={() => navigate('/')}>
+            <div 
+                className="logo" 
+                role="link"
+                tabIndex={0}
+                aria-label={isEnglish ? "Go to Home Page" : "חזור לדף הבית"}
+                onClick={() => navigate('/')}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate('/')}
+            >
                 <img src={Logo} alt="Tiran-Logo" />
-                {/* <span className="slogen">Lighting Design Studio</span> */}
             </div>
             <nav className="nav-bar">
-                {isMobile ? <div className={`menu-icon ${isMenuOpen ? `active` : ``}`} onClick={handleOpenMenu}> <Icons iconName="menu" /> </div> :
+                {isMobile ? <button className={`menu-icon ${isMenuOpen ? `active` : ``}`} onClick={handleOpenMenu} aria-expanded={isMenuOpen} aria-label={isEnglish ? 'Menu' : 'תפריט'} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}> <Icons iconName="menu" /> </button> :
                     <NavigationList navLinks={navbarProperties} handleSearch={handleSearch} />
                 }
             </nav>
@@ -115,7 +121,7 @@ export const AppHeader = () => {
             {/* Side sub-menu on mobile */}
             {isMenuOpen && !isOnSearch && <MenuModal closeMenu={handleOpenMenu} >
                 <div className="menu-modal" onClick={(e) => e.stopPropagation()}>
-                    <button className="exit-btn" onClick={handleOpenMenu}><Icons iconName={"close"} /></button>
+                    <button className="exit-btn" onClick={handleOpenMenu} aria-label={isEnglish ? 'Close menu' : 'סגור תפריט'}><Icons iconName={"close"} /></button>
                     <h1>{isEnglish ? 'Menu' : 'תפריט'}</h1>
                     <NavigationList navLinks={navbarProperties} closeMenu={handleOpenMenu} />
                 </div>
@@ -124,15 +130,15 @@ export const AppHeader = () => {
             {/* Side search on mobile */}
             {isOnSearch && <MenuModal closeMenu={handleOpenMenu} >
                 <div className="menu-modal search-modal" onClick={(e) => e.stopPropagation()}>
-                    <button className="exit-btn" onClick={handleOpenMenu}><Icons iconName={"close"} /></button>
+                    <button className="exit-btn" onClick={handleOpenMenu} aria-label={isEnglish ? 'Close' : 'סגור'}><Icons iconName={"close"} /></button>
                     <div className='text-field-search'>
-                        <Input autoFocus color='primary' onChange={onHandleChangeInput} value={inputSearch} sx={{ mr: '1rem', ml: '2.5rem', width: 'calc(100% - 2rem)' }} dir={isEnglish ? 'ltr' : 'rtl'} placeholder={isEnglish ? 'What would you like to light today?' : 'מה תרצו להאיר היום?'} />
+                        <Input autoFocus color='primary' onChange={onHandleChangeInput} value={inputSearch} sx={{ mr: '1rem', ml: '2.5rem', width: 'calc(100% - 2rem)' }} dir={isEnglish ? 'ltr' : 'rtl'} placeholder={isEnglish ? 'What would you like to light today?' : 'מה תרצו להאיר היום?'} inputProps={{ 'aria-label': isEnglish ? 'Search products' : 'חפש מוצרים' }} />
                     </div>
                     <div className="search-results">
                         {debouncedSearch?
                         <ul>
                             {resultProduct?.map(product => {
-                                return <li key={product._id} onClick={()=>navigateToProduct(product._id as string)}>
+                                return <li key={product._id} role="link" tabIndex={0} onClick={()=>navigateToProduct(product._id as string)} onKeyDown={(e)=> (e.key === 'Enter' || e.key === ' ') && navigateToProduct(product._id as string)}>
                                     <div>
                                         <img src={`https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${product.imgsUrl[0]}.webp`} alt={product.name.en} />
                                         <p>{isEnglish ? product.name.en : product.name.he}</p>

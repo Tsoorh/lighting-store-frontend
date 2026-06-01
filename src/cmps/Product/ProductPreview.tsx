@@ -63,14 +63,21 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     }
 
     return (
-        <div className="product-preview" onClick={onHandleClick}>
+        <div 
+            className="product-preview" 
+            role="link" 
+            tabIndex={0} 
+            onClick={onHandleClick}
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onHandleClick()}
+            aria-label={`${isEnglish ? 'View product:' : 'צפה במוצר:'} ${isEnglish ? product.name.en : product.name.he}`}
+        >
             <div className="product-preview-image-container">
                 {photosToRender.length > 1 && (
                     <>
-                        <button className={`nav-btn prev ${!canScrollLeft ? 'inactive' : ''}`} onClick={(e) => scroll('left', e)}>
+                        <button className={`nav-btn prev ${!canScrollLeft ? 'inactive' : ''}`} onClick={(e) => scroll('left', e)} aria-label={isEnglish ? 'Previous image' : 'תמונה קודמת'} tabIndex={-1}>
                             <Icons iconName="left" />
                         </button>
-                        <button className={`nav-btn next ${!canScrollRight ? 'inactive' : ''}`} onClick={(e) => scroll('right', e)}>
+                        <button className={`nav-btn next ${!canScrollRight ? 'inactive' : ''}`} onClick={(e) => scroll('right', e)} aria-label={isEnglish ? 'Next image' : 'תמונה הבאה'} tabIndex={-1}>
                             <Icons iconName="right" />
                         </button>
                     </>

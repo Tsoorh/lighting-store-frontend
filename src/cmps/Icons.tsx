@@ -25,21 +25,21 @@ export const Icons = ({ iconName }: IconsProps): JSX.Element | null => {
 
     const icons: Record<string, JSX.Element> = {
         menu: <MenuIcon aria-hidden="true" style={{'height':'28px','width':'28px'}}/>,
-        close: <CloseIcon aria-label="true" />,
+        close: <CloseIcon aria-hidden="true" />,
         dropdown: <KeyboardArrowDownIcon fontSize="small" aria-hidden="true" />,
-        size: <SquareFootIcon fontSize='small' aria-label='true'/>,
-        material: <LayersIcon fontSize='small' aria-label='true'/>,
-        bulb: <LightbulbIcon fontSize='small' aria-label='true'/>,
-        bolt:<BoltIcon fontSize='small' aria-label='true'/>,
-        whatsapp:<WhatsAppIcon aria-label='true'/>,
-        facebook:<FacebookIcon aria-label='true'/>,
-        instagram:<InstagramIcon aria-label='true'/>,
-        gmail:<EmailIcon aria-label='true'/>,
-        left:<KeyboardArrowLeftIcon aria-label='true'/>,
-        right:<KeyboardArrowRightIcon aria-label='true'/>,
-        search: <SearchIcon aria-label='true'/>,
-        back: <ArrowBackIcon sx={{fontSize:12,fontWeight: 100}} aria-label='true'/>,
-        next: <ArrowForwardIcon sx={{fontSize:12,fontWeight: 100}} aria-label='true'/>
+        size: <SquareFootIcon fontSize='small' aria-hidden='true'/>,
+        material: <LayersIcon fontSize='small' aria-hidden='true'/>,
+        bulb: <LightbulbIcon fontSize='small' aria-hidden='true'/>,
+        bolt:<BoltIcon fontSize='small' aria-hidden='true'/>,
+        whatsapp:<WhatsAppIcon aria-hidden='true'/>,
+        facebook:<FacebookIcon aria-hidden='true'/>,
+        instagram:<InstagramIcon aria-hidden='true'/>,
+        gmail:<EmailIcon aria-hidden='true'/>,
+        left:<KeyboardArrowLeftIcon aria-hidden='true'/>,
+        right:<KeyboardArrowRightIcon aria-hidden='true'/>,
+        search: <SearchIcon aria-hidden='true'/>,
+        back: <ArrowBackIcon sx={{fontSize:12,fontWeight: 100}} aria-hidden='true'/>,
+        next: <ArrowForwardIcon sx={{fontSize:12,fontWeight: 100}} aria-hidden='true'/>
     };
 
     return icons[key] ?? null;

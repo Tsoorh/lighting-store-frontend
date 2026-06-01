@@ -32,12 +32,12 @@ export const ContactForm = () => {
         <form ref={formRef} className="contact-form" onSubmit={sendEmail}>
             <div className="contact-form-row">
                 <div className="contact-form-col">
-                    <input type="text" name="name" dir={isEn ? 'ltr' : 'rtl'} placeholder={isEn ? 'Name' : 'שם'} className="contact-form-input" />
-                    <input type="tel" name="phone" dir={isEn ? 'ltr' : 'rtl'} placeholder={isEn ? 'Phone' : 'טלפון'} className="contact-form-input" />
+                    <input type="text" name="name" dir={isEn ? 'ltr' : 'rtl'} placeholder={isEn ? 'Name' : 'שם'} aria-label={isEn ? 'Name' : 'שם'} className="contact-form-input" />
+                    <input type="tel" name="phone" dir={isEn ? 'ltr' : 'rtl'} placeholder={isEn ? 'Phone' : 'טלפון'} aria-label={isEn ? 'Phone' : 'טלפון'} className="contact-form-input" />
                 </div>
                 <div className="contact-form-col">
-                    <input type="email" name="email" dir={isEn ? 'ltr' : 'rtl'} placeholder={isEn ? 'Email' : 'אימייל'} className="contact-form-input" />
-                    <input type="text" name="message" dir={isEn ? 'ltr' : 'rtl'} placeholder={isEn ? 'Message' : 'פניה'} className="contact-form-input" />
+                    <input type="email" name="email" dir={isEn ? 'ltr' : 'rtl'} placeholder={isEn ? 'Email' : 'אימייל'} aria-label={isEn ? 'Email' : 'אימייל'} className="contact-form-input" />
+                    <input type="text" name="message" dir={isEn ? 'ltr' : 'rtl'} placeholder={isEn ? 'Message' : 'פניה'} aria-label={isEn ? 'Message' : 'פניה'} className="contact-form-input" />
                 </div>
             </div>
             <button className="contact-submit-btn" type="submit" disabled={isSending}>
