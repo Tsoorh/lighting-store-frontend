@@ -4,7 +4,7 @@ import { Icons } from "./Icons";
 import { useWindowWidth } from "../hooks/useWindowWidth";
 import type { FullProductsOrNull, hebrewEnglishObj } from '../model/product.model';
 import { NavigationList } from './NavigationList';
-import { useEffect, useState, type ChangeEvent } from 'react';
+import { useEffect, useState, useMemo, type ChangeEvent } from 'react';
 import { MenuModal } from './MenuModal';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
@@ -39,20 +39,26 @@ export const AppHeader = () => {
 
     const isMobile = width <= 768;
 
-    const navbarProperties: NavbarProperties = [
-        { title: { en: 'Home', he: 'בית' }, address: '/' },
-        {
-            title: { en: 'Lighting', he: 'גופי תאורה' }, iconName: 'dropdown', subMenu: [
-                { title: { en: 'Wall', he: 'גופי תאורה לקיר' }, address: '/product/category/wall' },
-                { title: { en: 'Pendant', he: 'גופי תאורה תלויים' }, address: '/product/category/pendant' },
-                { title: { en: 'Ceiling', he: 'גופי תאורה צמודי תקרה' }, address: '/product/category/ceiling' },
-                { title: { en: 'Accessories', he: 'אביזרים' }, address: '/product/category/accessories' },
-            ]
-        },
-        { title: { en: 'About', he: 'אודות' }, address: '/About' },
-        { title: { en: 'Contact', he: 'יצירת קשר' }, address: '/contact' }
+    const navbarProperties: NavbarProperties = useMemo(() => {
+        const props: NavbarProperties = [
+            { title: { en: 'Home', he: 'בית' }, address: '/' },
+            {
+                title: { en: 'Lighting', he: 'גופי תאורה' }, iconName: 'dropdown', subMenu: [
+                    { title: { en: 'Wall', he: 'גופי תאורה לקיר' }, address: '/product/category/wall' },
+                    { title: { en: 'Pendant', he: 'גופי תאורה תלויים' }, address: '/product/category/pendant' },
+                    { title: { en: 'Ceiling', he: 'גופי תאורה צמודי תקרה' }, address: '/product/category/ceiling' }
+                ]
+            },
+            { title: { en: 'About', he: 'אודות' }, address: '/about' },
+            { title: { en: 'Contact', he: 'יצירת קשר' }, address: '/contact' }
+        ]
 
-    ]
+        if (user?.role?.trim().toLowerCase() === 'admin') {
+            props.push({ title: { en: 'Dashboard', he: 'לוח בקרה' }, address: '/dashboard' })
+        }
+
+        return props
+    }, [user])
 
     useEffect(() => {
         const onUserChanged = () => setUser(authService.getLoggedinUser())

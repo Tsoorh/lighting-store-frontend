@@ -83,7 +83,6 @@ export const ProductDetails = () => {
                             {product.price !== undefined && (
                                 <h2 className="product-price">
                                     ₪{product.price}
-                                    {user?.role === 'supplier' && <span style={{fontSize: '16px', color: '#7e8588', marginInlineStart: '8px'}}>{isEnglish ? '(Supplier Price)' : '(מחיר ספק)'}</span>}
                                 </h2>
                             )}
                         </div>

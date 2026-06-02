@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import type { FullProductsOrNull } from "../../model/product.model"
 import { productService } from "../../services/product.service"
 import { ProductPreview } from "./ProductPreview"

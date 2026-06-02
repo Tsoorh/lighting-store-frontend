@@ -98,7 +98,6 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
             {product.price !== undefined && (
                 <span className={`product-price-preview ${isEnglish ? 'ltr' : 'rtl'}`}>
                     ₪{product.price}
-                    {user?.role === 'supplier' && <span style={{fontSize: '14px', marginInlineStart: '4px'}}>{isEnglish ? '(Supplier Price)' : '(מחיר ספק)'}</span>}
                 </span>
             )}
         </div>

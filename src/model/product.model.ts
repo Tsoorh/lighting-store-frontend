@@ -16,6 +16,7 @@ export type Product = {
     name: hebrewEnglishObj
     description: hebrewEnglishObj
     price?: number
+    isActive?: boolean
 }
 
 export type ProductParams = { productId: string }
@@ -36,6 +37,7 @@ export type FullProduct = Product & {
     socketType:SocketType
     material:hebrewEnglishObj[]
     woodType:hebrewEnglishObj[]
+    isActive?: boolean
 }
 
 

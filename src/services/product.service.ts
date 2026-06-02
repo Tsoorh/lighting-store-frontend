@@ -11,10 +11,10 @@ const getById = async (productId: string): Promise<FullProductOrNull> => {
     return await httpService.get<FullProductOrNull>(`product/${productId}`)
 }
 const add = async (product: FullProduct): Promise<FullProduct> => {
-    return await httpService.post<FullProduct, FullProduct>(`product`, product)
+    return await httpService.post<FullProduct, { product: FullProduct }>(`product`, { product })
 }
 const update = async (product: FullProduct): Promise<FullProduct> => {
-    return await httpService.put<FullProduct, FullProduct>(`product`, product)
+    return await httpService.put<FullProduct, { product: FullProduct }>(`product`, { product })
 }
 const remove = async (productId: string): Promise<string> => {
     return await httpService.delete<string>(`product/${productId}`)

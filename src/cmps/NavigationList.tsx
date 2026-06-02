@@ -4,7 +4,7 @@ import { useLanguage } from "../hooks/useLanguage"
 import type { Language } from "../services/LanguageContext"
 import type { NavbarProperties, SubMenu } from "./AppHeader"
 import { Icons } from "./Icons"
-import React, { useState, Fragment } from "react"
+import { useState, Fragment } from "react"
 import { useWindowWidth } from "../hooks/useWindowWidth"
 
 type NavLinks = {

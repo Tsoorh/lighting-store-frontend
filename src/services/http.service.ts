@@ -43,65 +43,67 @@ async function ajax<TResponse, TData = undefined>(endpoint: string, method: Meth
     }
 }
 
-// let isRefreshing = false
-// let refreshSubscribers = []
+let isRefreshing = false
+let refreshSubscribers: ((() => void))[] = []
 
-// function onRefreshed() {
-//     refreshSubscribers.forEach(callback => callback())
-//     refreshSubscribers = []
-// }
+function onRefreshed() {
+    refreshSubscribers.forEach(callback => callback())
+    refreshSubscribers = []
+}
 
-// function addRefreshSubscriber(callback) {
-//     refreshSubscribers.push(callback)
-// }
+function addRefreshSubscriber(callback: () => void) {
+    refreshSubscribers.push(callback)
+}
 
-// axios.interceptors.response.use(
-//     (response) => response,
-//     async (error) => {
-//         const originalRequest = error.config;
-//         const status = error.response?.status;
-//         const refreshUrl = `${BASE_URL}auth/refresh`;
+axios.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+        const status = error.response?.status;
 
-//         if (status === 401 && !originalRequest._retry) {
-//             if (originalRequest.url?.includes('/auth/refresh')) {
-//                 //Refresh token failed or revoked. Logging out.
-//                 isRefreshing = false
-//                 await userService.logout();
-//                 return Promise.reject(error);
-//             }
+        if (status === 401 && !originalRequest._retry) {
+            if (originalRequest.url?.includes('/auth/refresh-token')) {
+                //Refresh token failed or revoked. Logging out.
+                isRefreshing = false
+                sessionStorage.removeItem('loggedinUser')
+                window.dispatchEvent(new Event('user-changed'))
+                window.location.assign('/login')
+                return Promise.reject(error);
+            }
 
-//             originalRequest._retry = true
+            originalRequest._retry = true
 
-//             if (isRefreshing) {
-//                 return new Promise((resolve) => {
-//                     addRefreshSubscriber(() => {
-//                         resolve(axios(originalRequest))
-//                     })
-//                 })
-//             }
+            if (isRefreshing) {
+                return new Promise((resolve) => {
+                    addRefreshSubscriber(() => {
+                        resolve(axios(originalRequest))
+                    })
+                })
+            }
 
-//             isRefreshing = true
+            isRefreshing = true
 
-//             //Access Token expired. Attempting to refresh...
-//             try {
-//                 await _renewAccessToken();
-//                 isRefreshing = false
-//                 onRefreshed()
-//                 //Token refreshed. Retrying original request...
-//                 return axios(originalRequest);
-//             } catch (refreshErr) {
-//                 //Failed to renew token. Logging out.
-//                 isRefreshing = false
-//                 await userService.logout();
-//                 return Promise.reject(error);
-//             }
-//         }
-//         return Promise.reject(error);
-//     }
-// );
+            //Access Token expired. Attempting to refresh...
+            try {
+                await _renewAccessToken();
+                isRefreshing = false
+                onRefreshed()
+                //Token refreshed. Retrying original request...
+                return axios(originalRequest);
+            } catch (refreshErr) {
+                //Failed to renew token. Logging out.
+                isRefreshing = false
+                sessionStorage.removeItem('loggedinUser')
+                window.dispatchEvent(new Event('user-changed'))
+                window.location.assign('/login')
+                return Promise.reject(error);
+            }
+        }
+        return Promise.reject(error);
+    }
+);
 
 
-// async function _renewAccessToken() {
-//     const res = await axiosNoIntercept.post('auth/refresh')
-//     return res.data
-// }
+async function _renewAccessToken() {
+    await axios.post('auth/refresh-token')
+}

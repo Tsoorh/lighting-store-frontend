@@ -52,6 +52,7 @@ export const LoginRegister = () => {
                                     placeholder={isEnglish ? 'Username' : 'שם משתמש'} 
                                     required 
                                     className="auth-input"
+                                    autoComplete="off"
                                 />
                                 <input 
                                     type="password" 
@@ -61,6 +62,7 @@ export const LoginRegister = () => {
                                     placeholder={isEnglish ? 'Password' : 'סיסמה'} 
                                     required 
                                     className="auth-input"
+                                    autoComplete="new-password"
                                 />
                                 
                                 {errorMsg && <p className="error-msg">{errorMsg}</p>}

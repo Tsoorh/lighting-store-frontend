@@ -11,6 +11,7 @@ import { TermsOfUse } from './pages/TermsOfUse'
 import { PrivacyPolicy } from './pages/PrivacyPolicy'
 import { AccessibilityStatement } from './pages/AccessibilityStatement'
 import { LoginRegister } from './pages/LoginRegister'
+import { AdminPage } from './pages/AdminPage'
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginRegister />} />
+            <Route path="/dashboard" element={<AdminPage />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
             <Route path="/product/:productId" element={<ProductDetails />} />
