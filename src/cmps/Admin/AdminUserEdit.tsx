@@ -22,7 +22,7 @@ export const AdminUserEdit: React.FC<Props> = ({ user, onSave, onCancel }) => {
 
     const roles: Role[] = ['admin', 'supplier', 'architect']
 
-    function handleChange(field: string, value: any) {
+    function handleChange<K extends keyof User>(field: K, value: User[K]) {
         setFormData(prev => ({ ...prev, [field]: value }))
     }
 
@@ -69,7 +69,7 @@ export const AdminUserEdit: React.FC<Props> = ({ user, onSave, onCancel }) => {
                     <label>{isEn ? 'Role' : 'תפקיד'}</label>
                     <select 
                         value={formData.role} 
-                        onChange={(e) => handleChange('role', e.target.value)}
+                        onChange={(e) => handleChange('role', e.target.value as Role)}
                     >
                         {roles.map(role => (
                             <option key={role} value={role}>{role}</option>

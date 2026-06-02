@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import type { FullProduct } from '../../model/product.model'
+import type { FullProduct, hebrewEnglishObj } from '../../model/product.model'
 import { useLanguage } from '../../hooks/useLanguage'
 import { uploadService } from '../../services/upload.service'
 
@@ -7,6 +7,28 @@ type Props = {
     product?: FullProduct
     onSave: (product: FullProduct) => void
     onCancel: () => void
+}
+
+const OPTIONS = {
+    WOOD_TYPES: [
+        { en: 'Oak', he: 'אלון' },
+        { en: 'Walnut/Oak', he: 'אלון/אגוז' },
+        { en: 'Oak stained as walnut', he: 'אלון מגוון לאגוז' },
+        { en: 'No wood', he: 'ללא עץ' }
+    ],
+    CATEGORIES: [
+        { en: 'Hanging', he: 'תליה' },
+        { en: 'Wall', he: 'קיר' },
+        { en: 'Ceiling', he: 'תקרה' },
+        { en: 'Accessories', he: 'אביזרים' }
+    ],
+    MATERIALS: [
+        { en: 'Wood', he: 'עץ' },
+        { en: 'Metal', he: 'מתכת' },
+        { en: 'Glass', he: 'זכוכית' }
+    ],
+    SCREW_TYPES: ['E27', 'G9', 'GU10', 'LED (Integrated)', 'Mixed: GU10 + E27', 'Mixed: G9 + E27'],
+    LIGHT_TYPES: ['LED - Max 5W', 'LED - Max 7W', 'LED - Max 10W', 'LED - Max 15W', 'LED - Max 20W', 'LED - Max 35W']
 }
 
 export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel }) => {
@@ -30,7 +52,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     const { language } = useLanguage()
     const isEn = language === 'en'
 
-    function handleChange(field: string, value: any) {
+    function handleChange<K extends keyof FullProduct>(field: K, value: FullProduct[K]) {
         setFormData(prev => ({ ...prev, [field]: value }))
     }
 
@@ -41,25 +63,18 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         }))
     }
 
-    // Dynamic list handlers (Category, Material, WoodType)
-    function handleListChange(field: 'category' | 'material' | 'woodType', index: number, lang: 'en' | 'he', value: string) {
-        const newList = [...(formData[field] || [])]
-        newList[index] = { ...newList[index], [lang]: value }
+    function toggleOption(field: 'category' | 'material' | 'woodType', option: hebrewEnglishObj) {
+        const currentList = formData[field] || []
+        const isSelected = currentList.some(item => item.en === option.en)
+        
+        let newList
+        if (isSelected) {
+            newList = currentList.filter(item => item.en !== option.en)
+        } else {
+            newList = [...currentList, option]
+        }
+        
         setFormData(prev => ({ ...prev, [field]: newList }))
-    }
-
-    function addListItem(field: 'category' | 'material' | 'woodType') {
-        setFormData(prev => ({
-            ...prev,
-            [field]: [...(prev[field] || []), { en: '', he: '' }]
-        }))
-    }
-
-    function removeListItem(field: 'category' | 'material' | 'woodType', index: number) {
-        setFormData(prev => ({
-            ...prev,
-            [field]: prev[field]?.filter((_, i) => i !== index)
-        }))
     }
 
     // Size handler
@@ -127,29 +142,25 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         onSave(formData as FullProduct)
     }
 
-    const renderMultiLangList = (field: 'category' | 'material' | 'woodType', label: string) => (
+    const renderSelectionList = (field: 'category' | 'material' | 'woodType', label: string, options: hebrewEnglishObj[]) => (
         <div className="form-section">
             <h4>{label}</h4>
-            {formData[field]?.map((item, index) => (
-                <div key={index} className="list-item-row" style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'center' }}>
-                    <input 
-                        type="text" 
-                        placeholder="EN"
-                        value={item.en} 
-                        style={{ flex: 1 }}
-                        onChange={(e) => handleListChange(field, index, 'en', e.target.value)} 
-                    />
-                    <input 
-                        type="text" 
-                        placeholder="עברית"
-                        value={item.he} 
-                        style={{ flex: 1 }}
-                        onChange={(e) => handleListChange(field, index, 'he', e.target.value)} 
-                    />
-                    <button type="button" onClick={() => removeListItem(field, index)} style={{ background: '#ff4444', color: 'white', border: 'none', borderRadius: '4px', padding: '5px 10px', cursor: 'pointer' }}>X</button>
-                </div>
-            ))}
-            <button type="button" onClick={() => addListItem(field)} className="btn-add-secondary" style={{ marginBottom: '15px' }}>+ Add {label}</button>
+            <div className="options-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                {options.map(option => {
+                    const isSelected = (formData[field] || []).some(item => item.en === option.en)
+                    return (
+                        <label key={option.en} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                            <input 
+                                type="checkbox" 
+                                checked={isSelected} 
+                                onChange={() => toggleOption(field, option)}
+                                style={{ width: '18px', height: '18px' }}
+                            />
+                            {isEn ? option.en : option.he}
+                        </label>
+                    )
+                })}
+            </div>
         </div>
     )
 
@@ -205,20 +216,28 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                         <h4>{isEn ? 'Socket Type' : 'סוג הברגה/נורה'}</h4>
                         <div className="stacked-fields">
                             <div className="form-group">
-                                <label>Screw (e.g. E27)</label>
-                                <input 
-                                    type="text" 
+                                <label>{isEn ? 'Screw Type' : 'סוג הברגה'}</label>
+                                <select 
                                     value={formData.socketType?.screwType || ''} 
-                                    onChange={(e) => handleSocketChange('screwType', e.target.value)} 
-                                />
+                                    onChange={(e) => handleSocketChange('screwType', e.target.value)}
+                                >
+                                    <option value="">{isEn ? '-- Select --' : '-- בחר --'}</option>
+                                    {OPTIONS.SCREW_TYPES.map(type => (
+                                        <option key={type} value={type}>{type}</option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="form-group">
-                                <label>Light (e.g. LED)</label>
-                                <input 
-                                    type="text" 
+                                <label>{isEn ? 'Light Type' : 'סוג נורה'}</label>
+                                <select 
                                     value={formData.socketType?.lightType || ''} 
-                                    onChange={(e) => handleSocketChange('lightType', e.target.value)} 
-                                />
+                                    onChange={(e) => handleSocketChange('lightType', e.target.value)}
+                                >
+                                    <option value="">{isEn ? '-- Select --' : '-- בחר --'}</option>
+                                    {OPTIONS.LIGHT_TYPES.map(type => (
+                                        <option key={type} value={type}>{type}</option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -228,11 +247,11 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                         {formData.size?.map((s, index) => (
                             <div key={index} className="size-row-container" style={{ borderBottom: '1px solid #eee', paddingBottom: '15px', marginBottom: '15px' }}>
                                 <div className="form-group">
-                                    <label>Radius</label>
+                                    <label>{isEn ? 'Radius' : 'רדיוס'}</label>
                                     <input type="number" value={s.radius} onChange={(e) => handleSizeChange(index, 'radius', +e.target.value)} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Height</label>
+                                    <label>{isEn ? 'Height' : 'גובה'}</label>
                                     <input type="number" value={s.height} onChange={(e) => handleSizeChange(index, 'height', +e.target.value)} />
                                 </div>
                                 <button type="button" onClick={() => removeSize(index)} style={{ background: '#ff4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '5px 15px', width: '100%' }}>{isEn ? 'Remove Size' : 'הסר מידה'}</button>
@@ -243,9 +262,9 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                 </div>
 
                 <div className="secondary-info">
-                    {renderMultiLangList('category', isEn ? 'Categories' : 'קטגוריות')}
-                    {renderMultiLangList('material', isEn ? 'Materials' : 'חומרים')}
-                    {renderMultiLangList('woodType', isEn ? 'Wood Types' : 'סוגי עץ')}
+                    {renderSelectionList('category', isEn ? 'Categories' : 'קטגוריות', OPTIONS.CATEGORIES)}
+                    {renderSelectionList('material', isEn ? 'Materials' : 'חומרים', OPTIONS.MATERIALS)}
+                    {renderSelectionList('woodType', isEn ? 'Wood Types' : 'סוגי עץ', OPTIONS.WOOD_TYPES)}
 
                     <div className="image-upload-section" style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '5px', marginBottom: '20px' }}>
                         <h4>{isEn ? 'Product Images' : 'תמונות מוצר'}</h4>
@@ -255,7 +274,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                 <label>{isEn ? 'Type' : 'סוג'}</label>
                                 <select 
                                     value={uploadConfig.type} 
-                                    onChange={(e) => setUploadConfig(prev => ({ ...prev, type: e.target.value as any }))}
+                                    onChange={(e) => setUploadConfig(prev => ({ ...prev, type: e.target.value as 'C' | 'H' }))}
                                 >
                                     <option value="C">{isEn ? 'Card' : 'כרטיס (C)'}</option>
                                     <option value="H">{isEn ? 'Hero' : 'ראשי (H)'}</option>
@@ -265,7 +284,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                 <label>{isEn ? 'Category' : 'קטגוריה'}</label>
                                 <select 
                                     value={uploadConfig.category} 
-                                    onChange={(e) => setUploadConfig(prev => ({ ...prev, category: e.target.value as any }))}
+                                    onChange={(e) => setUploadConfig(prev => ({ ...prev, category: e.target.value as 'P' | 'C' | 'W' | 'A' }))}
                                 >
                                     <option value="P">{isEn ? 'Pendant' : 'תלייה (P)'}</option>
                                     <option value="C">{isEn ? 'Ceiling' : 'צמוד תקרה (C)'}</option>
@@ -315,6 +334,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                 type="checkbox" 
                                 checked={formData.isActive !== false} 
                                 onChange={(e) => handleChange('isActive', e.target.checked)} 
+                                style={{ width: '18px', height: '18px' }}
                             />
                             {isEn ? 'Active' : 'פעיל'}
                         </label>

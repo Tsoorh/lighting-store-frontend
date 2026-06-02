@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { userService } from '../../services/user.service'
 import { useLanguage } from '../../hooks/useLanguage'
 import type { Role } from '../../model/user.model'
@@ -10,6 +10,23 @@ export const AdminPriceSettings: React.FC = () => {
     const [message, setMessage] = useState<string | null>(null)
     const { language } = useLanguage()
     const isEn = language === 'en'
+
+    useEffect(() => {
+        async function loadCurrentMultiplier() {
+            try {
+                const users = await userService.query()
+                const userWithRole = users.find(u => u.role === selectedRole)
+                if (userWithRole && userWithRole.priceMultiplier !== undefined) {
+                    setMultiplier(userWithRole.priceMultiplier)
+                } else {
+                    setMultiplier(1)
+                }
+            } catch (err) {
+                console.error('Failed to load current multiplier', err)
+            }
+        }
+        loadCurrentMultiplier()
+    }, [selectedRole])
 
     async function onUpdateMultipliers(e: React.FormEvent) {
         e.preventDefault()
