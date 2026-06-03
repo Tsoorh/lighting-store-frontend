@@ -7,7 +7,6 @@ import { useLanguage } from "../../hooks/useLanguage"
 import { Icons } from "../Icons"
 import { ProductSuggestion } from "./ProductSuggestion"
 import { ContactSection } from "../ContactSection"
-import { authService } from "../../services/auth.service"
 
 export const ProductDetails = () => {
     const { productId } = useParams()
@@ -15,7 +14,6 @@ export const ProductDetails = () => {
     const [gallery, setGallery] = useState<string[]>([])
     const [mainImage, setMainImage] = useState<string>('')
     const { language } = useLanguage()
-    const user = authService.getLoggedinUser()
 
     useEffect(() => {
         window.scrollTo(0, 0)

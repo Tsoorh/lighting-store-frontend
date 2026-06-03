@@ -3,7 +3,6 @@ import { useLanguage } from "../../hooks/useLanguage"
 import type { FullProduct } from "../../model/product.model"
 import { useNavigate } from "react-router-dom"
 import { Icons } from "../Icons"
-import { authService } from "../../services/auth.service"
 
 type ProductPreviewProp = {
     product: FullProduct
@@ -14,7 +13,6 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const navigate = useNavigate()
     const scrollRef = useRef<HTMLDivElement>(null)
     const [currentIndex, setCurrentIndex] = useState(0)
-    const user = authService.getLoggedinUser()
 
     const onHandleClick = () => {
         navigate(`/product/${product._id}`)

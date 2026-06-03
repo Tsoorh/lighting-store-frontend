@@ -245,9 +245,9 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                 </div>
 
                 <div className="secondary-info">
-                    {renderSelectionList('category', isEn ? 'Categories' : 'קטגוריות', PRODUCT_OPTIONS.CATEGORIES)}
-                    {renderSelectionList('material', isEn ? 'Materials' : 'חומרים', PRODUCT_OPTIONS.MATERIALS)}
-                    {renderSelectionList('woodType', isEn ? 'Wood Types' : 'סוגי עץ', PRODUCT_OPTIONS.WOOD_TYPES)}
+                    {renderSelectionList('category', isEn ? 'Categories' : 'קטגוריות', PRODUCT_OPTIONS.CATEGORIES as unknown as hebrewEnglishObj[])}
+                    {renderSelectionList('material', isEn ? 'Materials' : 'חומרים', PRODUCT_OPTIONS.MATERIALS as unknown as hebrewEnglishObj[])}
+                    {renderSelectionList('woodType', isEn ? 'Wood Types' : 'סוגי עץ', PRODUCT_OPTIONS.WOOD_TYPES as unknown as hebrewEnglishObj[])}
 
                     <div className="image-upload-section" style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '5px', marginBottom: '20px' }}>
                         <h4>{isEn ? 'Product Images' : 'תמונות מוצר'}</h4>

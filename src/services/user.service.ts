@@ -1,4 +1,4 @@
-import type { Miniuser, User } from "../model/user.model"
+import type { Miniuser, User, Role } from "../model/user.model"
 import { httpService } from "./http.service"
 
 const query = async (): Promise<Miniuser[]> => {
