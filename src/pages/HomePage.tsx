@@ -3,11 +3,19 @@ import { Icons } from '../cmps/Icons';
 import { useNavigate } from 'react-router-dom';
 import { ContactSection } from '../cmps/ContactSection';
 import { useLanguage } from '../hooks/useLanguage';
+import { authService } from '../services/auth.service';
+import { useState } from 'react';
+import type { Miniuser } from '../model/user.model';
 
 export const HomePage = () => {
     const navigate = useNavigate()
     const { language } = useLanguage()
+    const [user] = useState<Miniuser | null>(authService.getLoggedinUser())
+    
     const isEn = language === 'en'
+    
+    const canDownloadPriceList = user?.role && ['admin', 'supplier', 'architect'].includes(user.role.trim().toLowerCase())
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
     return (
         <div className="main-layout" dir={isEn ? 'ltr' : 'rtl'}>
@@ -39,7 +47,31 @@ export const HomePage = () => {
                 </div>
             </section>
             <div className="works-sec page-section" id="works-section">
-                <h2 className="section-title">{isEn ? 'Collection' : 'גופי התאורה'}</h2>
+                <div className="section-title-container" style={{ width: '100%', maxWidth: '1280px', marginBottom: '40px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <h2 className="section-title" style={{ width: 'auto', margin: 0 }}>{isEn ? 'Collection' : 'גופי התאורה'}</h2>
+                        {canDownloadPriceList && (
+                            <div className="download-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                <a 
+                                    href={`${baseUrl}/product/export/pdf?t=${Date.now()}`} 
+                                    download 
+                                    style={{ textDecoration: 'none', color: '#d32f2f', fontWeight: 'bold', fontSize: '14px', border: '1px solid #d32f2f', padding: '4px 10px', borderRadius: '4px' }}
+                                    title={isEn ? 'Download PDF Price List' : 'הורד מחירון PDF'}
+                                >
+                                    PDF
+                                </a>
+                                <a 
+                                    href={`${baseUrl}/product/export/excel?t=${Date.now()}`} 
+                                    download 
+                                    style={{ textDecoration: 'none', color: '#2e7d32', fontWeight: 'bold', fontSize: '14px', border: '1px solid #2e7d32', padding: '4px 10px', borderRadius: '4px' }}
+                                    title={isEn ? 'Download Excel Price List' : 'הורד מחירון Excel'}
+                                >
+                                    XLSX
+                                </a>
+                            </div>
+                        )}
+                    </div>
+                </div>
                 <div className="works-grid">
                     <div 
                         className="work-item" 
