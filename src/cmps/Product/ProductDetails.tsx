@@ -35,9 +35,10 @@ export const ProductDetails = () => {
                     const otherPhotos = validPhotos.filter((url: string) => !url.startsWith('H_'));
 
                     const getImageUrl = (cleanName: string) => {
-                        if (cleanName === 'coming-soon') return `https://res.cloudinary.com/dhixlriwm/image/upload/coming-soon.webp`
-                        if (cleanName.startsWith('H_') || cleanName.startsWith('C_')) return `https://res.cloudinary.com/dhixlriwm/image/upload/${cleanName}.webp`
-                        return `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${cleanName}.webp`
+                        const cloudId = import.meta.env.VITE_CLOUDINARY_ID
+                        if (cleanName === 'coming-soon') return `https://res.cloudinary.com/${cloudId}/image/upload/coming-soon.webp`
+                        if (cleanName.startsWith('H_') || cleanName.startsWith('C_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${cleanName}.webp`
+                        return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${cleanName}.webp`
                     }
 
                     // Combine and take up to 5 photos (1 main + 4 thumbs)

@@ -118,10 +118,14 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             const res = await uploadService.uploadImg(file, publicId)
             const newImgUrl = res.public_id
             
-            setFormData(prev => ({
-                ...prev,
-                imgsUrl: [...(prev.imgsUrl || []), newImgUrl]
-            }))
+            if (newImgUrl) {
+                setFormData(prev => ({
+                    ...prev,
+                    imgsUrl: [...(prev.imgsUrl || []), newImgUrl]
+                }))
+            } else {
+                throw new Error('No public_id returned from Cloudinary')
+            }
         } catch (err) {
             console.error('Failed to upload image', err)
             alert(isEn ? 'Upload failed' : 'העלאה נכשלה')
@@ -306,25 +310,28 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                         </div>
 
                         <div className="images-preview" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px', maxHeight: '200px', overflowY: 'auto' }}>
-                            {formData.imgsUrl?.map(url => (
-                                <div key={url} className="img-preview-item" style={{ position: 'relative' }}>
-                                    <img 
-                                        src={url.startsWith('C_') || url.startsWith('H_') 
-                                            ? `https://res.cloudinary.com/dhixlriwm/image/upload/${url}.webp`
-                                            : `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${url}.webp`
-                                        } 
-                                        alt="preview" 
-                                        style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
-                                    />
-                                    <button 
-                                        type="button" 
-                                        onClick={() => onRemoveImg(url)}
-                                        style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '18px', height: '18px', cursor: 'pointer', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                    >
-                                        X
-                                    </button>
-                                </div>
-                            ))}
+                            {formData.imgsUrl?.map(url => {
+                                if (!url) return null
+                                return (
+                                    <div key={url} className="img-preview-item" style={{ position: 'relative' }}>
+                                        <img 
+                                            src={url.startsWith('C_') || url.startsWith('H_') 
+                                                ? `https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_ID}/image/upload/${url}.webp`
+                                                : `https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_ID}/image/upload/4G8A${url}.webp`
+                                            } 
+                                            alt="preview" 
+                                            style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
+                                        />
+                                        <button 
+                                            type="button" 
+                                            onClick={() => onRemoveImg(url)}
+                                            style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '18px', height: '18px', cursor: 'pointer', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                        >
+                                            X
+                                        </button>
+                                    </div>
+                                )
+                            })}
                         </div>
                     </div>
 

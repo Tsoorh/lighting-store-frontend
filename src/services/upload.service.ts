@@ -3,7 +3,7 @@ export const uploadService = {
 }
 
 async function uploadImg(file: File, publicId: string) {
-  const CLOUD_NAME = "dhixlriwm"
+  const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_ID
   const UPLOAD_PRESET = "tiran_preset" // User needs to create this in Cloudinary
   const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`
 
@@ -18,6 +18,10 @@ async function uploadImg(file: File, publicId: string) {
       body: formData
     })
     const data = await res.json()
+    if (!res.ok) {
+      console.error('Cloudinary upload error:', data)
+      throw new Error(data.error?.message || 'Failed to upload to Cloudinary')
+    }
     return data
   } catch (err) {
     console.error('Failed to upload', err)

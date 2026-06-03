@@ -14,6 +14,8 @@ import { productService } from '../services/product.service';
 import { authService } from '../services/auth.service';
 import type { Miniuser } from '../model/user.model';
 
+
+
 export type SubMenu = {
     title: hebrewEnglishObj
     address: string
@@ -181,7 +183,7 @@ export const AppHeader = () => {
                             {resultProduct?.map(product => {
                                 return <li key={product._id} role="link" tabIndex={0} onClick={()=>navigateToProduct(product._id as string)} onKeyDown={(e)=> (e.key === 'Enter' || e.key === ' ') && navigateToProduct(product._id as string)}>
                                     <div>
-                                        <img src={`https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${product.imgsUrl[0]}.webp`} alt={product.name.en} />
+                                        <img src={`https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_ID}/image/upload/4G8A${product.imgsUrl[0]}.webp`} alt={product.name.en} />
                                         <p>{isEnglish ? product.name.en : product.name.he}</p>
                                     </div>
                                     {product.price !== undefined && <b>₪{product.price}</b>}

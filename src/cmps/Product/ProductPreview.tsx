@@ -34,10 +34,11 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const photosToRender = displayPhotos.length > 0 ? displayPhotos : ['coming-soon']
 
     const getImageUrl = (imgName: string) => {
+        const cloudId = import.meta.env.VITE_CLOUDINARY_ID
         const cleanName = imgName.replace(/\.[^/.]+$/, "")
-        if (cleanName === 'coming-soon') return `https://res.cloudinary.com/dhixlriwm/image/upload/coming-soon.webp`
-        if (cleanName.startsWith('C_') || cleanName.startsWith('H_')) return `https://res.cloudinary.com/dhixlriwm/image/upload/${cleanName}.webp`
-        return `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${cleanName}.webp`
+        if (cleanName === 'coming-soon') return `https://res.cloudinary.com/${cloudId}/image/upload/coming-soon.webp`
+        if (cleanName.startsWith('C_') || cleanName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${cleanName}.webp`
+        return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${cleanName}.webp`
     }
 
     const handleScroll = () => {
