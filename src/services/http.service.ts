@@ -1,8 +1,8 @@
 import Axios, { type AxiosRequestConfig, type Method } from 'axios'
 
 const BASE_URL = import.meta.env.NODE_ENV === 'development'
-    ? '/api/'
-    : 'http://localhost:3000/api/'
+    ? 'http://localhost:3000/api/'
+    : '/api/'
 
 
 const axios = Axios.create({ withCredentials: true, baseURL: BASE_URL })
