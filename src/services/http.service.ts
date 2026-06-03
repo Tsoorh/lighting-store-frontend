@@ -1,6 +1,6 @@
 import Axios, { type AxiosRequestConfig, type Method } from 'axios'
 
-const BASE_URL = import.meta.env.NODE_ENV === 'production'
+const BASE_URL = import.meta.env.NODE_ENV === 'development'
     ? '/api/'
     : 'http://localhost:3000/api/'
 
