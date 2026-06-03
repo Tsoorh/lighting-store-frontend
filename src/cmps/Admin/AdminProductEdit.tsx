@@ -2,33 +2,12 @@ import React, { useState } from 'react'
 import type { FullProduct, hebrewEnglishObj } from '../../model/product.model'
 import { useLanguage } from '../../hooks/useLanguage'
 import { uploadService } from '../../services/upload.service'
+import { PRODUCT_OPTIONS } from '../../constants/product.constants'
 
 type Props = {
     product?: FullProduct
     onSave: (product: FullProduct) => void
     onCancel: () => void
-}
-
-const OPTIONS = {
-    WOOD_TYPES: [
-        { en: 'Oak', he: 'אלון' },
-        { en: 'Walnut/Oak', he: 'אלון/אגוז' },
-        { en: 'Oak stained as walnut', he: 'אלון מגוון לאגוז' },
-        { en: 'No wood', he: 'ללא עץ' }
-    ],
-    CATEGORIES: [
-        { en: 'Hanging', he: 'תליה' },
-        { en: 'Wall', he: 'קיר' },
-        { en: 'Ceiling', he: 'תקרה' },
-        { en: 'Accessories', he: 'אביזרים' }
-    ],
-    MATERIALS: [
-        { en: 'Wood', he: 'עץ' },
-        { en: 'Metal', he: 'מתכת' },
-        { en: 'Glass', he: 'זכוכית' }
-    ],
-    SCREW_TYPES: ['E27', 'G9', 'GU10', 'LED (Integrated)', 'Mixed: GU10 + E27', 'Mixed: G9 + E27'],
-    LIGHT_TYPES: ['LED - Max 5W', 'LED - Max 7W', 'LED - Max 10W', 'LED - Max 15W', 'LED - Max 20W', 'LED - Max 35W']
 }
 
 export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel }) => {
@@ -226,7 +205,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                     onChange={(e) => handleSocketChange('screwType', e.target.value)}
                                 >
                                     <option value="">{isEn ? '-- Select --' : '-- בחר --'}</option>
-                                    {OPTIONS.SCREW_TYPES.map(type => (
+                                    {PRODUCT_OPTIONS.SCREW_TYPES.map(type => (
                                         <option key={type} value={type}>{type}</option>
                                     ))}
                                 </select>
@@ -238,7 +217,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                     onChange={(e) => handleSocketChange('lightType', e.target.value)}
                                 >
                                     <option value="">{isEn ? '-- Select --' : '-- בחר --'}</option>
-                                    {OPTIONS.LIGHT_TYPES.map(type => (
+                                    {PRODUCT_OPTIONS.LIGHT_TYPES.map(type => (
                                         <option key={type} value={type}>{type}</option>
                                     ))}
                                 </select>
@@ -266,9 +245,9 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                 </div>
 
                 <div className="secondary-info">
-                    {renderSelectionList('category', isEn ? 'Categories' : 'קטגוריות', OPTIONS.CATEGORIES)}
-                    {renderSelectionList('material', isEn ? 'Materials' : 'חומרים', OPTIONS.MATERIALS)}
-                    {renderSelectionList('woodType', isEn ? 'Wood Types' : 'סוגי עץ', OPTIONS.WOOD_TYPES)}
+                    {renderSelectionList('category', isEn ? 'Categories' : 'קטגוריות', PRODUCT_OPTIONS.CATEGORIES)}
+                    {renderSelectionList('material', isEn ? 'Materials' : 'חומרים', PRODUCT_OPTIONS.MATERIALS)}
+                    {renderSelectionList('woodType', isEn ? 'Wood Types' : 'סוגי עץ', PRODUCT_OPTIONS.WOOD_TYPES)}
 
                     <div className="image-upload-section" style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '5px', marginBottom: '20px' }}>
                         <h4>{isEn ? 'Product Images' : 'תמונות מוצר'}</h4>
