@@ -13,6 +13,7 @@ import { useDebounce } from '../hooks/useDebounce';
 import { productService } from '../services/product.service';
 import { authService } from '../services/auth.service';
 import type { Miniuser } from '../model/user.model';
+import { ImageWithSkeleton } from './Skeleton/ImageWithSkeleton';
 
 
 
@@ -180,15 +181,17 @@ export const AppHeader = () => {
                     <div className="search-results">
                         {debouncedSearch?
                         <ul>
-                            {resultProduct?.map(product => {
-                                return <li key={product._id} role="link" tabIndex={0} onClick={()=>navigateToProduct(product._id as string)} onKeyDown={(e)=> (e.key === 'Enter' || e.key === ' ') && navigateToProduct(product._id as string)}>
+                            {resultProduct?.map(product => (
+                                <li key={product._id} role="link" tabIndex={0} onClick={()=>navigateToProduct(product._id as string)} onKeyDown={(e)=> (e.key === 'Enter' || e.key === ' ') && navigateToProduct(product._id as string)}>
                                     <div>
-                                        <img src={`https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_ID}/image/upload/4G8A${product.imgsUrl[0]}.webp`} alt={product.name.en} />
+                                        <div style={{ width: '40px', height: '40px' }}>
+                                            <ImageWithSkeleton src={`https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_ID}/image/upload/4G8A${product.imgsUrl[0]}.webp`} alt={product.name.en} />
+                                        </div>
                                         <p>{isEnglish ? product.name.en : product.name.he}</p>
                                     </div>
                                     {product.price !== undefined && <b>₪{product.price}</b>}
                                 </li>
-                            })}
+                            ))}
                         </ul>:
                         <p>{isEnglish?`Start Searching...`:`...התחל בחיפוש`}</p>
                         }

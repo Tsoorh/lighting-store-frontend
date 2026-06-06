@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { SkeletonProductDetails } from "../Skeleton/SkeletonProductDetails"
+import { ImageWithSkeleton } from "../Skeleton/ImageWithSkeleton"
 import type { FullProduct } from "../../model/product.model"
 import { productService } from "../../services/product.service"
 import { useLanguage } from "../../hooks/useLanguage"
@@ -156,7 +157,7 @@ export const ProductDetails = () => {
                 <div className="product-gallery-container">
                     <div className="gallery-top">
                         {mainImage ? (
-                            <img src={mainImage} alt={nameLabel} className="main-image" />
+                            <ImageWithSkeleton src={mainImage} alt={nameLabel} className="main-image" />
                         ) : (
                             <div className="no-image-placeholder">No Image Available</div>
                         )}
@@ -172,7 +173,7 @@ export const ProductDetails = () => {
                                 onClick={() => setMainImage(imgUrl)}
                                 onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setMainImage(imgUrl)}
                             >
-                                <img src={imgUrl} alt={`${nameLabel} thumb ${idx}`} />
+                                <ImageWithSkeleton src={imgUrl} alt={`${nameLabel} thumb ${idx}`} />
                             </div>
                         ))}
                     </div>

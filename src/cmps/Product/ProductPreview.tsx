@@ -3,6 +3,7 @@ import { useLanguage } from "../../hooks/useLanguage"
 import type { FullProduct } from "../../model/product.model"
 import { useNavigate } from "react-router-dom"
 import { Icons } from "../Icons"
+import { ImageWithSkeleton } from "../Skeleton/ImageWithSkeleton"
 
 type ProductPreviewProp = {
     product: FullProduct
@@ -25,7 +26,7 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const cPhotos = cleanUrls.filter(url => url.startsWith('C_'))
     const hPhotos = cleanUrls.filter(url => url.startsWith('H_'))
     const numPhotos = cleanUrls.filter(url => !url.startsWith('C_') && !url.startsWith('H_'))
-    
+
     let displayPhotos = cPhotos.length > 0 ? cPhotos : hPhotos
     if (displayPhotos.length === 0) displayPhotos = numPhotos
 
@@ -86,7 +87,7 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
                 <div className="product-preview-images" ref={scrollRef} onScroll={handleScroll}>
                     {photosToRender.map((img, idx) => (
                         <div className="img-wrapper" key={idx}>
-                            <img src={getImageUrl(img)} alt={isEnglish ? product.name.en : product.name.he} loading="lazy" />
+                            <ImageWithSkeleton src={getImageUrl(img)} alt={isEnglish ? product.name.en : product.name.he} loading="lazy" />
                         </div>
                     ))}
                 </div>
