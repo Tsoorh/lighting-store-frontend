@@ -8,6 +8,7 @@ import Axios, { type AxiosRequestConfig, type Method } from 'axios'
 
 // production - uncomment.
 const BASE_URL ='/api/'
+// const BASE_URL ='http://localhost:3000/api/'
 
 
 const axios = Axios.create({ withCredentials: true, baseURL: BASE_URL })
