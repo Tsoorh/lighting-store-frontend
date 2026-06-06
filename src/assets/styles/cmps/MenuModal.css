@@ -32,7 +32,7 @@
         flex-direction: column;
         width: 100%;
         flex: 1;
-...
+
         >li {
             height: 2rem;
             display: flex;
@@ -88,7 +88,7 @@
         display: grid;
         overflow-y: auto;
         overflow-x: hidden;
-...
+
         >ul {
             display: flex;
             flex-direction: column;
@@ -115,7 +115,7 @@
                     >img {
                         height: 4rem;
                         width: 4rem;
-                        background-color: var(-);
+                        background-color:var(--background-color);
                     }
                 }
 

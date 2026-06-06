@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import type { FullProduct, hebrewEnglishObj } from '../../model/product.model'
+import type { FullProduct, hebrewEnglishObj, ProductSize } from '../../model/product.model'
 import { useLanguage } from '../../hooks/useLanguage'
 import { uploadService } from '../../services/upload.service'
 import { PRODUCT_OPTIONS } from '../../constants/product.constants'
