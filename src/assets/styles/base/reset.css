@@ -57,3 +57,14 @@ button, input[type="submit"] {
   border: none;
   /* תדאג להגדיר צבע פונט ורקע בצורה מפורשת */
 }
+
+/* ביטול צבע ההדגשה הכחול של iOS בלחיצה */
+a, button, div, svg {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* הכרחת צבע האייקון (תחליף את הסלקטורים לשמות המחלקות שלך אם צריך) */
+.close-button, .menu-toggle {
+  color: #333333 !important; /* או הצבע הכהה שאתה באמת רוצה */
+  fill: currentColor; /* אם זה SVG, זה יכריח אותו לקבל את צבע הטקסט */
+}

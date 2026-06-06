@@ -2,29 +2,37 @@
     position: fixed;
     top: 0;
     right: 0;
-    bottom: 0;
     width: 70vw;
+    height: 100dvh;
     box-shadow: 0 0 6px 6px rgb(112, 112, 112);
     background-color: var(--background-color);
-    display: grid;
-    grid-template-rows: 10vh 1fr;
-    justify-items: end;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-top: 20px;
+    box-sizing: border-box;
+
+    @supports not (height: 100dvh) {
+        height: 100vh;
+    }
 
     >h1 {
-        grid-column: 1/-1;
         margin: 0;
-        align-self: stretch;
-        justify-self: stretch;
         display: grid;
         place-items: center;
         background-color: var(--background-color);
+        min-height: 10vh;
     }
 
     >.nav-links {
         display: flex;
         flex-direction: column;
         width: 100%;
-
+        flex: 1;
+...
         >li {
             height: 2rem;
             display: flex;
@@ -65,22 +73,22 @@
 }
 
 .menu-modal.search-modal {
-    grid-template-columns: 1fr;
-    grid-template-rows: 10vh 5vh 1fr;
+    display: flex;
+    flex-direction: column;
 
     >.text-field-search {
-        grid-row: 2/3;
         width: calc(100% - 2rem);
         margin-inline: 1.5rem;
+        min-height: 5vh;
     }
 
     >.search-results {
-        grid-row: 3/4;
+        flex: 1;
         width: 100%;
         display: grid;
         overflow-y: auto;
         overflow-x: hidden;
-
+...
         >ul {
             display: flex;
             flex-direction: column;
