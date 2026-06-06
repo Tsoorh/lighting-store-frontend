@@ -163,7 +163,7 @@ export const AppHeader = () => {
 
             {/* Side sub-menu on mobile */}
             {isMenuOpen && !isOnSearch && <MenuModal closeMenu={handleOpenMenu} >
-                <div className="menu-modal" onClick={(e) => e.stopPropagation()}>
+                <div className={`menu-modal ${isEnglish ? 'en-dir' : 'he-dir'}`} dir={isEnglish ? 'ltr' : 'rtl'} onClick={(e) => e.stopPropagation()}>
                     <button className="exit-btn" onClick={handleOpenMenu} aria-label={isEnglish ? 'Close menu' : 'סגור תפריט'}><Icons iconName={"close"} /></button>
                     <h1>{isEnglish ? 'Menu' : 'תפריט'}</h1>
                     <NavigationList navLinks={navbarProperties} closeMenu={handleOpenMenu} />
@@ -172,7 +172,7 @@ export const AppHeader = () => {
 
             {/* Side search on mobile */}
             {isOnSearch && <MenuModal closeMenu={handleOpenMenu} >
-                <div className="menu-modal search-modal" onClick={(e) => e.stopPropagation()}>
+                <div className={`menu-modal search-modal ${isEnglish ? 'en-dir' : 'he-dir'}`} dir={isEnglish ? 'ltr' : 'rtl'} onClick={(e) => e.stopPropagation()}>
                     <button className="exit-btn" onClick={handleOpenMenu} aria-label={isEnglish ? 'Close' : 'סגור'}><Icons iconName={"close"} /></button>
                     <div className='text-field-search'>
                         <Input autoFocus color='primary' onChange={onHandleChangeInput} value={inputSearch} sx={{ mr: '1rem', ml: '2.5rem', width: 'calc(100% - 2rem)' }} dir={isEnglish ? 'ltr' : 'rtl'} placeholder={isEnglish ? 'What would you like to light today?' : 'מה תרצו להאיר היום?'} inputProps={{ 'aria-label': isEnglish ? 'Search products' : 'חפש מוצרים' }} />

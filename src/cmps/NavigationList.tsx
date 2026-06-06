@@ -50,7 +50,7 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
     const isEnglish = language === 'en'
     const isMobile = (width <= 768)
     return (
-        <ul className="nav-links " style={!isMobile ? { flexDirection: isEnglish ? 'row-reverse' : 'row-reverse' } : { alignItems: isEnglish ? 'start' : 'end' }}>
+        <ul className="nav-links " style={!isMobile ? { flexDirection: isEnglish ? 'row-reverse' : 'row-reverse' } : { alignItems: isEnglish ? 'start' : '' }}>
             {navLinks.map(link => {
                 return (
                     <Fragment key={link.title.en}>
@@ -67,8 +67,17 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
                             onMouseEnter={() => !isMobile && onEnter(link?.subMenu)}
                             onMouseLeave={!isMobile ? onLeave : undefined}
                         >
-                            {isEnglish ? link.title.en : link.title.he}
-                            {link?.iconName && <Icons iconName={link.iconName} />}
+                            {isMobile ? (
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '8px' }}>
+                                    {isEnglish ? link.title.en : link.title.he}
+                                    {link?.iconName && <Icons iconName={link.iconName} />}
+                                </div>
+                            ) : (
+                                <>
+                                    {isEnglish ? link.title.en : link.title.he}
+                                    {link?.iconName && <Icons iconName={link.iconName} />}
+                                </>
+                            )}
 
                             {/* DESKTOP SUBMENU */}
                             {link.subMenu && subMenuDetails && !isMobile &&

@@ -19,10 +19,17 @@
         height: 100vh;
     }
 
+    &.en-dir {
+        right: auto;
+        left: 0;
+    }
+
     >h1 {
         margin: 0;
         display: grid;
-        place-items: center;
+        align-items: center;
+        justify-items: start;
+        padding-inline-start: 2rem;
         background-color: var(--background-color);
         min-height: 10vh;
     }
@@ -41,7 +48,7 @@
             flex-direction: column;
             justify-content: center;
             padding: 0 2rem;
-            align-items: center;
+            align-items: stretch;
             /* box-shadow: 0 0 2px -1px rgb(66, 66, 66); */
             cursor: pointer;
 
@@ -76,6 +83,12 @@
     }
 }
 
+.en-dir .sub-menu-small > ul > li {
+    text-align: left;
+    /* padding-inline-start: 2rem; */
+    padding-inline-end: 0;
+}
+
 .exit-btn {
     border-radius: 50%;
     padding: 0;
@@ -94,6 +107,11 @@
     &:hover {
         background-color: #a8a8a8;
     }
+}
+
+.en-dir .exit-btn {
+    left: auto;
+    right: 1rem;
 }
 
 .menu-modal.search-modal {

@@ -132,7 +132,7 @@
 
             &:hover {
                 color: black;
-            }
+            }   
         }
     }
 }
@@ -143,5 +143,11 @@
         padding: 0 20px;
         gap: 10px;
         box-sizing: border-box;
+    }
+    .he-dir{
+    direction: rtl;
+    }
+    .en-dir{
+        direction: ltr;
     }
 }
