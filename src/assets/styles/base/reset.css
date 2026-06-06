@@ -53,9 +53,10 @@ button, input[type="submit"] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  background-color: transparent; /* או הצבע שאתה בחרת */
+  background-color: transparent;
   border: none;
-  /* תדאג להגדיר צבע פונט ורקע בצורה מפורשת */
+  color: inherit;
+  fill: currentColor;
 }
 
 /* ביטול צבע ההדגשה הכחול של iOS בלחיצה */
