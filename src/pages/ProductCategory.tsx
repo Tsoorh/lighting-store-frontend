@@ -5,15 +5,18 @@ import type { FullProduct } from "../model/product.model"
 import { ProductList } from "../cmps/Product/ProductList"
 import { ContactSection } from "../cmps/ContactSection"
 import { useLanguage } from "../hooks/useLanguage"
+import { SkeletonProductPreview } from "../cmps/Skeleton/SkeletonProductPreview"
 
 export const ProductCategory = () => {
     const { categoryName } = useParams()
     const [products, setProducts] = useState<FullProduct[] | undefined>()
+    const [isLoading, setIsLoading] = useState(true)
     const { language } = useLanguage()
 
     useEffect(() => {
         if (categoryName) {
             const getProducts = async () => {
+                setIsLoading(true)
                 try {
                     // Map 'pendant' in URL back to 'hanging' for the DB query, 
                     // in case the database still uses 'hanging'.
@@ -29,6 +32,8 @@ export const ProductCategory = () => {
                 } catch (err) {
                     console.error('Failed to fetch products:', err)
                     setProducts(undefined)
+                } finally {
+                    setIsLoading(false)
                 }
             }
             getProducts()
@@ -71,7 +76,19 @@ export const ProductCategory = () => {
             </section>
             
             <section className="category-products-container">
-                {products ? <ProductList products={products} /> : <div className="no-products">{isEnglish ? 'No products yet' : 'אין מוצרים כרגע'}</div>}
+                {isLoading ? (
+                    <div className="product-list">
+                        {[...Array(6)].map((_, i) => (
+                            <SkeletonProductPreview key={i} />
+                        ))}
+                    </div>
+                ) : products && products.length > 0 ? (
+                    <ProductList products={products} />
+                ) : (
+                    <div className="no-products">
+                        {isEnglish ? 'No products yet' : 'אין מוצרים כרגע'}
+                    </div>
+                )}
             </section>
 
             <ContactSection />
