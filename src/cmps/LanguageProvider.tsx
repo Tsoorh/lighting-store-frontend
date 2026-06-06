@@ -7,7 +7,7 @@ type cmpProp = {
 }
 
 export const LanguageProvider = ({ children }: cmpProp) => {
-    const [language, setLanguage] = useState<Language>("en");
+    const [language, setLanguage] = useState<Language>("he");
 
     const changeLanguage = (lang: Language) => {
         setLanguage(lang);
