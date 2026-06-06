@@ -105,11 +105,27 @@ export const ProductDetails = () => {
                             <div className="product-sec3">
                                 <h3>{sizeTitle}</h3>
                                 <ul className="sizes-list">
-                                    {product.size.map((s, idx) => (
-                                        <li key={idx}>
-                                            {isEnglish ? `Radius ${s.radius} cm, Height ${s.height} cm` : `רדיוס ${s.radius} ס"מ, גובה ${s.height} ס"מ`}
-                                        </li>
-                                    ))}
+                                    {product.size.map((s, idx) => {
+                                        const parts = []
+                                        if (isEnglish) {
+                                            if (s.upTo) parts.push(`Up to ${s.upTo} cm`)
+                                            if (s.diameter) parts.push(`Diameter ${s.diameter} cm`)
+                                            if (s.length) parts.push(`Length ${s.length} cm`)
+                                            if (s.width) parts.push(`Width ${s.width} cm`)
+                                            if (s.height) parts.push(`Height ${s.height} cm`)
+                                        } else {
+                                            if (s.upTo) parts.push(`עד ל- ${s.upTo} ס"מ`)
+                                            if (s.diameter) parts.push(`קוטר ${s.diameter} ס"מ`)
+                                            if (s.length) parts.push(`אורך ${s.length} ס"מ`)
+                                            if (s.width) parts.push(`רוחב ${s.width} ס"מ`)
+                                            if (s.height) parts.push(`גובה ${s.height} ס"מ`)
+                                        }
+                                        return (
+                                            <li key={idx}>
+                                                {parts.join(', ')}
+                                            </li>
+                                        )
+                                    })}
                                 </ul>
                             </div>
 
@@ -168,6 +184,6 @@ export const ProductDetails = () => {
             </div>
             
             <ContactSection />
-        </div >
+        </div>
     )
 }

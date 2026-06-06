@@ -400,7 +400,7 @@ html, body {
     @media (max-width: 768px) {
         &:nth-child(n) {
             grid-column: 1 / -1;
-            aspect-ratio: 358 / 179;
+            /* aspect-ratio: 358 / 179; */
             height: auto;
         }
 

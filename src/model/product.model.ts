@@ -22,8 +22,11 @@ export type Product = {
 export type ProductParams = { productId: string }
 
 type ProductSize = {
-    height: number
-    radius: number
+    height?: number
+    diameter?: number
+    length?: number
+    width?: number
+    upTo?: number
 }
 type SocketType = {
     screwType: string

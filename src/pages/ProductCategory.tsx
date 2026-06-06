@@ -14,13 +14,22 @@ export const ProductCategory = () => {
     useEffect(() => {
         if (categoryName) {
             const getProducts = async () => {
-                // Map 'pendant' in URL back to 'hanging' for the DB query, 
-                // in case the database still uses 'hanging'.
-                const dbCategory = categoryName.toLowerCase() === 'pendant' ? 'hanging' : categoryName;
-                const filterBy = { category: dbCategory }
-                const productsFromDB = await productService.query(filterBy)
-                if (productsFromDB && productsFromDB.length > 0) setProducts(productsFromDB)
-                else (setProducts(undefined))
+                try {
+                    // Map 'pendant' in URL back to 'hanging' for the DB query, 
+                    // in case the database still uses 'hanging'.
+                    const dbCategory = categoryName.toLowerCase() === 'pendant' ? 'hanging' : categoryName;
+                    const filterBy = { category: dbCategory }
+                    const productsFromDB = await productService.query(filterBy)
+                    
+                    if (Array.isArray(productsFromDB) && productsFromDB.length > 0) {
+                        setProducts(productsFromDB)
+                    } else {
+                        setProducts(undefined)
+                    }
+                } catch (err) {
+                    console.error('Failed to fetch products:', err)
+                    setProducts(undefined)
+                }
             }
             getProducts()
         }

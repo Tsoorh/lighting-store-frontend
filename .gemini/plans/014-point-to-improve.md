@@ -17,8 +17,8 @@ this are the selection option for the next field:
   2. Size (size)
   This is an array of objects containing the following numeric fields:
    * height
-   * radius
-   * Example: [{ "height": 30, "radius": 15 }]
+   * diameter
+   * Example: [{ "height": 30, "diameter": 15 }]
 
   3. Category (category)
   Stored as an array of objects:

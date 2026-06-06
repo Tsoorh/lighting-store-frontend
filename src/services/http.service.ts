@@ -1,8 +1,13 @@
 import Axios, { type AxiosRequestConfig, type Method } from 'axios'
 
-const BASE_URL = import.meta.env.NODE_ENV === 'development'
+// on production - comment
+const BASE_URL = import.meta.env.VITE_NODE_ENV === 'development'
     ? 'http://localhost:3000/api/'
     : '/api/'
+
+
+// production - uncomment.
+// const BASE_URL ='/api/'
 
 
 const axios = Axios.create({ withCredentials: true, baseURL: BASE_URL })
@@ -90,7 +95,7 @@ axios.interceptors.response.use(
                 onRefreshed()
                 //Token refreshed. Retrying original request...
                 return axios(originalRequest);
-            } catch (refreshErr) {
+            } catch {
                 //Failed to renew token. Logging out.
                 isRefreshing = false
                 sessionStorage.removeItem('loggedinUser')

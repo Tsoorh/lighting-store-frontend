@@ -11,6 +11,17 @@ export const ProductList = ({ products }: Products) => {
     const [page, setPage] = useState(1)
     const [prevProducts, setPrevProducts] = useState(products)
     const itemsPerPage = 9
+
+    // גלילה אוטומטית למעלה כשעוברים עמוד
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }, [page])
+
+    if (!Array.isArray(products)) {
+        console.error('ProductList: products prop is not an array!', products)
+        return <div className="error">Error: products is not an array</div>
+    }
+
     const totalPages = Math.ceil(products.length / itemsPerPage)
 
     // איפוס לעמוד הראשון כאשר עוברים קטגוריה
@@ -19,18 +30,14 @@ export const ProductList = ({ products }: Products) => {
         setPrevProducts(products)
     }
 
-    // גלילה אוטומטית למעלה כשעוברים עמוד
-    useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-    }, [page])
-
     const startIdx = (page - 1) * itemsPerPage
     const endIdx = startIdx + itemsPerPage
     const displayProducts = products.slice(startIdx, endIdx)
-
+    
     return (
         <>
             <div className="product-list">
+
                 {displayProducts.map(product => {
                     return <ProductPreview product={product} key={product._id}/>
                 })}

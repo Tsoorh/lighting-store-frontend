@@ -62,7 +62,7 @@ i also update the product entity on db like this-
   ],
   "size": [
     {
-      "radius": 53,
+      "diameter": 53,
       "height": 24
     }
   ],

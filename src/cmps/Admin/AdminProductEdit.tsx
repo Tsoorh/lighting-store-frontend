@@ -20,7 +20,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         imgsUrl: [],
         material: [],
         woodType: [],
-        size: [{ radius: 0, height: 0 }],
+        size: [{}],
         socketType: { screwType: '', lightType: '' }
     })
     const [uploadConfig, setUploadConfig] = useState({
@@ -57,7 +57,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     }
 
     // Size handler
-    function handleSizeChange(index: number, field: 'radius' | 'height', value: number) {
+    function handleSizeChange(index: number, field: keyof ProductSize, value: number | boolean) {
         const newSize = [...(formData.size || [])]
         newSize[index] = { ...newSize[index], [field]: value }
         setFormData(prev => ({ ...prev, size: newSize }))
@@ -66,7 +66,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     function addSize() {
         setFormData(prev => ({
             ...prev,
-            size: [...(prev.size || []), { radius: 0, height: 0 }]
+            size: [...(prev.size || []), {}]
         }))
     }
 
@@ -230,14 +230,28 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                         {formData.size?.map((s, index) => (
                             <div key={index} className="size-row-container" style={{ borderBottom: '1px solid #eee', paddingBottom: '15px', marginBottom: '15px' }}>
                                 <div className="form-group">
-                                    <label>{isEn ? 'Radius' : 'רדיוס'}</label>
-                                    <input type="number" value={s.radius} onChange={(e) => handleSizeChange(index, 'radius', +e.target.value)} />
+                                    <label>{isEn ? 'Up to' : 'עד ל-'}</label>
+                                    <input type="number" value={s.upTo || ''} onChange={(e) => handleSizeChange(index, 'upTo', +e.target.value)} />
                                 </div>
-                                <div className="form-group">
-                                    <label>{isEn ? 'Height' : 'גובה'}</label>
-                                    <input type="number" value={s.height} onChange={(e) => handleSizeChange(index, 'height', +e.target.value)} />
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                    <div className="form-group">
+                                        <label>{isEn ? 'Diameter' : 'קוטר'}</label>
+                                        <input type="number" value={s.diameter || ''} onChange={(e) => handleSizeChange(index, 'diameter', +e.target.value)} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>{isEn ? 'Length' : 'אורך'}</label>
+                                        <input type="number" value={s.length || ''} onChange={(e) => handleSizeChange(index, 'length', +e.target.value)} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>{isEn ? 'Width' : 'רוחב'}</label>
+                                        <input type="number" value={s.width || ''} onChange={(e) => handleSizeChange(index, 'width', +e.target.value)} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>{isEn ? 'Height' : 'גובה'}</label>
+                                        <input type="number" value={s.height || ''} onChange={(e) => handleSizeChange(index, 'height', +e.target.value)} />
+                                    </div>
                                 </div>
-                                <button type="button" onClick={() => removeSize(index)} style={{ background: '#ff4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '5px 15px', width: '100%' }}>{isEn ? 'Remove Size' : 'הסר מידה'}</button>
+                                <button type="button" onClick={() => removeSize(index)} style={{ background: '#ff4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '5px 15px', width: '100%', marginTop: '10px' }}>{isEn ? 'Remove Size' : 'הסר מידה'}</button>
                             </div>
                         ))}
                         <button type="button" onClick={addSize} className="btn-add-secondary">+ Add Size</button>
