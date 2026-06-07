@@ -137,11 +137,11 @@ export const ProductDetails = () => {
                                 </div>
                                 <div className="term-box">
                                     <h4>{isEnglish ? 'Production Time' : 'זמן ייצור'}</h4>
-                                    <p>{isEnglish ? 'Made to order: up to 30 work days.' : 'בהזמנה: עד 30 ימי עבודה.'}</p>
+                                    <p>{isEnglish ? 'Made to order: up to 30 business days.' : 'בהזמנה: עד 30 ימי עסקים.'}</p>
                                 </div>
                                 <div className="term-box">
                                     <h4>{isEnglish ? 'Warranty' : 'אחריות'}</h4>
-                                    <p>{isEnglish ? '1 year warranty on the fixture.' : 'שנה אחריות על גוף התאורה.'}</p>
+                                    <p>{isEnglish ? '1 year warranty subject to terms and conditions.' : 'שנה אחריות בהתאם לתקנון.'}</p>
                                 </div>
                             </div>
                         </div>

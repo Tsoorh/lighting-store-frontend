@@ -11,6 +11,7 @@ export const HomePage = () => {
     const navigate = useNavigate()
     const { language } = useLanguage()
     const [user] = useState<Miniuser | null>(authService.getLoggedinUser())
+    const [timestamp] = useState(() => Date.now())
     
     const isEn = language === 'en'
     
@@ -42,8 +43,8 @@ export const HomePage = () => {
                 </div>
                 <div className="entry-vid-text">
                     {isEn 
-                        ? 'Handcrafted lighting fixtures, combining 45 years of experience in the lighting world with precise craftsmanship and material sensitivity. Designed for architects, interior designers, and spaces seeking a timeless presence.'
-                        : 'גופי תאורה בעבודת יד, המשלבים 45 שנות ניסיון בעולם התאורה עם מלאכה מדויקת ורגישות חומרית. מיועד לאדריכלים, מעצבי פנים ולחללים המחפשים נוכחות על זמנית.'}
+                        ? 'Handcrafted lighting fixtures, combining 40 years of experience in the lighting world with precise craftsmanship and material sensitivity. Designed for architects, interior designers, and spaces seeking a timeless presence.'
+                        : 'גופי תאורה בעבודת יד, המשלבים 40 שנות ניסיון בעולם התאורה עם מלאכה מדויקת ורגישות חומרית. מיועד לאדריכלים, מעצבי פנים ולחללים המחפשים נוכחות על זמנית.'}
                 </div>
             </section>
             <div className="works-sec page-section" id="works-section">
@@ -53,7 +54,7 @@ export const HomePage = () => {
                         {canDownloadPriceList && (
                             <div className="download-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                                 <a 
-                                    href={`${baseUrl}/product/export/pdf?t=${Date.now()}`} 
+                                    href={`${baseUrl}/product/export/pdf?t=${timestamp}`} 
                                     download 
                                     style={{ textDecoration: 'none', color: '#d32f2f', fontWeight: 'bold', fontSize: '14px', border: '1px solid #d32f2f', padding: '4px 10px', borderRadius: '4px' }}
                                     title={isEn ? 'Download PDF Price List' : 'הורד מחירון PDF'}
@@ -61,7 +62,7 @@ export const HomePage = () => {
                                     PDF
                                 </a>
                                 <a 
-                                    href={`${baseUrl}/product/export/excel?t=${Date.now()}`} 
+                                    href={`${baseUrl}/product/export/excel?t=${timestamp}`} 
                                     download 
                                     style={{ textDecoration: 'none', color: '#2e7d32', fontWeight: 'bold', fontSize: '14px', border: '1px solid #2e7d32', padding: '4px 10px', borderRadius: '4px' }}
                                     title={isEn ? 'Download Excel Price List' : 'הורד מחירון Excel'}
@@ -107,7 +108,7 @@ export const HomePage = () => {
                     >
                         <img src="/images/Figma/CAT_PENDANT.jpg" alt="pendant" />
                         <span className="work-item-title">{isEn ? 'Pendant Lighting' : 'גופי תאורה תלויים'}</span>
-                        <p className="work-item-desc">{isEn ? 'Pendant lighting fixtures with sculptural presence, combining solid wood and metal, suitable for private and commercial spaces.' : 'גופי תאורה תלויים בעלי נוכחות פיסולית, המשלבים עץ מלא ומתכת ומתאימים לחללים פרטיים ומסחריים.'}</p>
+                        <p className="work-item-desc">{isEn ? 'Pendant lighting fixtures with a pleasant presence, combining wood and metal, suitable for private and commercial spaces.' : 'גופי תאורה תלויים בעלי נוכחות נעימה, המשלבים עץ ומתכת ומתאימים לחללים פרטיים ומסחריים.'}</p>
                     </div>
                 </div>
             </div>

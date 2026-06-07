@@ -103,6 +103,10 @@
     direction: rtl;
 }
 
+.app-header.is-mobile {
+  flex-direction: row-reverse;
+}
+
 .sub-menu.he{
     padding: 0 8.3rem;
     right: -7rem;
@@ -119,17 +123,17 @@
     padding: 1rem;
     min-height: max-content;
     width: 100%;
-
+    
     >ul {
         display: flex;
         flex-direction: column;
         align-self: start;
         padding-inline: 1rem;
-
+        
         >li {
             font-size: 0.9rem;
             margin: 0.5rem 0;
-
+            
             &:hover {
                 color: black;
             }   
@@ -145,7 +149,7 @@
         box-sizing: border-box;
     }
     .he-dir{
-    direction: rtl;
+        direction: rtl;
     }
     .en-dir{
         direction: ltr;

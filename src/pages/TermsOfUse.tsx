@@ -46,12 +46,12 @@ export const TermsOfUse = () => {
                     </li>
                 </ul>
 
-                <h2>{isEn ? '2. Custom Made Production and Cancellation Policy' : '2. ייצור בבנייה אישית (Custom Made) ומדיניות ביטולים'}</h2>
+                <h2>{isEn ? '2. Custom Made Production and Cancellation Policy' : '2. ייצור בהתאמה אישית (Custom Made) ומדיניות ביטולים'}</h2>
                 <ul>
                     <li>
                         {isEn
-                            ? 'All lighting fixtures are designed, assembled, and manufactured personally and uniquely for each customer (Tailor-Made).'
-                            : 'כל גופי התאורה מתוכנלים, מורכבים ומיוצרים בבנייה אישית וייחודית עבור כל לקוח ולקוח (Tailor-Made).'}
+                            ? 'All lighting fixtures are designed, planned, and manufactured with personal and unique customization for each and every customer (Tailor-Made).'
+                            : 'כל גופי התאורה מעוצבים, מתוכננים ומיוצרים בהתאמה אישית וייחודית עבור כל לקוח ולקוח (Tailor-Made).'}
                     </li>
                     <li>
                         {isEn

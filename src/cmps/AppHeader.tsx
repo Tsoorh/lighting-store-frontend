@@ -164,7 +164,7 @@ export const AppHeader = () => {
 
             {/* Side sub-menu on mobile */}
             {isMenuOpen && !isOnSearch && <MenuModal closeMenu={handleOpenMenu} >
-                <div className={`menu-modal ${isEnglish ? 'en-dir' : 'he-dir'}`} dir={isEnglish ? 'ltr' : 'rtl'} onClick={(e) => e.stopPropagation()}>
+                <div className={`menu-modal ${isEnglish ? 'en-dir' : 'he-dir'} ` } dir={isEnglish ? 'ltr' : 'rtl'} onClick={(e) => e.stopPropagation()}>
                     <button className="exit-btn" onClick={handleOpenMenu} aria-label={isEnglish ? 'Close menu' : 'סגור תפריט'}><Icons iconName={"close"} /></button>
                     <h1>{isEnglish ? 'Menu' : 'תפריט'}</h1>
                     <NavigationList navLinks={navbarProperties} closeMenu={handleOpenMenu} />
