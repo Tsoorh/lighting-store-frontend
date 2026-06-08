@@ -16,7 +16,7 @@ export const HomePage = () => {
     const isEn = language === 'en'
     
     const canDownloadPriceList = user?.role && ['admin', 'supplier', 'architect'].includes(user.role.trim().toLowerCase())
-    const baseUrl = import.meta.env.VITE_API_URL || '/api/'
+    const baseUrl = import.meta.env.VITE_API_URL || '/api'
 
     return (
         <div className="main-layout" dir={isEn ? 'ltr' : 'rtl'}>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { useParams } from "react-router-dom"
 import { productService } from "../services/product.service"
 import type { FullProduct } from "../model/product.model"
@@ -11,6 +11,7 @@ export const ProductCategory = () => {
     const { categoryName } = useParams()
     const [products, setProducts] = useState<FullProduct[] | undefined>()
     const [isLoading, setIsLoading] = useState(true)
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
     const { language } = useLanguage()
 
     useEffect(() => {
@@ -63,6 +64,15 @@ export const ProductCategory = () => {
 
     const title = isEnglish ? titleEn : titleHe
 
+    const sortedProducts = useMemo(() => {
+        return [...(products || [])].sort((a, b) => {
+            const nameA = (isEnglish ? a.name?.en : a.name?.he) || ''
+            const nameB = (isEnglish ? b.name?.en : b.name?.he) || ''
+            const comparison = nameA.localeCompare(nameB, isEnglish ? 'en' : 'he')
+            return sortOrder === 'asc' ? comparison : -comparison
+        })
+    }, [products, sortOrder, isEnglish])
+
     return (
         <div className="product-category-page">
             <section className={`category-strip ${isEnglish ? 'ltr' : 'rtl'}`}>
@@ -75,15 +85,27 @@ export const ProductCategory = () => {
                 </div>
             </section>
             
-            <section className="category-products-container">
+            <section className={`category-products-container ${isEnglish ? 'ltr' : 'rtl'}`}>
+                <div className={`sort-container ${isEnglish ? 'ltr' : 'rtl'}`}>
+                    <label htmlFor="sortOrder">{isEnglish ? 'Sort by:' : 'מיון לפי:'}</label>
+                    <select 
+                        id="sortOrder" 
+                        value={sortOrder} 
+                        onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                    >
+                        <option value="asc">{isEnglish ? 'A-Z' : 'א-ת'}</option>
+                        <option value="desc">{isEnglish ? 'Z-A' : 'ת-א'}</option>
+                    </select>
+                </div>
+
                 {isLoading ? (
                     <div className="product-list">
                         {[...Array(6)].map((_, i) => (
                             <SkeletonProductPreview key={i} />
                         ))}
                     </div>
-                ) : products && products.length > 0 ? (
-                    <ProductList products={products} />
+                ) : sortedProducts.length > 0 ? (
+                    <ProductList products={sortedProducts} />
                 ) : (
                     <div className="no-products">
                         {isEnglish ? 'No products yet' : 'אין מוצרים כרגע'}
