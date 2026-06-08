@@ -11,6 +11,54 @@ type Props = {
 }
 
 export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel }) => {
+    // Helper to merge split objects like [{he: 'A'}, {en: 'B'}] into [{he: 'A', en: 'B'}]
+    function _healHebrewEnglishArray(arr: any[]): hebrewEnglishObj[] {
+        if (!arr || !Array.isArray(arr)) return []
+        
+        const healed: hebrewEnglishObj[] = []
+        let current: Partial<hebrewEnglishObj> = {}
+
+        arr.forEach(item => {
+            if (!item) return
+            
+            // If item has both, just add it
+            if (item.he && item.en) {
+                healed.push({ he: item.he, en: item.en })
+                return
+            }
+
+            // If it's a partial object, try to merge it
+            if (item.he) {
+                if (current.he) { // Already have a pending Hebrew, push it and start new
+                    healed.push({ he: current.he, en: current.en || '' })
+                    current = { he: item.he }
+                } else {
+                    current.he = item.he
+                }
+            } else if (item.en) {
+                if (current.en) { // Already have a pending English, push it and start new
+                    healed.push({ he: current.he || '', en: current.en })
+                    current = { en: item.en }
+                } else {
+                    current.en = item.en
+                }
+            }
+
+            // If we now have a complete pair, push it
+            if (current.he && current.en) {
+                healed.push({ he: current.he, en: current.en })
+                current = {}
+            }
+        })
+
+        // Push any remaining partial
+        if (current.he || current.en) {
+            healed.push({ he: current.he || '', en: current.en || '' })
+        }
+
+        return healed
+    }
+
     const [formData, setFormData] = useState<Partial<FullProduct>>(() => {
         const initialState = product || {
             name: { en: '', he: '' },
@@ -27,9 +75,9 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         
         return {
             ...initialState,
-            category: initialState.category || [],
-            material: initialState.material || [],
-            woodType: initialState.woodType || [],
+            category: _healHebrewEnglishArray(initialState.category),
+            material: _healHebrewEnglishArray(initialState.material),
+            woodType: _healHebrewEnglishArray(initialState.woodType),
             size: (initialState.size && initialState.size.length > 0) ? initialState.size : [{}],
             imgsUrl: initialState.imgsUrl || [],
             socketType: initialState.socketType || { screwType: '', lightType: '' },
@@ -143,7 +191,13 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
-        onSave(formData as FullProduct)
+        const productToSave = {
+            ...formData,
+            category: _healHebrewEnglishArray(formData.category || []),
+            material: _healHebrewEnglishArray(formData.material || []),
+            woodType: _healHebrewEnglishArray(formData.woodType || [])
+        }
+        onSave(productToSave as FullProduct)
     }
 
     const renderSelectionList = (field: 'category' | 'material' | 'woodType', label: string, options: hebrewEnglishObj[]) => (
