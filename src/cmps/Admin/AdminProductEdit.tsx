@@ -11,17 +11,31 @@ type Props = {
 }
 
 export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel }) => {
-    const [formData, setFormData] = useState<Partial<FullProduct>>(product || {
-        name: { en: '', he: '' },
-        description: { en: '', he: '' },
-        price: 0,
-        isActive: true,
-        category: [],
-        imgsUrl: [],
-        material: [],
-        woodType: [],
-        size: [{}],
-        socketType: { screwType: '', lightType: '' }
+    const [formData, setFormData] = useState<Partial<FullProduct>>(() => {
+        const initialState = product || {
+            name: { en: '', he: '' },
+            description: { en: '', he: '' },
+            price: 0,
+            isActive: true,
+            category: [],
+            imgsUrl: [],
+            material: [],
+            woodType: [],
+            size: [{}],
+            socketType: { screwType: '', lightType: '' }
+        }
+        
+        return {
+            ...initialState,
+            category: initialState.category || [],
+            material: initialState.material || [],
+            woodType: initialState.woodType || [],
+            size: (initialState.size && initialState.size.length > 0) ? initialState.size : [{}],
+            imgsUrl: initialState.imgsUrl || [],
+            socketType: initialState.socketType || { screwType: '', lightType: '' },
+            name: initialState.name || { en: '', he: '' },
+            description: initialState.description || { en: '', he: '' }
+        }
     })
     const [uploadConfig, setUploadConfig] = useState({
         type: 'C' as 'C' | 'H',
@@ -38,17 +52,24 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     function handleLangChange(field: 'name' | 'description', lang: 'en' | 'he', value: string) {
         setFormData(prev => ({
             ...prev,
-            [field]: { ...prev[field], [lang]: value }
+            [field]: { ...(prev[field] as any || {}), [lang]: value }
         }))
     }
 
     function toggleOption(field: 'category' | 'material' | 'woodType', option: hebrewEnglishObj) {
         const currentList = formData[field] || []
-        const isSelected = currentList.some(item => item.en === option.en)
+        
+        const isSelected = currentList.some(item => 
+            (item.en && item.en.toLowerCase() === option.en.toLowerCase()) || 
+            (item.he && item.he === option.he)
+        )
         
         let newList
         if (isSelected) {
-            newList = currentList.filter(item => item.en !== option.en)
+            newList = currentList.filter(item => 
+                (item.en && item.en.toLowerCase() !== option.en.toLowerCase()) && 
+                (item.he && item.he !== option.he)
+            )
         } else {
             newList = [...currentList, option]
         }
@@ -130,7 +151,10 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             <h4>{label}</h4>
             <div className="options-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 {options.map(option => {
-                    const isSelected = (formData[field] || []).some(item => item.en === option.en)
+                    const isSelected = (formData[field] || []).some(item => 
+                        (item.en && item.en.toLowerCase() === option.en.toLowerCase()) || 
+                        (item.he && item.he === option.he)
+                    )
                     return (
                         <label key={option.en} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
                             <input 
