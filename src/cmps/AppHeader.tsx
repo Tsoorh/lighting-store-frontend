@@ -181,17 +181,33 @@ export const AppHeader = () => {
                     <div className="search-results">
                         {debouncedSearch?
                         <ul>
-                            {resultProduct?.map(product => (
-                                <li key={product._id} role="link" tabIndex={0} onClick={()=>navigateToProduct(product._id as string)} onKeyDown={(e)=> (e.key === 'Enter' || e.key === ' ') && navigateToProduct(product._id as string)}>
-                                    <div>
-                                        <div style={{ width: '40px', height: '40px' }}>
-                                            <ImageWithSkeleton src={`https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_ID}/image/upload/4G8A${product.imgsUrl[0]}.webp`} alt={product.name.en} />
+                            {resultProduct?.map(product => {
+                                const cleanUrls = product.imgsUrl.map(url => url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, ""))
+                                const cPhoto = cleanUrls.find(url => url.startsWith('C_'))
+                                const hPhoto = cleanUrls.find(url => url.startsWith('H_'))
+                                const numPhoto = cleanUrls.find(url => !url.startsWith('C_') && !url.startsWith('H_'))
+                                
+                                const displayPhoto = cPhoto || hPhoto || numPhoto || 'coming-soon'
+                                
+                                const getImageUrl = (imgName: string) => {
+                                    const cloudId = import.meta.env.VITE_CLOUDINARY_ID
+                                    if (imgName === 'coming-soon') return `https://res.cloudinary.com/${cloudId}/image/upload/coming-soon.webp`
+                                    if (imgName.startsWith('C_') || imgName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${imgName}.webp`
+                                    return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${imgName}.webp`
+                                }
+
+                                return (
+                                    <li key={product._id} role="link" tabIndex={0} onClick={()=>navigateToProduct(product._id as string)} onKeyDown={(e)=> (e.key === 'Enter' || e.key === ' ') && navigateToProduct(product._id as string)}>
+                                        <div>
+                                            <div style={{ width: '40px', height: '40px' }}>
+                                                <ImageWithSkeleton src={getImageUrl(displayPhoto)} alt={product.name.en} />
+                                            </div>
+                                            <p>{isEnglish ? product.name.en : product.name.he}</p>
                                         </div>
-                                        <p>{isEnglish ? product.name.en : product.name.he}</p>
-                                    </div>
-                                    {product.price !== undefined && <b>₪{product.price}</b>}
-                                </li>
-                            ))}
+                                        {product.price !== undefined && <b>₪{product.price}</b>}
+                                    </li>
+                                )
+                            })}
                         </ul>:
                         <p>{isEnglish?`Start Searching...`:`...התחל בחיפוש`}</p>
                         }

@@ -28,10 +28,9 @@ export const ProductDetails = () => {
                 if (productFromDb && productFromDb.imgsUrl) {
                     const cleanUrls = productFromDb.imgsUrl.map((url: string) => url.replace(/[\r\n\s]+/g, "").replace(/\.[^/.]+$/, ""));
                     
-                    // Plan 009: Ignore C_ photos, prioritize H_ photos
-                    const validPhotos = cleanUrls.filter((url: string) => !url.startsWith('C_'));
-                    const hPhotos = validPhotos.filter((url: string) => url.startsWith('H_'));
-                    const otherPhotos = validPhotos.filter((url: string) => !url.startsWith('H_'));
+                    const cPhotos = cleanUrls.filter((url: string) => url.startsWith('C_'));
+                    const hPhotos = cleanUrls.filter((url: string) => url.startsWith('H_'));
+                    const otherPhotos = cleanUrls.filter((url: string) => !url.startsWith('C_') && !url.startsWith('H_'));
 
                     const getImageUrl = (cleanName: string) => {
                         const cloudId = import.meta.env.VITE_CLOUDINARY_ID
@@ -41,7 +40,7 @@ export const ProductDetails = () => {
                     }
 
                     // Combine and take up to 5 photos (1 main + 4 thumbs)
-                    const sortedPhotos = [...hPhotos, ...otherPhotos].slice(0, 5).map(getImageUrl);
+                    const sortedPhotos = [...cPhotos, ...hPhotos, ...otherPhotos].slice(0, 5).map(getImageUrl);
                     
                     setGallery(sortedPhotos);
                     if (sortedPhotos.length > 0) setMainImage(sortedPhotos[0]);

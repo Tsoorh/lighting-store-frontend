@@ -22,22 +22,19 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const isEnglish = language === "en"
 
     // מנקים תווים נסתרים, רווחים וירידות שורות מכל השמות
-    const cleanUrls = product.imgsUrl.map(url => url.replace(/[\r\n\s]+/g, ''))
+    const cleanUrls = product.imgsUrl.map(url => url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, ""))
     const cPhotos = cleanUrls.filter(url => url.startsWith('C_'))
     const hPhotos = cleanUrls.filter(url => url.startsWith('H_'))
     const numPhotos = cleanUrls.filter(url => !url.startsWith('C_') && !url.startsWith('H_'))
 
-    let displayPhotos = cPhotos.length > 0 ? cPhotos : hPhotos
-    if (displayPhotos.length === 0) displayPhotos = numPhotos
-
-    const photosToRender = displayPhotos.length > 0 ? displayPhotos : ['coming-soon']
+    let photosToRender = cPhotos.length > 0 ? cPhotos : (hPhotos.length > 0 ? hPhotos : numPhotos)
+    if (photosToRender.length === 0) photosToRender = ['coming-soon']
 
     const getImageUrl = (imgName: string) => {
         const cloudId = import.meta.env.VITE_CLOUDINARY_ID
-        const cleanName = imgName.replace(/\.[^/.]+$/, "")
-        if (cleanName === 'coming-soon') return `https://res.cloudinary.com/${cloudId}/image/upload/coming-soon.webp`
-        if (cleanName.startsWith('C_') || cleanName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${cleanName}.webp`
-        return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${cleanName}.webp`
+        if (imgName === 'coming-soon') return `https://res.cloudinary.com/${cloudId}/image/upload/coming-soon.webp`
+        if (imgName.startsWith('C_') || imgName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${imgName}.webp`
+        return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${imgName}.webp`
     }
 
     const handleScroll = () => {
@@ -59,7 +56,11 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
         if ((direction === 'left' && !canScrollLeft) || (direction === 'right' && !canScrollRight)) return
         if (scrollRef.current) {
             const { clientWidth } = scrollRef.current
-            const scrollAmount = direction === 'left' ? -clientWidth : clientWidth
+            // In RTL, "next" (right button) should scroll left (negative)
+            // In LTR, "next" (right button) should scroll right (positive)
+            let scrollAmount = direction === 'left' ? -clientWidth : clientWidth
+            if (!isEnglish) scrollAmount = -scrollAmount
+            
             scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
         }
     }
