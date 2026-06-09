@@ -28,19 +28,18 @@ export const ProductDetails = () => {
                 if (productFromDb && productFromDb.imgsUrl) {
                     const cleanUrls = productFromDb.imgsUrl.map((url: string) => url.replace(/[\r\n\s]+/g, "").replace(/\.[^/.]+$/, ""));
                     
-                    const cPhotos = cleanUrls.filter((url: string) => url.startsWith('C_'));
                     const hPhotos = cleanUrls.filter((url: string) => url.startsWith('H_'));
                     const otherPhotos = cleanUrls.filter((url: string) => !url.startsWith('C_') && !url.startsWith('H_'));
 
                     const getImageUrl = (cleanName: string) => {
                         const cloudId = import.meta.env.VITE_CLOUDINARY_ID
                         if (cleanName === 'coming-soon') return `https://res.cloudinary.com/${cloudId}/image/upload/coming-soon.webp`
-                        if (cleanName.startsWith('H_') || cleanName.startsWith('C_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${cleanName}.webp`
+                        if (cleanName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${cleanName}.webp`
                         return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${cleanName}.webp`
                     }
 
                     // Combine and take up to 5 photos (1 main + 4 thumbs)
-                    const sortedPhotos = [...cPhotos, ...hPhotos, ...otherPhotos].slice(0, 5).map(getImageUrl);
+                    const sortedPhotos = [...hPhotos, ...otherPhotos].slice(0, 5).map(getImageUrl);
                     
                     setGallery(sortedPhotos);
                     if (sortedPhotos.length > 0) setMainImage(sortedPhotos[0]);
