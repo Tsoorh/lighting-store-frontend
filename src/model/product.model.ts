@@ -4,6 +4,7 @@ export type FilterBy = {
     txt?: string
     price?: number
     category?:string
+    isActive?: boolean
 }
 
 export type hebrewEnglishObj = {
