@@ -73,9 +73,29 @@ export const ProductDetails = () => {
     const bulbStr = product.socketType?.screwType || ''
     const voltStr = product.socketType?.lightType || ''
 
+    const onBack = () => {
+        if (window.history.length > 1) {
+            navigate(-1)
+        } else {
+            const cat = product?.category[0]?.en?.toLowerCase() || 'pendant'
+            const routeCat = cat === 'hanging' ? 'pendant' : cat
+            navigate(`/product/category/${routeCat}`)
+        }
+    }
+
     return (
         <div className={`product-details-page ${isEnglish ? 'ltr' : 'rtl'}`} dir={isEnglish ? 'ltr' : 'rtl'}>
             
+            <div className="product-navigation-header">
+                <button 
+                    className="back-to-category-btn" 
+                    onClick={onBack}
+                >
+                    <Icons iconName={isEnglish ? 'back' : 'next'} />
+                    <span>{isEnglish ? 'Back to collection' : 'חזרה לקולקציה'}</span>
+                </button>
+            </div>
+
             <div className="product-top-section">
                 
                 {/* RIGHT SIDE: INFO (Flex swaps this visually on LTR/RTL) */}

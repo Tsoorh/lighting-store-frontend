@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useSearchParams } from "react-router-dom"
 import { productService } from "../services/product.service"
 import type { FullProduct } from "../model/product.model"
 import { ProductList } from "../cmps/Product/ProductList"
@@ -9,18 +9,19 @@ import { SkeletonProductPreview } from "../cmps/Skeleton/SkeletonProductPreview"
 
 export const ProductCategory = () => {
     const { categoryName } = useParams()
+    const [searchParams, setSearchParams] = useSearchParams()
     const [products, setProducts] = useState<FullProduct[] | undefined>()
     const [isLoading, setIsLoading] = useState(true)
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
     const { language } = useLanguage()
+
+    const page = parseInt(searchParams.get('page') || '1')
 
     useEffect(() => {
         if (categoryName) {
             const getProducts = async () => {
                 setIsLoading(true)
                 try {
-                    // Map 'pendant' in URL back to 'hanging' for the DB query, 
-                    // in case the database still uses 'hanging'.
                     const dbCategory = categoryName.toLowerCase() === 'pendant' ? 'hanging' : categoryName;
                     const filterBy = { category: dbCategory }
                     const productsFromDB = await productService.query(filterBy)
@@ -40,6 +41,17 @@ export const ProductCategory = () => {
             getProducts()
         }
     }, [categoryName])
+
+    const onPageChange = (newPage: number) => {
+        setSearchParams(prev => {
+            if (newPage === 1) {
+                prev.delete('page')
+            } else {
+                prev.set('page', newPage.toString())
+            }
+            return prev
+        })
+    }
 
     const isEnglish = language === 'en'
     const categoryKey = categoryName?.toLowerCase() || ''
@@ -91,7 +103,10 @@ export const ProductCategory = () => {
                     <select 
                         id="sortOrder" 
                         value={sortOrder} 
-                        onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                        onChange={(e) => {
+                            setSortOrder(e.target.value as 'asc' | 'desc')
+                            onPageChange(1) // Reset to page 1 on sort change
+                        }}
                     >
                         <option value="asc">{isEnglish ? 'A-Z' : 'א-ת'}</option>
                         <option value="desc">{isEnglish ? 'Z-A' : 'ת-א'}</option>
@@ -105,7 +120,11 @@ export const ProductCategory = () => {
                         ))}
                     </div>
                 ) : sortedProducts.length > 0 ? (
-                    <ProductList products={sortedProducts} />
+                    <ProductList 
+                        products={sortedProducts} 
+                        page={page} 
+                        onPageChange={onPageChange}
+                    />
                 ) : (
                     <div className="no-products">
                         {isEnglish ? 'No products yet' : 'אין מוצרים כרגע'}

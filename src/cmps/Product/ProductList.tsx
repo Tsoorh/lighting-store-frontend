@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import type { FullProduct } from "../../model/product.model"
 import { ProductPreview } from "./ProductPreview"
 import { Pagination } from "@heroui/pagination"
 
-type Products = {
+type ProductListProps = {
     products: FullProduct[]
+    page: number
+    onPageChange: (newPage: number) => void
 }
 
-export const ProductList = ({ products }: Products) => {
-    const [page, setPage] = useState(1)
-    const [prevProducts, setPrevProducts] = useState(products)
+export const ProductList = ({ products, page, onPageChange }: ProductListProps) => {
     const itemsPerPage = 9
 
     // גלילה אוטומטית למעלה כשעוברים עמוד
@@ -24,12 +24,6 @@ export const ProductList = ({ products }: Products) => {
 
     const totalPages = Math.ceil(products.length / itemsPerPage)
 
-    // איפוס לעמוד הראשון כאשר עוברים קטגוריה
-    if (products !== prevProducts) {
-        setPage(1)
-        setPrevProducts(products)
-    }
-
     const startIdx = (page - 1) * itemsPerPage
     const endIdx = startIdx + itemsPerPage
     const displayProducts = products.slice(startIdx, endIdx)
@@ -37,7 +31,6 @@ export const ProductList = ({ products }: Products) => {
     return (
         <>
             <div className="product-list">
-
                 {displayProducts.map(product => {
                     return <ProductPreview product={product} key={product._id}/>
                 })}
@@ -47,7 +40,7 @@ export const ProductList = ({ products }: Products) => {
                     <Pagination 
                         total={totalPages} 
                         page={page} 
-                        onChange={setPage} 
+                        onChange={onPageChange} 
                         showControls
                     />
                 </div>

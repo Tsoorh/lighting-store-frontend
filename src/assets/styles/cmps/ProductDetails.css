@@ -8,6 +8,36 @@
     overflow-x: hidden;
 }
 
+.product-navigation-header {
+    width: 1440px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px 40px 0;
+    box-sizing: border-box;
+}
+
+.back-to-category-btn {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: 'Heebo', sans-serif;
+    font-size: 16px;
+    color: rgba(30, 28, 25, 0.7);
+    padding: 0;
+    transition: color 0.3s;
+}
+
+.back-to-category-btn:hover {
+    color: rgba(30, 28, 25, 1);
+}
+
+.back-to-category-btn svg {
+    font-size: 14px;
+}
+
 .product-top-section {
     width: 1440px;
     max-width: 100%;
@@ -303,6 +333,10 @@
     .product-details-page {
         padding-top: 70px; /* התאמה לגובה ההדר במובייל */
         gap: 60px; /* ריווח קטן יותר במובייל בין המקטעים */
+    }
+
+    .product-navigation-header {
+        padding: 10px 20px 0;
     }
 
     .product-top-section {
