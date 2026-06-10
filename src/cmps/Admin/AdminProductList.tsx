@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { productService } from '../../services/product.service'
 import type { FullProduct } from '../../model/product.model'
 import { useLanguage } from '../../hooks/useLanguage'
@@ -7,6 +7,7 @@ import { AdminProductEdit } from './AdminProductEdit'
 export const AdminProductList: React.FC = () => {
     const [products, setProducts] = useState<FullProduct[]>([])
     const [editingProduct, setEditingProduct] = useState<FullProduct | null | 'new'>(null)
+    const [filterBy, setFilterBy] = useState({ txt: '' })
     const { language } = useLanguage()
     const isEn = language === 'en'
 
@@ -22,6 +23,15 @@ export const AdminProductList: React.FC = () => {
 
         loadProducts()
     }, [])
+
+    const filteredProducts = useMemo(() => {
+        if (!filterBy.txt) return products
+        const searchTxt = filterBy.txt.toLowerCase()
+        return products.filter(p => 
+            p.name.en.toLowerCase().includes(searchTxt) || 
+            p.name.he.includes(searchTxt)
+        )
+    }, [products, filterBy.txt])
 
     async function onRemoveProduct(productId: string) {
         if (!window.confirm(isEn ? 'Are you sure?' : 'האם אתה בטוח?')) return
@@ -60,6 +70,22 @@ export const AdminProductList: React.FC = () => {
         }
     }
 
+    const getImageUrl = (imgsUrl: string[]) => {
+        if (!imgsUrl || imgsUrl.length === 0) return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_ID}/image/upload/coming-soon.webp`
+        
+        const cleanUrls = imgsUrl.map(url => url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, ""))
+        const cPhoto = cleanUrls.find(url => url.startsWith('C_'))
+        const hPhoto = cleanUrls.find(url => url.startsWith('H_'))
+        const numPhoto = cleanUrls.find(url => !url.startsWith('C_') && !url.startsWith('H_'))
+        
+        const imgName = cPhoto || hPhoto || numPhoto || 'coming-soon'
+        const cloudId = import.meta.env.VITE_CLOUDINARY_ID
+
+        if (imgName === 'coming-soon') return `https://res.cloudinary.com/${cloudId}/image/upload/coming-soon.webp`
+        if (imgName.startsWith('C_') || imgName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/${imgName}.webp`
+        return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/4G8A${imgName}.webp`
+    }
+
     if (editingProduct) {
         return (
             <AdminProductEdit 
@@ -74,14 +100,24 @@ export const AdminProductList: React.FC = () => {
         <section className="admin-product-list">
             <header className="list-header">
                 <h2>{isEn ? 'Manage Products' : 'ניהול מוצרים'}</h2>
-                <button className="btn-add" onClick={() => setEditingProduct('new')}>
-                    {isEn ? 'Add Product' : 'הוסף מוצר'}
-                </button>
+                <div className="list-actions">
+                    <input 
+                        type="text" 
+                        placeholder={isEn ? 'Search products...' : 'חפש מוצרים...'}
+                        value={filterBy.txt}
+                        onChange={(e) => setFilterBy({ txt: e.target.value })}
+                        className="search-input"
+                    />
+                    <button className="btn-add" onClick={() => setEditingProduct('new')}>
+                        {isEn ? 'Add Product' : 'הוסף מוצר'}
+                    </button>
+                </div>
             </header>
             <div className="table-responsive">
                 <table className="admin-table">
                     <thead>
                         <tr>
+                            <th>{isEn ? 'Image' : 'תמונה'}</th>
                             <th>{isEn ? 'Name' : 'שם'}</th>
                             <th>{isEn ? 'Price' : 'מחיר'}</th>
                             <th>{isEn ? 'Status' : 'סטטוס'}</th>
@@ -89,8 +125,15 @@ export const AdminProductList: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {products.map(product => (
+                        {filteredProducts.map(product => (
                             <tr key={product._id?.toString()}>
+                                <td className="product-img-td">
+                                    <img 
+                                        src={getImageUrl(product.imgsUrl)} 
+                                        alt={isEn ? product.name.en : product.name.he} 
+                                        className="admin-list-img"
+                                    />
+                                </td>
                                 <td>{isEn ? product.name.en : product.name.he}</td>
                                 <td>{product.price || '-'}</td>
                                 <td>
