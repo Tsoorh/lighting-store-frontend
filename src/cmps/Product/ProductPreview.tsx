@@ -4,6 +4,7 @@ import type { FullProduct } from "../../model/product.model"
 import { useNavigate } from "react-router-dom"
 import { Icons } from "../Icons"
 import { ImageWithSkeleton } from "../Skeleton/ImageWithSkeleton"
+import { authService } from "../../services/auth.service"
 
 type ProductPreviewProp = {
     product: FullProduct
@@ -14,9 +15,17 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const navigate = useNavigate()
     const scrollRef = useRef<HTMLDivElement>(null)
     const [currentIndex, setCurrentIndex] = useState(0)
+    const user = authService.getLoggedinUser()
+    const isAdmin = user?.role?.trim().toLowerCase() === 'admin'
 
     const onHandleClick = () => {
         navigate(`/product/${product._id}`)
+    }
+
+    const onEditProduct = (ev: React.MouseEvent) => {
+        ev.stopPropagation()
+        ev.preventDefault()
+        navigate(`/dashboard?edit=${product._id}`)
     }
 
     const isEnglish = language === "en"
@@ -75,6 +84,11 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
             aria-label={`${isEnglish ? 'View product:' : 'צפה במוצר:'} ${isEnglish ? product.name.en : product.name.he}`}
         >
             <div className="product-preview-image-container">
+                {isAdmin && (
+                    <button className="admin-edit-btn" onClick={onEditProduct} title={isEnglish ? 'Edit Product' : 'ערוך מוצר'}>
+                        <Icons iconName="edit" />
+                    </button>
+                )}
                 {photosToRender.length > 1 && (
                     <>
                         <button className={`nav-btn prev ${!canScrollLeft ? 'inactive' : ''}`} onClick={(e) => scroll('left', e)} aria-label={isEnglish ? 'Previous image' : 'תמונה קודמת'} tabIndex={-1}>

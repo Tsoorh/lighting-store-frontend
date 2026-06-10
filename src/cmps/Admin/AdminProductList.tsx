@@ -4,7 +4,11 @@ import type { FullProduct } from '../../model/product.model'
 import { useLanguage } from '../../hooks/useLanguage'
 import { AdminProductEdit } from './AdminProductEdit'
 
-export const AdminProductList: React.FC = () => {
+interface AdminProductListProps {
+    initialProductId?: string | null
+}
+
+export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProductId }) => {
     const [products, setProducts] = useState<FullProduct[]>([])
     const [editingProduct, setEditingProduct] = useState<FullProduct | null | 'new'>(null)
     const [filterBy, setFilterBy] = useState({ txt: '' })
@@ -15,14 +19,20 @@ export const AdminProductList: React.FC = () => {
         async function loadProducts() {
             try {
                 const fetchedProducts = await productService.query({})
-                setProducts(fetchedProducts as FullProduct[])
+                const prodList = fetchedProducts as FullProduct[]
+                setProducts(prodList)
+
+                if (initialProductId) {
+                    const productToEdit = prodList.find(p => p._id === initialProductId)
+                    if (productToEdit) setEditingProduct(productToEdit)
+                }
             } catch (err) {
                 console.error('Failed to load products', err)
             }
         }
 
         loadProducts()
-    }, [])
+    }, [initialProductId])
 
     const filteredProducts = useMemo(() => {
         if (!filterBy.txt) return products

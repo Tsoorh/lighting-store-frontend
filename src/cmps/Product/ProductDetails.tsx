@@ -8,13 +8,18 @@ import { useLanguage } from "../../hooks/useLanguage"
 import { Icons } from "../Icons"
 import { ProductSuggestion } from "./ProductSuggestion"
 import { ContactSection } from "../ContactSection"
+import { authService } from "../../services/auth.service"
+import { useNavigate } from "react-router-dom"
 
 export const ProductDetails = () => {
     const { productId } = useParams()
+    const navigate = useNavigate()
     const [product, setProduct] = useState<FullProduct | null>(null)
     const [gallery, setGallery] = useState<string[]>([])
     const [mainImage, setMainImage] = useState<string>('')
     const { language } = useLanguage()
+    const user = authService.getLoggedinUser()
+    const isAdmin = user?.role?.trim().toLowerCase() === 'admin'
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -77,7 +82,18 @@ export const ProductDetails = () => {
                 <div className="product-info-container">
                     <div className="product-info-content">
                         <div className="product-title-wrapper">
-                            <h1>{nameLabel}</h1>
+                            <div className="title-with-admin">
+                                <h1>{nameLabel}</h1>
+                                {isAdmin && (
+                                    <button 
+                                        className="admin-edit-btn-details" 
+                                        onClick={() => navigate(`/dashboard?edit=${product._id}`)}
+                                        title={isEnglish ? 'Edit Product' : 'ערוך מוצר'}
+                                    >
+                                        <Icons iconName="edit" />
+                                    </button>
+                                )}
+                            </div>
                             {product.price !== undefined && (
                                 <h2 className="product-price">
                                     ₪{product.price}

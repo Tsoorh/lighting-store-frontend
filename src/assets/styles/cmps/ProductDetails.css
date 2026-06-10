@@ -40,6 +40,37 @@
     gap: 60px;
 }
 
+.product-title-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.title-with-admin {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.admin-edit-btn-details {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #333;
+}
+
+.admin-edit-btn-details:hover {
+    background: #e0e0e0;
+    transform: scale(1.05);
+    color: #000;
+}
+
 .product-title-wrapper h1 {
     font-family: 'Heebo', sans-serif;
     font-weight: 400;

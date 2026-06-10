@@ -13,6 +13,36 @@
     width: 100%;
 }
 
+.admin-edit-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+    color: #333;
+}
+
+.admin-edit-btn:hover {
+    background: #fff;
+    transform: scale(1.1);
+    color: #000;
+}
+
+[dir="rtl"] .admin-edit-btn {
+    left: auto;
+    right: 10px;
+}
+
 .product-preview-images {
     width: 100%;
     aspect-ratio: 1 / 1;
