@@ -63,7 +63,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         const initialState = product || {
             name: { en: '', he: '' },
             description: { en: '', he: '' },
-            price: 0,
+            price: [{ wood: { he: '', en: '' }, amount: 0 }],
             isActive: true,
             category: [],
             imgsUrl: [],
@@ -81,6 +81,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             size: (initialState.size && initialState.size.length > 0) ? initialState.size : [{}],
             imgsUrl: initialState.imgsUrl || [],
             socketType: initialState.socketType || { screwType: '', lightType: '' },
+            price: (initialState.price && Array.isArray(initialState.price) && initialState.price.length > 0) ? initialState.price : [{ wood: { he: '', en: '' }, amount: 0 }],
             name: initialState.name || { en: '', he: '' },
             description: initialState.description || { en: '', he: '' }
         }
@@ -95,6 +96,33 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
 
     function handleChange<K extends keyof FullProduct>(field: K, value: FullProduct[K]) {
         setFormData(prev => ({ ...prev, [field]: value }))
+    }
+
+    function handlePriceChange(index: number, field: 'amount' | 'wood', value: any, lang?: 'en' | 'he') {
+        const newPrice = [...(formData.price || [])]
+        if (field === 'wood' && lang) {
+            newPrice[index] = { 
+                ...newPrice[index], 
+                wood: { ...newPrice[index].wood, [lang]: value } 
+            }
+        } else {
+            newPrice[index] = { ...newPrice[index], [field]: value }
+        }
+        setFormData(prev => ({ ...prev, price: newPrice }))
+    }
+
+    function addPrice() {
+        setFormData(prev => ({
+            ...prev,
+            price: [...(prev.price || []), { wood: { he: '', en: '' }, amount: 0 }]
+        }))
+    }
+
+    function removePrice(index: number) {
+        setFormData(prev => ({
+            ...prev,
+            price: prev.price?.filter((_, i) => i !== index)
+        }))
     }
 
     function handleLangChange(field: 'name' | 'description', lang: 'en' | 'he', value: string) {
@@ -264,13 +292,47 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                             rows={3}
                         />
                     </div>
-                    <div className="form-group">
-                        <label>{isEn ? 'Price' : 'מחיר'}</label>
-                        <input 
-                            type="number" 
-                            value={formData.price || ''} 
-                            onChange={(e) => handleChange('price', +e.target.value)} 
-                        />
+                    
+                    <div className="form-section">
+                        <h4>{isEn ? 'Prices' : 'מחירים'}</h4>
+                        {formData.price?.map((p, index) => (
+                            <div key={index} className="price-row-container" style={{ borderBottom: '1px solid #eee', paddingBottom: '15px', marginBottom: '15px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                    <div className="form-group">
+                                        <label>{isEn ? 'Wood/Finish (EN)' : 'סוג עץ/גימור (אנגלית)'}</label>
+                                        <input 
+                                            type="text" 
+                                            value={p.wood.en} 
+                                            onChange={(e) => handlePriceChange(index, 'wood', e.target.value, 'en')} 
+                                            placeholder="e.g. Oak"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>{isEn ? 'Wood/Finish (HE)' : 'סוג עץ/גימור (עברית)'}</label>
+                                        <input 
+                                            type="text" 
+                                            value={p.wood.he} 
+                                            onChange={(e) => handlePriceChange(index, 'wood', e.target.value, 'he')} 
+                                            placeholder='למשל אלון'
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>{isEn ? 'Amount' : 'מחיר'}</label>
+                                    <input 
+                                        type="number" 
+                                        value={p.amount || ''} 
+                                        onChange={(e) => handlePriceChange(index, 'amount', +e.target.value)} 
+                                    />
+                                </div>
+                                {formData.price!.length > 1 && (
+                                    <button type="button" onClick={() => removePrice(index)} style={{ background: '#ff4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '5px 15px', width: '100%', marginTop: '5px' }}>
+                                        {isEn ? 'Remove Price' : 'הסר מחיר'}
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        <button type="button" onClick={addPrice} className="btn-add-secondary">+ {isEn ? 'Add Price' : 'הוסף מחיר'}</button>
                     </div>
 
                     <div className="form-section">

@@ -15,11 +15,13 @@ export const ProductDetails = () => {
     const { productId } = useParams()
     const navigate = useNavigate()
     const [product, setProduct] = useState<FullProduct | null>(null)
+    const [selectedPriceIdx, setSelectedPriceIdx] = useState<number>(0)
     const [gallery, setGallery] = useState<string[]>([])
     const [mainImage, setMainImage] = useState<string>('')
     const { language } = useLanguage()
     const user = authService.getLoggedinUser()
     const isAdmin = user?.role?.trim().toLowerCase() === 'admin'
+    const isSupplier = user?.role?.trim().toLowerCase() === 'supplier'
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -114,12 +116,29 @@ export const ProductDetails = () => {
                                     </button>
                                 )}
                             </div>
-                            {product.price !== undefined && (
+                            {product.price !== undefined && Array.isArray(product.price) && product.price.length > 0 && (
                                 <h2 className="product-price">
-                                    ₪{product.price}
+                                    ₪{product.price[selectedPriceIdx]?.amount}
                                 </h2>
                             )}
                         </div>
+
+                        {product.price && product.price.length > 1 && (
+                            <div className="wood-selector-details">
+                                <label htmlFor="wood-select">{isEnglish ? 'Select Finish:' : 'בחר גימור:'}</label>
+                                <select 
+                                    id="wood-select"
+                                    value={selectedPriceIdx}
+                                    onChange={(e) => setSelectedPriceIdx(+e.target.value)}
+                                >
+                                    {product.price.map((p, idx) => (
+                                        <option key={idx} value={idx}>
+                                            {isEnglish ? p.wood.en : p.wood.he}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
 
                         <div className="product-sections">
                             <div className="product-sec1">
@@ -163,6 +182,12 @@ export const ProductDetails = () => {
                                     })}
                                 </ul>
                             </div>
+
+                            {isSupplier && (
+                                <p className="supplier-vat-disclaimer">
+                                    * {isEnglish ? 'Prices do not include VAT' : 'המחירים אינם כוללים מע"מ'}
+                                </p>
+                            )}
 
                             <div className="product-sec4">
                                 <div className="term-box">

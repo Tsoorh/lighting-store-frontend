@@ -110,9 +110,15 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
             <span className={`product-name ${isEnglish ? 'ltr' : 'rtl'}`}>
                 {isEnglish ? product.name.en : product.name.he}
             </span>
-            {product.price !== undefined && (
-                <span className={`product-price-preview ${isEnglish ? 'ltr' : 'rtl'}`}>
-                    ₪{product.price}
+            {product.price !== undefined && Array.isArray(product.price) && product.price.length > 0 && (
+                <span className={`product-price-preview ${isEnglish ? 'ltr' : 'rtl'}`} dir="ltr">
+                    {(() => {
+                        const amounts = product.price.map(p => p.amount)
+                        const min = Math.min(...amounts)
+                        const max = Math.max(...amounts)
+                        if (min === max) return `₪${min}`
+                        return `₪${min} - ₪${max}`
+                    })()}
                 </span>
             )}
         </div>

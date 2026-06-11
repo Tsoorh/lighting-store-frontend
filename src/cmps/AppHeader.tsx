@@ -204,7 +204,17 @@ export const AppHeader = () => {
                                             </div>
                                             <p>{isEnglish ? product.name.en : product.name.he}</p>
                                         </div>
-                                        {product.price !== undefined && <b>₪{product.price}</b>}
+                                        {product.price !== undefined && Array.isArray(product.price) && product.price.length > 0 && (
+                                            <b dir="ltr">
+                                                {(() => {
+                                                    const amounts = product.price.map(p => p.amount)
+                                                    const min = Math.min(...amounts)
+                                                    const max = Math.max(...amounts)
+                                                    if (min === max) return `₪${min}`
+                                                    return `₪${min} - ₪${max}`
+                                                })()}
+                                            </b>
+                                        )}
                                     </li>
                                 )
                             })}

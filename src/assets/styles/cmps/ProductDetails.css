@@ -118,6 +118,39 @@
     margin: 8px 0 0 0;
 }
 
+.wood-selector-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 20px 0 -20px 0; /* Positioned between price and sections */
+    width: fit-content;
+}
+
+.wood-selector-details label {
+    font-family: 'Heebo', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(30, 28, 25, 0.7);
+}
+
+.wood-selector-details select {
+    font-family: 'Heebo', sans-serif;
+    font-size: 16px;
+    padding: 8px 12px;
+    border: 1px solid rgba(30, 28, 25, 0.2);
+    background-color: var(--header-bgc);
+    cursor: pointer;
+    border-radius: 4px;
+    min-width: 200px;
+}
+
+.supplier-vat-disclaimer {
+    font-family: 'Heebo', sans-serif;
+    font-size: 14px;
+    color: rgba(126, 133, 136, 0.6);
+    margin: -20px 0 0 0;
+}
+
 .product-sections {
     display: flex;
     flex-direction: column;

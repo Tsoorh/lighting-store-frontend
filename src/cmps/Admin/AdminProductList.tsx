@@ -145,7 +145,16 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
                                     />
                                 </td>
                                 <td>{isEn ? product.name.en : product.name.he}</td>
-                                <td>{product.price || '-'}</td>
+                                <td>
+                                    {(() => {
+                                        if (!product.price || !Array.isArray(product.price) || product.price.length === 0) return '-'
+                                        const amounts = product.price.map(p => p.amount)
+                                        const min = Math.min(...amounts)
+                                        const max = Math.max(...amounts)
+                                        if (min === max) return <span dir="ltr">₪{min}</span>
+                                        return <span dir="ltr">₪{min} - ₪{max}</span>
+                                    })()}
+                                </td>
                                 <td>
                                     <button 
                                         className={`status-btn ${product.isActive !== false ? 'active' : 'inactive'}`}
