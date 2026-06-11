@@ -103,42 +103,44 @@ export const ProductDetails = () => {
                 {/* RIGHT SIDE: INFO (Flex swaps this visually on LTR/RTL) */}
                 <div className="product-info-container">
                     <div className="product-info-content">
-                        <div className="product-title-wrapper">
-                            <div className="title-with-admin">
-                                <h1>{nameLabel}</h1>
-                                {isAdmin && (
-                                    <button 
-                                        className="admin-edit-btn-details" 
-                                        onClick={() => navigate(`/dashboard?edit=${product._id}`)}
-                                        title={isEnglish ? 'Edit Product' : 'ערוך מוצר'}
-                                    >
-                                        <Icons iconName="edit" />
-                                    </button>
+                        <div className="product-info-header">
+                            <div className="product-title-wrapper">
+                                <div className="title-with-admin">
+                                    <h1>{nameLabel}</h1>
+                                    {isAdmin && (
+                                        <button 
+                                            className="admin-edit-btn-details" 
+                                            onClick={() => navigate(`/dashboard?edit=${product._id}`)}
+                                            title={isEnglish ? 'Edit Product' : 'ערוך מוצר'}
+                                        >
+                                            <Icons iconName="edit" />
+                                        </button>
+                                    )}
+                                </div>
+                                {product.price !== undefined && Array.isArray(product.price) && product.price.length > 0 && (
+                                    <h2 className="product-price">
+                                        ₪{product.price[selectedPriceIdx]?.amount}
+                                    </h2>
                                 )}
                             </div>
-                            {product.price !== undefined && Array.isArray(product.price) && product.price.length > 0 && (
-                                <h2 className="product-price">
-                                    ₪{product.price[selectedPriceIdx]?.amount}
-                                </h2>
+
+                            {product.price && product.price.length > 1 && (
+                                <div className="wood-selector-details">
+                                    <label htmlFor="wood-select">{isEnglish ? 'Select Finish:' : 'בחר גימור:'}</label>
+                                    <select 
+                                        id="wood-select"
+                                        value={selectedPriceIdx}
+                                        onChange={(e) => setSelectedPriceIdx(+e.target.value)}
+                                    >
+                                        {product.price.map((p, idx) => (
+                                            <option key={idx} value={idx}>
+                                                {isEnglish ? p.wood.en : p.wood.he}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             )}
                         </div>
-
-                        {product.price && product.price.length > 1 && (
-                            <div className="wood-selector-details">
-                                <label htmlFor="wood-select">{isEnglish ? 'Select Finish:' : 'בחר גימור:'}</label>
-                                <select 
-                                    id="wood-select"
-                                    value={selectedPriceIdx}
-                                    onChange={(e) => setSelectedPriceIdx(+e.target.value)}
-                                >
-                                    {product.price.map((p, idx) => (
-                                        <option key={idx} value={idx}>
-                                            {isEnglish ? p.wood.en : p.wood.he}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        )}
 
                         <div className="product-sections">
                             <div className="product-sec1">
@@ -154,6 +156,13 @@ export const ProductDetails = () => {
                                     {voltStr && <li>{isEnglish ? 'Voltage:' : 'מתח:'} {voltStr}</li>}
                                     {bulbStr && <li>{isEnglish ? 'Bulb Type:' : 'סוג נורה:'} {bulbStr}</li>}
                                 </ul>
+                                {woodStr && (
+                                    <p className="natural-material-note">
+                                        {isEnglish 
+                                            ? '* Slight variations in wood tone may occur due to the natural character of the material' 
+                                            : '* ייתכנו שינויים קלים בגוון העץ בשל אופיו הטבעי של החומר'}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="product-sec3">
