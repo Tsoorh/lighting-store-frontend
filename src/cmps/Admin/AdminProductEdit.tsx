@@ -98,31 +98,29 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         setFormData(prev => ({ ...prev, [field]: value }))
     }
 
-    function handlePriceChange(index: number, field: 'amount' | 'wood', value: any, lang?: 'en' | 'he') {
+    function handlePriceChange(index: number, field: 'amount', value: number) {
         const newPrice = [...(formData.price || [])]
-        if (field === 'wood' && lang) {
-            newPrice[index] = { 
-                ...newPrice[index], 
-                wood: { ...newPrice[index].wood, [lang]: value } 
-            }
-        } else {
-            newPrice[index] = { ...newPrice[index], [field]: value }
-        }
+        newPrice[index] = { ...newPrice[index], [field]: value }
         setFormData(prev => ({ ...prev, price: newPrice }))
     }
 
-    function addPrice() {
-        setFormData(prev => ({
-            ...prev,
-            price: [...(prev.price || []), { wood: { he: '', en: '' }, amount: 0 }]
-        }))
-    }
-
-    function removePrice(index: number) {
-        setFormData(prev => ({
-            ...prev,
-            price: prev.price?.filter((_, i) => i !== index)
-        }))
+    function toggleWoodPrice(woodOption: hebrewEnglishObj) {
+        const currentPrices = [...(formData.price || [])]
+        const existingIdx = currentPrices.findIndex(p => p.wood.en === woodOption.en)
+        
+        let newPrices
+        if (existingIdx !== -1) {
+            // Don't allow removing if it's the last one
+            if (currentPrices.length <= 1) {
+                alert(isEn ? 'At least one price is required' : 'חובה להזין לפחות מחיר אחד')
+                return
+            }
+            newPrices = currentPrices.filter((_, i) => i !== existingIdx)
+        } else {
+            newPrices = [...currentPrices, { wood: woodOption, amount: 0 }]
+        }
+        
+        setFormData(prev => ({ ...prev, price: newPrices }))
     }
 
     function handleLangChange(field: 'name' | 'description', lang: 'en' | 'he', value: string) {
@@ -294,45 +292,39 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                     </div>
                     
                     <div className="form-section">
-                        <h4>{isEn ? 'Prices' : 'מחירים'}</h4>
+                        <h4>{isEn ? 'Prices by Wood Type' : 'מחירים לפי סוג עץ'}</h4>
+                        <div className="wood-price-toggles" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
+                            {PRODUCT_OPTIONS.WOOD_TYPES.map(wood => {
+                                const isSelected = (formData.price || []).some(p => p.wood.en === wood.en)
+                                return (
+                                    <label key={wood.en} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', padding: '8px', background: isSelected ? '#f0f7ff' : '#f9f9f9', borderRadius: '4px', border: `1px solid ${isSelected ? '#007bff' : '#ddd'}` }}>
+                                        <input 
+                                            type="checkbox" 
+                                            checked={isSelected} 
+                                            onChange={() => toggleWoodPrice(wood as unknown as hebrewEnglishObj)}
+                                            style={{ width: '18px', height: '18px' }}
+                                        />
+                                        {isEn ? wood.en : wood.he}
+                                    </label>
+                                )
+                            })}
+                        </div>
+
                         {formData.price?.map((p, index) => (
-                            <div key={index} className="price-row-container" style={{ borderBottom: '1px solid #eee', paddingBottom: '15px', marginBottom: '15px' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                                    <div className="form-group">
-                                        <label>{isEn ? 'Wood/Finish (EN)' : 'סוג עץ/גימור (אנגלית)'}</label>
-                                        <input 
-                                            type="text" 
-                                            value={p.wood.en} 
-                                            onChange={(e) => handlePriceChange(index, 'wood', e.target.value, 'en')} 
-                                            placeholder="e.g. Oak"
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>{isEn ? 'Wood/Finish (HE)' : 'סוג עץ/גימור (עברית)'}</label>
-                                        <input 
-                                            type="text" 
-                                            value={p.wood.he} 
-                                            onChange={(e) => handlePriceChange(index, 'wood', e.target.value, 'he')} 
-                                            placeholder='למשל אלון'
-                                        />
-                                    </div>
-                                </div>
+                            <div key={p.wood.en} className="price-row-container" style={{ borderBottom: '1px solid #eee', paddingBottom: '15px', marginBottom: '15px' }}>
                                 <div className="form-group">
-                                    <label>{isEn ? 'Amount' : 'מחיר'}</label>
+                                    <label>
+                                        <strong>{isEn ? p.wood.en : p.wood.he}</strong> {isEn ? 'Amount' : 'מחיר'}
+                                    </label>
                                     <input 
                                         type="number" 
                                         value={p.amount || ''} 
                                         onChange={(e) => handlePriceChange(index, 'amount', +e.target.value)} 
+                                        placeholder={isEn ? 'Enter price' : 'הזן מחיר'}
                                     />
                                 </div>
-                                {formData.price!.length > 1 && (
-                                    <button type="button" onClick={() => removePrice(index)} style={{ background: '#ff4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '5px 15px', width: '100%', marginTop: '5px' }}>
-                                        {isEn ? 'Remove Price' : 'הסר מחיר'}
-                                    </button>
-                                )}
                             </div>
                         ))}
-                        <button type="button" onClick={addPrice} className="btn-add-secondary">+ {isEn ? 'Add Price' : 'הוסף מחיר'}</button>
                     </div>
 
                     <div className="form-section">
