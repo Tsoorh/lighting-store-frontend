@@ -104,23 +104,37 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         setFormData(prev => ({ ...prev, price: newPrice }))
     }
 
+    function _getAvailablePriceOptions(): hebrewEnglishObj[] {
+        const woodSpecs = formData.woodType || []
+        const optionsMap = new Map<string, hebrewEnglishObj>()
+
+        woodSpecs.forEach(spec => {
+            if (spec.en === 'Oak/American walnut') {
+                optionsMap.set('Oak', { en: 'Oak', he: 'אלון' })
+                optionsMap.set('American walnut', { en: 'American walnut', he: 'אגוז אמריקאי' })
+            } else {
+                optionsMap.set(spec.en, spec)
+            }
+        })
+
+        return Array.from(optionsMap.values())
+    }
+
     function toggleWoodPrice(woodOption: hebrewEnglishObj) {
         const currentPrices = [...(formData.price || [])]
         const existingIdx = currentPrices.findIndex(p => p.wood.en === woodOption.en)
         
-        let newPrices
         if (existingIdx !== -1) {
-            // Don't allow removing if it's the last one
             if (currentPrices.length <= 1) {
                 alert(isEn ? 'At least one price is required' : 'חובה להזין לפחות מחיר אחד')
                 return
             }
-            newPrices = currentPrices.filter((_, i) => i !== existingIdx)
+            const newPrices = currentPrices.filter((_, i) => i !== existingIdx)
+            setFormData(prev => ({ ...prev, price: newPrices }))
         } else {
-            newPrices = [...currentPrices, { wood: woodOption, amount: 0 }]
+            const newPrices = [...currentPrices, { wood: woodOption, amount: 0 }]
+            setFormData(prev => ({ ...prev, price: newPrices }))
         }
-        
-        setFormData(prev => ({ ...prev, price: newPrices }))
     }
 
     function handleLangChange(field: 'name' | 'description', lang: 'en' | 'he', value: string) {
@@ -147,8 +161,33 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         } else {
             newList = [...currentList, option]
         }
+
+        const newFormData = { ...formData, [field]: newList }
         
-        setFormData(prev => ({ ...prev, [field]: newList }))
+        // If woodType changed, prune prices that are no longer available
+        if (field === 'woodType') {
+            const availableOptions = [] as string[]
+            newList.forEach(spec => {
+                if (spec.en === 'Oak/American walnut') {
+                    availableOptions.push('Oak', 'American walnut')
+                } else {
+                    availableOptions.push(spec.en)
+                }
+            })
+
+            const prunedPrices = (formData.price || []).filter(p => availableOptions.includes(p.wood.en))
+            
+            // If we pruned everything, try to add back the first available option with 0 amount
+            if (prunedPrices.length === 0 && availableOptions.length > 0) {
+                const firstOpt = newList[0].en === 'Oak/American walnut' 
+                    ? { en: 'Oak', he: 'אלון' }
+                    : newList[0]
+                prunedPrices.push({ wood: firstOpt, amount: 0 })
+            }
+            newFormData.price = prunedPrices
+        }
+        
+        setFormData(newFormData)
     }
 
     // Size handler
@@ -294,14 +333,14 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                     <div className="form-section">
                         <h4>{isEn ? 'Prices by Wood Type' : 'מחירים לפי סוג עץ'}</h4>
                         <div className="wood-price-toggles" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
-                            {PRODUCT_OPTIONS.WOOD_TYPES.map(wood => {
+                            {_getAvailablePriceOptions().map(wood => {
                                 const isSelected = (formData.price || []).some(p => p.wood.en === wood.en)
                                 return (
                                     <label key={wood.en} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', padding: '8px', background: isSelected ? '#f0f7ff' : '#f9f9f9', borderRadius: '4px', border: `1px solid ${isSelected ? '#007bff' : '#ddd'}` }}>
                                         <input 
                                             type="checkbox" 
                                             checked={isSelected} 
-                                            onChange={() => toggleWoodPrice(wood as unknown as hebrewEnglishObj)}
+                                            onChange={() => toggleWoodPrice(wood)}
                                             style={{ width: '18px', height: '18px' }}
                                         />
                                         {isEn ? wood.en : wood.he}
@@ -325,6 +364,11 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                 </div>
                             </div>
                         ))}
+                        {_getAvailablePriceOptions().length === 0 && (
+                            <p style={{ fontSize: '0.8rem', color: '#888', fontStyle: 'italic' }}>
+                                {isEn ? 'Select wood types in "Wood Types" section first' : 'בחר סוגי עץ במקטע "סוגי עץ" תחילה'}
+                            </p>
+                        )}
                     </div>
 
                     <div className="form-section">
