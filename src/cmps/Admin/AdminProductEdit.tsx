@@ -66,13 +66,13 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             const woodNameEn = (p.wood?.en || '').trim()
             const woodNameHe = (p.wood?.he || '').trim()
             
-            // Explicitly handle the "Oak stained Walnut" vs "Oak stained as walnut" mismatch found in the DB
+            // Handle "Oak stained Walnut" mapping
             if (
                 woodNameEn.toLowerCase() === 'oak stained walnut' || 
                 woodNameEn.toLowerCase() === 'oak stained as walnut' ||
                 woodNameHe === 'אלון מגוון לאגוז'
             ) {
-                return { ...p, wood: { en: 'Oak stained as walnut', he: 'אלון מגוון לאגוז' } }
+                return { ...p, wood: { en: 'Oak stained Walnut', he: 'אלון מגוון לאגוז' } }
             }
 
             // Try to find a match in constants by either English or Hebrew name
@@ -216,9 +216,12 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             // 2. If an option was added, automatically add its corresponding price entries
             if (addedOption) {
                 const optionsToAdd: hebrewEnglishObj[] = []
-                if (addedOption.en.toLowerCase() === 'oak/american walnut') {
+                const addedEnLower = addedOption.en.toLowerCase()
+                if (addedEnLower === 'oak/american walnut') {
                     optionsToAdd.push({ en: 'Oak', he: 'אלון' })
                     optionsToAdd.push({ en: 'American walnut', he: 'אגוז אמריקאי' })
+                } else if (addedEnLower === 'oak stained walnut' || addedEnLower === 'oak stained as walnut') {
+                    optionsToAdd.push({ en: 'Oak stained Walnut', he: 'אלון מגוון לאגוז' })
                 } else {
                     optionsToAdd.push(addedOption)
                 }

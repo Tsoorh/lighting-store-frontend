@@ -1,7 +1,7 @@
 export const PRODUCT_OPTIONS = {
     WOOD_TYPES: [
         { en: 'Oak', he: 'אלון' },
-        { en: 'Oak stained as walnut', he: 'אלון מגוון לאגוז' },
+        { en: 'Oak stained Walnut', he: 'אלון מגוון לאגוז' },
         { en: 'No wood', he: 'ללא עץ' },
         { en: 'Oak/American walnut', he:'אלון/אגוז אמריקאי' }
     ],
