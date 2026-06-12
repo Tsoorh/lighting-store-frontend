@@ -183,9 +183,13 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             
             // 2. If an option was added, automatically add its corresponding price entries
             if (addedOption) {
-                const optionsToAdd = addedOption.en === 'Oak/American walnut' 
-                    ? [{ en: 'Oak', he: 'אלון' }, { en: 'American walnut', he: 'אגוז אמריקאי' }] 
-                    : [addedOption]
+                const optionsToAdd: hebrewEnglishObj[] = []
+                if (addedOption.en === 'Oak/American walnut') {
+                    optionsToAdd.push({ en: 'Oak', he: 'אלון' })
+                    optionsToAdd.push({ en: 'American walnut', he: 'אגוז אמריקאי' })
+                } else {
+                    optionsToAdd.push(addedOption)
+                }
                 
                 optionsToAdd.forEach(opt => {
                     if (!updatedPrices.some(p => p.wood.en === opt.en)) {
