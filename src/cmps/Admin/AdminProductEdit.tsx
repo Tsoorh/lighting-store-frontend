@@ -63,15 +63,22 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     function _healPriceArray(prices: any[]): any[] {
         if (!prices || !Array.isArray(prices)) return []
         return prices.map(p => {
-            const woodNameEn = p.wood?.en || ''
-            const woodNameHe = p.wood?.he || ''
+            const woodNameEn = (p.wood?.en || '').trim()
+            const woodNameHe = (p.wood?.he || '').trim()
             
+            // Explicitly handle the "Oak stained Walnut" vs "Oak stained as walnut" mismatch found in the DB
+            if (
+                woodNameEn.toLowerCase() === 'oak stained walnut' || 
+                woodNameEn.toLowerCase() === 'oak stained as walnut' ||
+                woodNameHe === 'אלון מגוון לאגוז'
+            ) {
+                return { ...p, wood: { en: 'Oak stained as walnut', he: 'אלון מגוון לאגוז' } }
+            }
+
             // Try to find a match in constants by either English or Hebrew name
             const found = (PRODUCT_OPTIONS.WOOD_TYPES as unknown as hebrewEnglishObj[]).find(opt => 
                 (woodNameEn && opt.en.toLowerCase() === woodNameEn.toLowerCase()) || 
-                (woodNameHe && opt.he === woodNameHe) ||
-                // Special case for variations of Oak stained as walnut
-                (woodNameEn.toLowerCase().includes('stained') && woodNameEn.toLowerCase().includes('walnut'))
+                (woodNameHe && opt.he === woodNameHe)
             ) || (woodNameEn.toLowerCase().includes('american') && woodNameEn.toLowerCase().includes('walnut') ? { en: 'American walnut', he: 'אגוז אמריקאי' } : null)
               || (woodNameEn.toLowerCase() === 'oak' ? { en: 'Oak', he: 'אלון' } : null)
 
