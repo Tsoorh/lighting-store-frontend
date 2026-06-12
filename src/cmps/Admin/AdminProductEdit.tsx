@@ -59,6 +59,28 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         return healed
     }
 
+    // Helper to ensure price entries have both languages if one is missing
+    function _healPriceArray(prices: any[]): any[] {
+        if (!prices || !Array.isArray(prices)) return []
+        return prices.map(p => {
+            if (p.wood && p.wood.he && p.wood.en) return p
+            
+            const woodName = p.wood?.en || p.wood?.he || ''
+            if (!woodName) return p
+
+            const found = (PRODUCT_OPTIONS.WOOD_TYPES as unknown as hebrewEnglishObj[]).find(opt => 
+                opt.en.toLowerCase() === woodName.toLowerCase() || 
+                opt.he === woodName
+            ) || (woodName.toLowerCase() === 'american walnut' ? { en: 'American walnut', he: 'אגוז אמריקאי' } : null)
+              || (woodName.toLowerCase() === 'oak' ? { en: 'Oak', he: 'אלון' } : null)
+
+            if (found) {
+                return { ...p, wood: found }
+            }
+            return p
+        })
+    }
+
     const [formData, setFormData] = useState<Partial<FullProduct>>(() => {
         const initialState = product || {
             name: { en: '', he: '' },
@@ -81,7 +103,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             size: (initialState.size && initialState.size.length > 0) ? initialState.size : [{}],
             imgsUrl: initialState.imgsUrl || [],
             socketType: initialState.socketType || { screwType: '', lightType: '' },
-            price: (initialState.price && Array.isArray(initialState.price) && initialState.price.length > 0) ? initialState.price : [{ wood: { he: '', en: '' }, amount: 0 }],
+            price: _healPriceArray((initialState.price && Array.isArray(initialState.price) && initialState.price.length > 0) ? initialState.price : [{ wood: { he: '', en: '' }, amount: 0 }]),
             name: initialState.name || { en: '', he: '' },
             description: initialState.description || { en: '', he: '' }
         }
@@ -109,11 +131,11 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         const optionsMap = new Map<string, hebrewEnglishObj>()
 
         woodSpecs.forEach(spec => {
-            if (spec.en === 'Oak/American walnut') {
-                optionsMap.set('Oak', { en: 'Oak', he: 'אלון' })
-                optionsMap.set('American walnut', { en: 'American walnut', he: 'אגוז אמריקאי' })
+            if (spec.en.toLowerCase() === 'oak/american walnut') {
+                optionsMap.set('oak', { en: 'Oak', he: 'אלון' })
+                optionsMap.set('american walnut', { en: 'American walnut', he: 'אגוז אמריקאי' })
             } else {
-                optionsMap.set(spec.en, spec)
+                optionsMap.set(spec.en.toLowerCase(), spec)
             }
         })
 
