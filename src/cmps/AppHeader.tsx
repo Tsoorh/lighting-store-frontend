@@ -176,7 +176,21 @@ export const AppHeader = () => {
                 <div className={`menu-modal search-modal ${isEnglish ? 'en-dir' : 'he-dir'}`} dir={isEnglish ? 'ltr' : 'rtl'} onClick={(e) => e.stopPropagation()}>
                     <button className="exit-btn" onClick={handleOpenMenu} aria-label={isEnglish ? 'Close' : 'סגור'}><Icons iconName={"close"} /></button>
                     <div className='text-field-search'>
-                        <Input autoFocus color='primary' onChange={onHandleChangeInput} value={inputSearch} sx={{ mr: '1rem', ml: '2.5rem', width: 'calc(100% - 2rem)' }} dir={isEnglish ? 'ltr' : 'rtl'} placeholder={isEnglish ? 'What would you like to light today?' : 'מה תרצו להאיר היום?'} inputProps={{ 'aria-label': isEnglish ? 'Search products' : 'חפש מוצרים' }} />
+                        <Input 
+                            autoFocus 
+                            color='primary' 
+                            onChange={onHandleChangeInput} 
+                            value={inputSearch} 
+                            sx={{ 
+                                width: '100%', 
+                                fontSize: '1.1rem',
+                                '&:before': { borderBottomColor: '#e0e0e0' },
+                                '&:after': { borderBottomColor: '#000' }
+                            }} 
+                            dir={isEnglish ? 'ltr' : 'rtl'} 
+                            placeholder={isEnglish ? 'What would you like to light today?' : 'מה תרצו להאיר היום?'} 
+                            inputProps={{ 'aria-label': isEnglish ? 'Search products' : 'חפש מוצרים' }} 
+                        />
                     </div>
                     <div className="search-results">
                         {debouncedSearch?
@@ -199,7 +213,7 @@ export const AppHeader = () => {
                                 return (
                                     <li key={product._id} role="link" tabIndex={0} onClick={()=>navigateToProduct(product._id as string)} onKeyDown={(e)=> (e.key === 'Enter' || e.key === ' ') && navigateToProduct(product._id as string)}>
                                         <div>
-                                            <div style={{ width: '40px', height: '40px' }}>
+                                            <div className="image-container">
                                                 <ImageWithSkeleton src={getImageUrl(displayPhoto)} alt={product.name.en} />
                                             </div>
                                             <p>{isEnglish ? product.name.en : product.name.he}</p>

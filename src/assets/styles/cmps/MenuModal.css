@@ -64,6 +64,10 @@
     margin-top: auto;
 }
 
+.en-dir .mobile-align {
+    align-self: flex-end;
+}
+
 .sub-menu-small {
     width: 100%;
     position: relative;
@@ -117,62 +121,85 @@
 .menu-modal.search-modal {
     display: flex;
     flex-direction: column;
+    padding-top: 40px;
 
     >.text-field-search {
-        width: calc(100% - 2rem);
-        margin-inline: 1.5rem;
-        min-height: 5vh;
+        width: calc(100% - 4rem);
+        margin-inline: 2rem;
+        margin-bottom: 2rem;
+        min-height: auto;
     }
 
     >.search-results {
         flex: 1;
         width: 100%;
-        display: grid;
+        display: block;
         overflow-y: auto;
         overflow-x: hidden;
+        padding-bottom: 2rem;
 
         >ul {
             display: flex;
             flex-direction: column;
+            padding: 0;
+            margin: 0;
 
-            /* gap: 1rem; */
             >li {
-                height: 5rem;
+                min-height: 5.5rem;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding-inline: 3rem;
+                padding-inline: 2rem;
                 cursor: pointer;
-                border-bottom: 2px #f1f1f1 solid;
+                border-bottom: 1px #eeeeee solid;
+                transition: background-color 0.2s ease;
 
                 &:hover {
-                    background-color: #f0f0f0;
+                    background-color: #fcfcfc;
                 }
 
                 >div {
                     display: flex;
                     align-items: center;
-                    gap: 2rem;
+                    gap: 1.5rem;
 
-                    >img {
-                        height: 4rem;
-                        width: 4rem;
-                        background-color:var(--background-color);
+                    .image-container {
+                        width: 55px;
+                        height: 55px;
+                        border-radius: 4px;
+                        overflow: hidden;
+                        background-color: #fff;
+                        border: 1px solid #f0f0f0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                    p {
+                        margin: 0;
+                        font-size: 0.95rem;
+                        font-weight: 400;
+                        color: #333;
                     }
                 }
 
-
+                b {
+                    font-size: 0.9rem;
+                    color: #666;
+                    font-weight: 500;
+                }
             }
         }
 
         >p {
-            padding: 1rem;
+            padding: 4rem 2rem;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 2rem;
+            font-size: 1.2rem;
             text-align: center;
-            color: #a8a8a8;
+            color: #bdbdbd;
+            font-weight: 300;
         }
     }
 }
