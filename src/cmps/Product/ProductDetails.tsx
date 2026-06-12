@@ -15,6 +15,7 @@ export const ProductDetails = () => {
     const { productId } = useParams()
     const navigate = useNavigate()
     const [product, setProduct] = useState<FullProduct | null>(null)
+    const [selectedWoodEn, setSelectedWoodEn] = useState<string>('')
     const [selectedPriceIdx, setSelectedPriceIdx] = useState<number>(0)
     const [gallery, setGallery] = useState<string[]>([])
     const [mainImage, setMainImage] = useState<string>('')
@@ -31,6 +32,10 @@ export const ProductDetails = () => {
             try {
                 const productFromDb = await productService.getById(productId)
                 setProduct(productFromDb);
+
+                if (productFromDb && productFromDb.price && productFromDb.price.length > 0) {
+                    setSelectedWoodEn(productFromDb.price[0].wood.en)
+                }
 
                 if (productFromDb && productFromDb.imgsUrl) {
                     const cleanUrls = productFromDb.imgsUrl.map((url: string) => url.replace(/[\r\n\s]+/g, "").replace(/\.[^/.]+$/, ""));
@@ -74,6 +79,13 @@ export const ProductDetails = () => {
     const woodStr = product.woodType.map(w => isEnglish ? w.en : w.he).join(', ')
     const bulbStr = product.socketType?.screwType || ''
     const voltStr = product.socketType?.lightType || ''
+
+    const uniqueWoodTypes = product.price ? Array.from(new Set(product.price.map(p => p.wood.en))).map(en => {
+        return product.price!.find(p => p.wood.en === en)!.wood
+    }) : []
+
+    const availablePricesForWood = product.price ? product.price.filter(p => p.wood.en === selectedWoodEn) : []
+    const activePrice = availablePricesForWood[selectedPriceIdx] || availablePricesForWood[0]
 
     const onBack = () => {
         if (window.history.length > 1) {
@@ -119,27 +131,57 @@ export const ProductDetails = () => {
                                 </div>
                                 {product.price !== undefined && Array.isArray(product.price) && product.price.length > 0 && (
                                     <h2 className="product-price">
-                                        ₪{product.price[selectedPriceIdx]?.amount}
+                                        ₪{activePrice?.amount}
                                     </h2>
                                 )}
                             </div>
 
-                            {product.price && product.price.length > 1 && (
-                                <div className="wood-selector-details">
-                                    <label htmlFor="wood-select">{isEnglish ? 'Select Finish:' : 'בחר גימור:'}</label>
-                                    <select 
-                                        id="wood-select"
-                                        value={selectedPriceIdx}
-                                        onChange={(e) => setSelectedPriceIdx(+e.target.value)}
-                                    >
-                                        {product.price.map((p, idx) => (
-                                            <option key={idx} value={idx}>
-                                                {isEnglish ? p.wood.en : p.wood.he}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
+                            <div className="variant-selectors">
+                                {uniqueWoodTypes.length > 1 && (
+                                    <div className="wood-selector-details">
+                                        <label htmlFor="wood-select">{isEnglish ? 'Select Finish:' : 'בחר גימור:'}</label>
+                                        <select 
+                                            id="wood-select"
+                                            value={selectedWoodEn}
+                                            onChange={(e) => {
+                                                setSelectedWoodEn(e.target.value)
+                                                setSelectedPriceIdx(0)
+                                            }}
+                                        >
+                                            {uniqueWoodTypes.map((wood, idx) => (
+                                                <option key={idx} value={wood.en}>
+                                                    {isEnglish ? wood.en : wood.he}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {availablePricesForWood.length > 1 ? (
+                                    <div className="wood-selector-details">
+                                        <label htmlFor="size-select">{isEnglish ? 'Select Size:' : 'בחר מידה:'}</label>
+                                        <select 
+                                            id="size-select"
+                                            value={selectedPriceIdx}
+                                            onChange={(e) => setSelectedPriceIdx(+e.target.value)}
+                                        >
+                                            {availablePricesForWood.map((p, idx) => (
+                                                <option key={idx} value={idx}>
+                                                    {p.size || (isEnglish ? `Default` : `רגיל`)}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                ) : (
+                                    activePrice?.size && (
+                                        <div className="wood-selector-details">
+                                            <span style={{ fontSize: '0.9rem', color: '#666' }}>
+                                                <strong>{isEnglish ? 'Size:' : 'מידה:'}</strong> {activePrice.size}
+                                            </span>
+                                        </div>
+                                    )
+                                )}
+                            </div>
                         </div>
 
                         <div className="product-sections">

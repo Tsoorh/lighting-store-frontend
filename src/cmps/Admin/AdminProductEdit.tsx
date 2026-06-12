@@ -128,10 +128,27 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         setFormData(prev => ({ ...prev, [field]: value }))
     }
 
-    function handlePriceChange(index: number, field: 'amount', value: number) {
+    function handlePriceChange(index: number, field: 'amount' | 'size', value: number | string) {
         const newPrice = [...(formData.price || [])]
-        newPrice[index] = { ...newPrice[index], [field]: value }
+        newPrice[index] = { ...newPrice[index], [field]: value } as any
         setFormData(prev => ({ ...prev, price: newPrice }))
+    }
+
+    function addPriceVariant(wood: hebrewEnglishObj) {
+        setFormData(prev => ({
+            ...prev,
+            price: [...(prev.price || []), { wood, amount: 0, size: '' }]
+        }))
+    }
+
+    function removePriceVariant(index: number) {
+        const currentPrices = [...(formData.price || [])]
+        if (currentPrices.length <= 1) {
+            alert(isEn ? 'At least one price is required' : 'חובה להזין לפחות מחיר אחד')
+            return
+        }
+        const newPrices = currentPrices.filter((_, i) => i !== index)
+        setFormData(prev => ({ ...prev, price: newPrices }))
     }
 
     function _getAvailablePriceOptions(): hebrewEnglishObj[] {
@@ -152,17 +169,17 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
 
     function toggleWoodPrice(woodOption: hebrewEnglishObj) {
         const currentPrices = [...(formData.price || [])]
-        const existingIdx = currentPrices.findIndex(p => p.wood.en.toLowerCase() === woodOption.en.toLowerCase())
+        const isCurrentlySelected = currentPrices.some(p => p.wood.en.toLowerCase() === woodOption.en.toLowerCase())
         
-        if (existingIdx !== -1) {
-            if (currentPrices.length <= 1) {
+        if (isCurrentlySelected) {
+            const remainingPrices = currentPrices.filter(p => p.wood.en.toLowerCase() !== woodOption.en.toLowerCase())
+            if (remainingPrices.length === 0) {
                 alert(isEn ? 'At least one price is required' : 'חובה להזין לפחות מחיר אחד')
                 return
             }
-            const newPrices = currentPrices.filter((_, i) => i !== existingIdx)
-            setFormData(prev => ({ ...prev, price: newPrices }))
+            setFormData(prev => ({ ...prev, price: remainingPrices }))
         } else {
-            const newPrices = [...currentPrices, { wood: woodOption, amount: 0 }]
+            const newPrices = [...currentPrices, { wood: woodOption, amount: 0, size: '' }]
             setFormData(prev => ({ ...prev, price: newPrices }))
         }
     }
@@ -405,21 +422,52 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                             })}
                         </div>
 
-                        {formData.price?.map((p, index) => (
-                            <div key={p.wood.en} className="price-row-container" style={{ borderBottom: '1px solid #eee', paddingBottom: '15px', marginBottom: '15px' }}>
-                                <div className="form-group">
-                                    <label>
-                                        <strong>{isEn ? p.wood.en : p.wood.he}</strong> {isEn ? 'Amount' : 'מחיר'}
-                                    </label>
-                                    <input 
-                                        type="number" 
-                                        value={p.amount || ''} 
-                                        onChange={(e) => handlePriceChange(index, 'amount', +e.target.value)} 
-                                        placeholder={isEn ? 'Enter price' : 'הזן מחיר'}
-                                    />
+                        {_getAvailablePriceOptions().filter(wood => (formData.price || []).some(p => p.wood.en.toLowerCase() === wood.en.toLowerCase())).map(wood => {
+                            const woodPrices = (formData.price || []).map((p, originalIdx) => ({...p, originalIdx})).filter(p => p.wood.en.toLowerCase() === wood.en.toLowerCase())
+                            
+                            return (
+                                <div key={wood.en} className="wood-group" style={{ marginBottom: '20px', padding: '15px', background: '#fcfcfc', border: '1px solid #eee', borderRadius: '8px' }}>
+                                    <h5 style={{ marginTop: 0, marginBottom: '15px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>{isEn ? wood.en : wood.he}</h5>
+                                    {woodPrices.map((p, i) => (
+                                        <div key={p.originalIdx} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '15px', marginBottom: '15px', alignItems: 'end' }}>
+                                            <div className="form-group" style={{ marginBottom: 0 }}>
+                                                <label style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{isEn ? 'Size Label (Optional)' : 'תווית מידה (אופציונלי)'}</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={p.size || ''} 
+                                                    onChange={(e) => handlePriceChange(p.originalIdx, 'size', e.target.value)}
+                                                    placeholder={isEn ? 'e.g. 12cm' : 'למשל 12 ס"מ'}
+                                                />
+                                            </div>
+                                            <div className="form-group" style={{ marginBottom: 0 }}>
+                                                <label style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{isEn ? 'Amount' : 'מחיר'}</label>
+                                                <input 
+                                                    type="number" 
+                                                    value={p.amount || ''} 
+                                                    onChange={(e) => handlePriceChange(p.originalIdx, 'amount', +e.target.value)} 
+                                                />
+                                            </div>
+                                            <button 
+                                                type="button" 
+                                                onClick={() => removePriceVariant(p.originalIdx)} 
+                                                style={{ padding: '8px 12px', background: '#fff', color: '#ff4444', border: '1px solid #ff4444', borderRadius: '4px', cursor: 'pointer' }}
+                                                title={isEn ? 'Remove Variant' : 'הסר גרסה'}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <button 
+                                        type="button" 
+                                        onClick={() => addPriceVariant(wood)} 
+                                        style={{ background: 'none', border: '1px dashed #ccc', color: '#666', padding: '8px', borderRadius: '4px', cursor: 'pointer', width: '100%', fontSize: '0.85rem' }}
+                                    >
+                                        + {isEn ? 'Add another size for ' : 'הוסף מידה נוספת ל-'}{isEn ? wood.en : wood.he}
+                                    </button>
                                 </div>
-                            </div>
-                        ))}
+                            )
+                        })}
+
                         {_getAvailablePriceOptions().length === 0 && (
                             <p style={{ fontSize: '0.8rem', color: '#888', fontStyle: 'italic' }}>
                                 {isEn ? 'Select wood types in "Wood Types" section first' : 'בחר סוגי עץ במקטע "סוגי עץ" תחילה'}
