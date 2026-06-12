@@ -122,7 +122,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
 
     function toggleWoodPrice(woodOption: hebrewEnglishObj) {
         const currentPrices = [...(formData.price || [])]
-        const existingIdx = currentPrices.findIndex(p => p.wood.en === woodOption.en)
+        const existingIdx = currentPrices.findIndex(p => p.wood.en.toLowerCase() === woodOption.en.toLowerCase())
         
         if (existingIdx !== -1) {
             if (currentPrices.length <= 1) {
@@ -179,12 +179,14 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             })
 
             // 1. Prune prices that are no longer available in ANY selected wood type
-            let updatedPrices = (formData.price || []).filter(p => availableOptions.includes(p.wood.en))
+            let updatedPrices = (formData.price || []).filter(p => 
+                availableOptions.some(opt => opt.toLowerCase() === p.wood.en.toLowerCase())
+            )
             
             // 2. If an option was added, automatically add its corresponding price entries
             if (addedOption) {
                 const optionsToAdd: hebrewEnglishObj[] = []
-                if (addedOption.en === 'Oak/American walnut') {
+                if (addedOption.en.toLowerCase() === 'oak/american walnut') {
                     optionsToAdd.push({ en: 'Oak', he: 'אלון' })
                     optionsToAdd.push({ en: 'American walnut', he: 'אגוז אמריקאי' })
                 } else {
@@ -192,7 +194,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                 }
                 
                 optionsToAdd.forEach(opt => {
-                    if (!updatedPrices.some(p => p.wood.en === opt.en)) {
+                    if (!updatedPrices.some(p => p.wood.en.toLowerCase() === opt.en.toLowerCase())) {
                         updatedPrices.push({ wood: opt, amount: 0 })
                     }
                 })
@@ -355,7 +357,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                         <h4>{isEn ? 'Prices by Wood Type' : 'מחירים לפי סוג עץ'}</h4>
                         <div className="wood-price-toggles" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
                             {_getAvailablePriceOptions().map(wood => {
-                                const isSelected = (formData.price || []).some(p => p.wood.en === wood.en)
+                                const isSelected = (formData.price || []).some(p => p.wood.en.toLowerCase() === wood.en.toLowerCase())
                                 return (
                                     <label key={wood.en} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', padding: '8px', background: isSelected ? '#f0f7ff' : '#f9f9f9', borderRadius: '4px', border: `1px solid ${isSelected ? '#007bff' : '#ddd'}` }}>
                                         <input 
