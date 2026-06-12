@@ -428,7 +428,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                             return (
                                 <div key={wood.en} className="wood-group" style={{ marginBottom: '20px', padding: '15px', background: '#fcfcfc', border: '1px solid #eee', borderRadius: '8px' }}>
                                     <h5 style={{ marginTop: 0, marginBottom: '15px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>{isEn ? wood.en : wood.he}</h5>
-                                    {woodPrices.map((p, i) => (
+                                    {woodPrices.map((p) => (
                                         <div key={p.originalIdx} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '15px', marginBottom: '15px', alignItems: 'end' }}>
                                             <div className="form-group" style={{ marginBottom: 0 }}>
                                                 <label style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{isEn ? 'Size Label (Optional)' : 'תווית מידה (אופציונלי)'}</label>
