@@ -153,6 +153,8 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         )
         
         let newList
+        let addedOption: hebrewEnglishObj | null = null
+        
         if (isSelected) {
             newList = currentList.filter(item => 
                 (item.en && item.en.toLowerCase() !== option.en.toLowerCase()) && 
@@ -160,13 +162,14 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             )
         } else {
             newList = [...currentList, option]
+            addedOption = option
         }
 
         const newFormData = { ...formData, [field]: newList }
         
-        // If woodType changed, prune prices that are no longer available
+        // If woodType changed, sync prices
         if (field === 'woodType') {
-            const availableOptions = [] as string[]
+            const availableOptions: string[] = []
             newList.forEach(spec => {
                 if (spec.en === 'Oak/American walnut') {
                     availableOptions.push('Oak', 'American walnut')
@@ -175,16 +178,30 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                 }
             })
 
-            const prunedPrices = (formData.price || []).filter(p => availableOptions.includes(p.wood.en))
+            // 1. Prune prices that are no longer available in ANY selected wood type
+            let updatedPrices = (formData.price || []).filter(p => availableOptions.includes(p.wood.en))
             
-            // If we pruned everything, try to add back the first available option with 0 amount
-            if (prunedPrices.length === 0 && availableOptions.length > 0) {
+            // 2. If an option was added, automatically add its corresponding price entries
+            if (addedOption) {
+                const optionsToAdd = addedOption.en === 'Oak/American walnut' 
+                    ? [{ en: 'Oak', he: 'אלון' }, { en: 'American walnut', he: 'אגוז אמריקאי' }] 
+                    : [addedOption]
+                
+                optionsToAdd.forEach(opt => {
+                    if (!updatedPrices.some(p => p.wood.en === opt.en)) {
+                        updatedPrices.push({ wood: opt, amount: 0 })
+                    }
+                })
+            }
+
+            // 3. Safety: If we have wood types but no prices, add the first available
+            if (updatedPrices.length === 0 && availableOptions.length > 0) {
                 const firstOpt = newList[0].en === 'Oak/American walnut' 
                     ? { en: 'Oak', he: 'אלון' }
                     : newList[0]
-                prunedPrices.push({ wood: firstOpt, amount: 0 })
+                updatedPrices.push({ wood: firstOpt, amount: 0 })
             }
-            newFormData.price = prunedPrices
+            newFormData.price = updatedPrices
         }
         
         setFormData(newFormData)
