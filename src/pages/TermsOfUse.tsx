@@ -68,6 +68,11 @@ export const TermsOfUse = () => {
                             ? 'It is the responsibility of the ordering party (or a designer/architect on their behalf) to verify the accuracy of measurements, shades, types of raw materials, and their suitability for the designated space before approving the order for production.'
                             : 'באחריות המזמין (או מעצב/אדריכל מטעמו) לוודא את דיוק המידות, הגוונים, סוגי חומרי הגלם והתאמתם לחלל המיועד בטרם אישור ההזמנה לייצור.'}
                     </li>
+                    <li>
+                        {isEn
+                            ? 'Prices do not include bulbs.'
+                            : 'המחירים אינם כוללים נורות.'}
+                    </li>
                 </ul>
 
                 <h2>{isEn ? '3. Intellectual Property' : '3. קניין רוחני'}</h2>
