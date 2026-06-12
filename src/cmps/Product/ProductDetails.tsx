@@ -106,7 +106,7 @@ export const ProductDetails = () => {
                     onClick={onBack}
                 >
                     <Icons iconName={isEnglish ? 'back' : 'next'} />
-                    <span>{isEnglish ? 'Back to collection' : 'חזרה לקולקציה'}</span>
+                    <span>{isEnglish ? 'Back' : 'חזרה'}</span>
                 </button>
             </div>
 
