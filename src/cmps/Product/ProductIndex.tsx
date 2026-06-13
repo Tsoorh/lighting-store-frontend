@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { productService } from "../../services/product.service"
-import type { FilterBy, FullProductsOrNull } from "../../model/product.model"
+import type { FilterBy } from "../../model/product.model"
 import { ProductPreview } from "./ProductPreview"
 import { SkeletonProductPreview } from "../Skeleton/SkeletonProductPreview"
 
@@ -9,23 +9,11 @@ type productIndexProps = {
 }
 
 export const ProductIndex = ({ filterBy = {} }: productIndexProps) => {
-    const [products, setProducts] = useState<FullProductsOrNull>(null)
-    const [isLoading, setIsLoading] = useState(true)
-
-    useEffect(() => {
-        const loadProducts = async (): Promise<void> => {
-            setIsLoading(true)
-            try {
-                const productsFromDB = await productService.query(filterBy)
-                setProducts(productsFromDB)
-            } catch (err) {
-                console.error('Failed to load products:', err)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-        loadProducts()
-    }, [])
+    const { data: products, isLoading } = useQuery({
+        queryKey: ['products', filterBy],
+        queryFn: () => productService.query(filterBy),
+        select: (data) => Array.isArray(data) ? data : []
+    })
 
     if (isLoading) {
         return (

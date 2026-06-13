@@ -1,7 +1,7 @@
-import { useEffect, useState, useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
 import { productService } from "../services/product.service"
-import type { FullProduct } from "../model/product.model"
 import { ProductList } from "../cmps/Product/ProductList"
 import { ContactSection } from "../cmps/ContactSection"
 import { useLanguage } from "../hooks/useLanguage"
@@ -10,37 +10,21 @@ import { SkeletonProductPreview } from "../cmps/Skeleton/SkeletonProductPreview"
 export const ProductCategory = () => {
     const { categoryName } = useParams()
     const [searchParams, setSearchParams] = useSearchParams()
-    const [products, setProducts] = useState<FullProduct[] | undefined>()
-    const [isLoading, setIsLoading] = useState(true)
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
     const { language } = useLanguage()
 
     const page = parseInt(searchParams.get('page') || '1')
 
-    useEffect(() => {
-        if (categoryName) {
-            const getProducts = async () => {
-                setIsLoading(true)
-                try {
-                    const dbCategory = categoryName.toLowerCase() === 'pendant' ? 'hanging' : categoryName;
-                    const filterBy = { category: dbCategory }
-                    const productsFromDB = await productService.query(filterBy)
-                    
-                    if (Array.isArray(productsFromDB) && productsFromDB.length > 0) {
-                        setProducts(productsFromDB)
-                    } else {
-                        setProducts(undefined)
-                    }
-                } catch (err) {
-                    console.error('Failed to fetch products:', err)
-                    setProducts(undefined)
-                } finally {
-                    setIsLoading(false)
-                }
-            }
-            getProducts()
-        }
-    }, [categoryName])
+    const { data: products, isLoading } = useQuery({
+        queryKey: ['products', 'category', categoryName],
+        queryFn: () => {
+            if (!categoryName) return []
+            const dbCategory = categoryName.toLowerCase() === 'pendant' ? 'hanging' : categoryName
+            return productService.query({ category: dbCategory })
+        },
+        enabled: !!categoryName,
+        select: (data) => Array.isArray(data) ? data : []
+    })
 
     const onPageChange = (newPage: number) => {
         setSearchParams(prev => {
