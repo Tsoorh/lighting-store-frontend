@@ -1,5 +1,4 @@
 import { useState, type ChangeEvent, type FormEvent } from "react"
-import { useNavigate } from "react-router-dom"
 import { useLanguage } from "../hooks/useLanguage"
 import { authService } from "../services/auth.service"
 import '../assets/styles/pages/LoginRegister.css'
@@ -9,7 +8,6 @@ export const LoginRegister = () => {
     const [errorMsg, setErrorMsg] = useState('')
     
     const { language } = useLanguage()
-    const navigate = useNavigate()
     const isEnglish = language === 'en'
 
     const handleChange = (ev: ChangeEvent<HTMLInputElement>) => {
