@@ -197,15 +197,15 @@ export const AppHeader = () => {
                         <ul>
                             {resultProduct?.map(product => {
                                 const cleanUrls = product.imgsUrl.map(url => url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, ""))
-                                const cPhoto = cleanUrls.find(url => url.startsWith('C_'))
-                                const hPhoto = cleanUrls.find(url => url.startsWith('H_'))
-                                const numPhoto = cleanUrls.find(url => !url.startsWith('C_') && !url.startsWith('H_'))
+                                const filteredUrls = cleanUrls.filter(url => url !== 'coming-soon')
+                                const cPhoto = filteredUrls.find(url => url.startsWith('C_'))
+                                const hPhoto = filteredUrls.find(url => url.startsWith('H_'))
+                                const numPhoto = filteredUrls.find(url => !url.startsWith('C_') && !url.startsWith('H_'))
                                 
-                                const displayPhoto = cPhoto || hPhoto || numPhoto || 'coming-soon'
+                                const displayPhoto = cPhoto || hPhoto || numPhoto
                                 
                                 const getImageUrl = (imgName: string) => {
                                     const cloudId = import.meta.env.VITE_CLOUDINARY_ID
-                                    if (imgName === 'coming-soon') return `https://res.cloudinary.com/${cloudId}/image/upload/coming-soon.webp`
                                     if (imgName.startsWith('C_') || imgName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${imgName}.webp`
                                     return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${imgName}.webp`
                                 }
@@ -214,7 +214,23 @@ export const AppHeader = () => {
                                     <li key={product._id} role="link" tabIndex={0} onClick={()=>navigateToProduct(product._id as string)} onKeyDown={(e)=> (e.key === 'Enter' || e.key === ' ') && navigateToProduct(product._id as string)}>
                                         <div>
                                             <div className="image-container">
-                                                <ImageWithSkeleton src={getImageUrl(displayPhoto)} alt={product.name.en} />
+                                                {displayPhoto ? (
+                                                    <ImageWithSkeleton src={getImageUrl(displayPhoto)} alt={product.name.en} />
+                                                ) : (
+                                                    <div className="no-photo-placeholder-search" style={{ 
+                                                        width: '100%', 
+                                                        height: '100%', 
+                                                        display: 'flex', 
+                                                        alignItems: 'center', 
+                                                        justifyContent: 'center', 
+                                                        backgroundColor: '#f4f4f4', 
+                                                        fontSize: '10px', 
+                                                        color: '#999',
+                                                        textAlign: 'center'
+                                                    }}>
+                                                        {isEnglish ? 'No photo' : 'אין תמונה'}
+                                                    </div>
+                                                )}
                                             </div>
                                             <p>{isEnglish ? product.name.en : product.name.he}</p>
                                         </div>

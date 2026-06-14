@@ -85,6 +85,25 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
         }
     }
 
+    const getImageUrl = (imgsUrl: string[]) => {
+        if (!imgsUrl || imgsUrl.length === 0) return null
+        
+        const cleanUrls = imgsUrl.map(url => url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, ""))
+        const filteredUrls = cleanUrls.filter(url => url !== 'coming-soon')
+        if (filteredUrls.length === 0) return null
+
+        const cPhoto = filteredUrls.find(url => url.startsWith('C_'))
+        const hPhoto = filteredUrls.find(url => url.startsWith('H_'))
+        const numPhoto = filteredUrls.find(url => !url.startsWith('C_') && !url.startsWith('H_'))
+        
+        const imgName = cPhoto || hPhoto || numPhoto
+        if (!imgName) return null
+
+        const cloudId = import.meta.env.VITE_CLOUDINARY_ID
+        if (imgName.startsWith('C_') || imgName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/${imgName}.webp`
+        return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/4G8A${imgName}.webp`
+    }
+
     if (editingProduct) {
         return (
             <AdminProductEdit 
@@ -130,40 +149,60 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredProducts.map(product => (
-                            <tr key={product._id?.toString()}>
-                                <td className="product-img-td">
-                                    <img 
-                                        src={getImageUrl(product.imgsUrl)} 
-                                        alt={isEn ? product.name.en : product.name.he} 
-                                        className="admin-list-img"
-                                    />
-                                </td>
-                                <td>{isEn ? product.name.en : product.name.he}</td>
-                                <td>
-                                    {(() => {
-                                        if (!product.price || !Array.isArray(product.price) || product.price.length === 0) return '-'
-                                        const amounts = product.price.map(p => p.amount)
-                                        const min = Math.min(...amounts)
-                                        const max = Math.max(...amounts)
-                                        if (min === max) return <span dir="ltr">₪{min}</span>
-                                        return <span dir="ltr">₪{min} - ₪{max}</span>
-                                    })()}
-                                </td>
-                                <td>
-                                    <button 
-                                        className={`status-btn ${product.isActive !== false ? 'active' : 'inactive'}`}
-                                        onClick={() => onToggleActive(product)}
-                                    >
-                                        {product.isActive !== false ? (isEn ? 'Active' : 'פעיל') : (isEn ? 'Inactive' : 'לא פעיל')}
-                                    </button>
-                                </td>
-                                <td className="actions">
-                                    <button onClick={() => setEditingProduct(product)}>{isEn ? 'Edit' : 'ערוך'}</button>
-                                    <button onClick={() => onRemoveProduct(product._id!.toString())}>{isEn ? 'Remove' : 'מחק'}</button>
-                                </td>
-                            </tr>
-                        ))}
+                        {filteredProducts.map(product => {
+                            const imageUrl = getImageUrl(product.imgsUrl)
+                            return (
+                                <tr key={product._id?.toString()}>
+                                    <td className="product-img-td">
+                                        {imageUrl ? (
+                                            <img 
+                                                src={imageUrl} 
+                                                alt={isEn ? product.name.en : product.name.he} 
+                                                className="admin-list-img"
+                                            />
+                                        ) : (
+                                            <div className="admin-list-no-img" style={{ 
+                                                width: '50px', 
+                                                height: '50px', 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                justifyContent: 'center', 
+                                                backgroundColor: '#f4f4f4', 
+                                                fontSize: '10px', 
+                                                textAlign: 'center',
+                                                color: '#999',
+                                                borderRadius: '4px'
+                                            }}>
+                                                {isEn ? 'No photo' : 'אין תמונה'}
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td>{isEn ? product.name.en : product.name.he}</td>
+                                    <td>
+                                        {(() => {
+                                            if (!product.price || !Array.isArray(product.price) || product.price.length === 0) return '-'
+                                            const amounts = product.price.map(p => p.amount)
+                                            const min = Math.min(...amounts)
+                                            const max = Math.max(...amounts)
+                                            if (min === max) return <span dir="ltr">₪{min}</span>
+                                            return <span dir="ltr">₪{min} - ₪{max}</span>
+                                        })()}
+                                    </td>
+                                    <td>
+                                        <button 
+                                            className={`status-btn ${product.isActive !== false ? 'active' : 'inactive'}`}
+                                            onClick={() => onToggleActive(product)}
+                                        >
+                                            {product.isActive !== false ? (isEn ? 'Active' : 'פעיל') : (isEn ? 'Inactive' : 'לא פעיל')}
+                                        </button>
+                                    </td>
+                                    <td className="actions">
+                                        <button onClick={() => setEditingProduct(product)}>{isEn ? 'Edit' : 'ערוך'}</button>
+                                        <button onClick={() => onRemoveProduct(product._id!.toString())}>{isEn ? 'Remove' : 'מחק'}</button>
+                                    </td>
+                                </tr>
+                            )
+                        })}
                     </tbody>
                 </table>
             </div>
