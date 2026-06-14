@@ -39,13 +39,13 @@ export const ProductDetails = () => {
 
                 if (productFromDb && productFromDb.imgsUrl) {
                     const cleanUrls = productFromDb.imgsUrl.map((url: string) => url.replace(/[\r\n\s]+/g, "").replace(/\.[^/.]+$/, ""));
+                    const filteredUrls = cleanUrls.filter((url: string) => url !== 'coming-soon');
                     
-                    const hPhotos = cleanUrls.filter((url: string) => url.startsWith('H_'));
-                    const otherPhotos = cleanUrls.filter((url: string) => !url.startsWith('C_') && !url.startsWith('H_'));
+                    const hPhotos = filteredUrls.filter((url: string) => url.startsWith('H_'));
+                    const otherPhotos = filteredUrls.filter((url: string) => !url.startsWith('C_') && !url.startsWith('H_'));
 
                     const getImageUrl = (cleanName: string) => {
                         const cloudId = import.meta.env.VITE_CLOUDINARY_ID
-                        if (cleanName === 'coming-soon') return `https://res.cloudinary.com/${cloudId}/image/upload/coming-soon.webp`
                         if (cleanName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${cleanName}.webp`
                         return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${cleanName}.webp`
                     }
@@ -280,7 +280,18 @@ export const ProductDetails = () => {
                         {mainImage ? (
                             <ImageWithSkeleton src={mainImage} alt={nameLabel} className="main-image" />
                         ) : (
-                            <div className="no-image-placeholder">No Image Available</div>
+                            <div className="no-image-placeholder" style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                height: '100%', 
+                                width: '100%', 
+                                backgroundColor: '#f4f4f4',
+                                color: '#666',
+                                fontSize: '18px'
+                            }}>
+                                {isEnglish ? 'No photo available' : 'אין תמונה זמינה'}
+                            </div>
                         )}
                     </div>
                     <div className="gallery-bottom">

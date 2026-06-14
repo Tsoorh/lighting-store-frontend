@@ -32,16 +32,15 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
 
     // מנקים תווים נסתרים, רווחים וירידות שורות מכל השמות
     const cleanUrls = product.imgsUrl.map(url => url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, ""))
-    const cPhotos = cleanUrls.filter(url => url.startsWith('C_'))
-    const hPhotos = cleanUrls.filter(url => url.startsWith('H_'))
-    const numPhotos = cleanUrls.filter(url => !url.startsWith('C_') && !url.startsWith('H_'))
+    const filteredUrls = cleanUrls.filter(url => url !== 'coming-soon')
+    const cPhotos = filteredUrls.filter(url => url.startsWith('C_'))
+    const hPhotos = filteredUrls.filter(url => url.startsWith('H_'))
+    const numPhotos = filteredUrls.filter(url => !url.startsWith('C_') && !url.startsWith('H_'))
 
     let photosToRender = cPhotos.length > 0 ? cPhotos : (hPhotos.length > 0 ? hPhotos : numPhotos)
-    if (photosToRender.length === 0) photosToRender = ['coming-soon']
 
     const getImageUrl = (imgName: string) => {
         const cloudId = import.meta.env.VITE_CLOUDINARY_ID
-        if (imgName === 'coming-soon') return `https://res.cloudinary.com/${cloudId}/image/upload/coming-soon.webp`
         if (imgName.startsWith('C_') || imgName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${imgName}.webp`
         return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${imgName}.webp`
     }
@@ -100,11 +99,28 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
                     </>
                 )}
                 <div className="product-preview-images" ref={scrollRef} onScroll={handleScroll}>
-                    {photosToRender.map((img, idx) => (
-                        <div className="img-wrapper" key={idx}>
-                            <ImageWithSkeleton src={getImageUrl(img)} alt={isEnglish ? product.name.en : product.name.he} loading="lazy" />
+                    {photosToRender.length > 0 ? (
+                        photosToRender.map((img, idx) => (
+                            <div className="img-wrapper" key={idx}>
+                                <ImageWithSkeleton src={getImageUrl(img)} alt={isEnglish ? product.name.en : product.name.he} loading="lazy" />
+                            </div>
+                        ))
+                    ) : (
+                        <div className="no-image-placeholder-preview" style={{ 
+                            width: '100%', 
+                            aspectRatio: '1/1', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            backgroundColor: '#f4f4f4',
+                            color: '#666',
+                            fontSize: '14px',
+                            textAlign: 'center',
+                            padding: '20px'
+                        }}>
+                            {isEnglish ? 'No photo available' : 'אין תמונה זמינה'}
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
             <span className={`product-name ${isEnglish ? 'ltr' : 'rtl'}`}>
