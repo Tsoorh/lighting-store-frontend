@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { productService } from "../services/product.service"
@@ -25,6 +25,26 @@ export const ProductCategory = () => {
         enabled: !!categoryName,
         select: (data) => Array.isArray(data) ? data : []
     })
+
+    useEffect(() => {
+        if (!isLoading && products) {
+            const scrollPos = sessionStorage.getItem(`scroll-pos-${categoryName}`)
+            if (scrollPos) {
+                window.scrollTo(0, parseInt(scrollPos))
+            }
+        }
+    }, [isLoading, categoryName, products])
+
+    useEffect(() => {
+        const handleScroll = () => {
+            sessionStorage.setItem(`scroll-pos-${categoryName}`, window.scrollY.toString())
+        }
+
+        window.addEventListener('scroll', handleScroll)
+        return () => {
+            window.removeEventListener('scroll', handleScroll)
+        }
+    }, [categoryName])
 
     const onPageChange = (newPage: number) => {
         setSearchParams(prev => {

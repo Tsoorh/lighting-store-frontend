@@ -74,26 +74,15 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
             } else {
                 setProducts(prev => [savedProduct, ...prev])
             }
-            setEditingProduct(null)
+            
+            if (initialProductId) {
+                window.history.back()
+            } else {
+                setEditingProduct(null)
+            }
         } catch (err) {
             console.error('Failed to save product', err)
         }
-    }
-
-    const getImageUrl = (imgsUrl: string[]) => {
-        if (!imgsUrl || imgsUrl.length === 0) return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_ID}/image/upload/coming-soon.webp`
-        
-        const cleanUrls = imgsUrl.map(url => url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, ""))
-        const cPhoto = cleanUrls.find(url => url.startsWith('C_'))
-        const hPhoto = cleanUrls.find(url => url.startsWith('H_'))
-        const numPhoto = cleanUrls.find(url => !url.startsWith('C_') && !url.startsWith('H_'))
-        
-        const imgName = cPhoto || hPhoto || numPhoto || 'coming-soon'
-        const cloudId = import.meta.env.VITE_CLOUDINARY_ID
-
-        if (imgName === 'coming-soon') return `https://res.cloudinary.com/${cloudId}/image/upload/coming-soon.webp`
-        if (imgName.startsWith('C_') || imgName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/${imgName}.webp`
-        return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/4G8A${imgName}.webp`
     }
 
     if (editingProduct) {
@@ -101,7 +90,13 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
             <AdminProductEdit 
                 product={editingProduct === 'new' ? undefined : editingProduct} 
                 onSave={onSaveProduct} 
-                onCancel={() => setEditingProduct(null)} 
+                onCancel={() => {
+                    if (initialProductId) {
+                        window.history.back()
+                    } else {
+                        setEditingProduct(null)
+                    }
+                }} 
             />
         )
     }

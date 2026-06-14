@@ -1,10 +1,13 @@
 import { useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import '../assets/styles/pages/LegalPage.css';
+import { Icons } from '../cmps/Icons';
+import { useNavigate } from 'react-router-dom';
 
 export const TermsOfUse = () => {
     const { language } = useLanguage();
     const isEn = language === 'en';
+    const navigate = useNavigate();
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -12,6 +15,15 @@ export const TermsOfUse = () => {
 
     return (
         <div className="legal-layout" dir={isEn ? 'ltr' : 'rtl'}>
+            <div className="product-navigation-header">
+                <button 
+                    className="back-to-category-btn" 
+                    onClick={() => navigate(-1)}
+                >
+                    <Icons iconName={isEn ? 'back' : 'next'} />
+                    <span>{isEn ? 'Back' : 'חזרה'}</span>
+                </button>
+            </div>
             <section className="legal-content">
                 <h1>{isEn ? 'Terms and Conditions of Use' : 'תקנון האתר ותנאי שימוש'}</h1>
                 
