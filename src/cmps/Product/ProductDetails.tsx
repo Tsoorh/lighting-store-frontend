@@ -76,9 +76,9 @@ export const ProductDetails = () => {
     const linkLabel = isEnglish ? 'Request a Quote' : 'בקשה להצעת מחיר'
 
     const materialsStr = product.material.map(m => isEnglish ? m.en : m.he).join(', ')
-    const hasMetal = product.material.some(m => m.en === 'Metal')
+    const hasMetal = product.material.some(m => m.en.toLowerCase() === 'metal')
     const woodStr = product.woodType.map(w => isEnglish ? w.en : w.he).join(', ')
-    const hasWood = woodStr && !product.woodType.some(w => w.en === 'No wood')
+    const hasWood = woodStr && !product.woodType.some(w => w.en.toLowerCase() === 'no wood')
     const bulbStr = product.socketType?.screwType || ''
     const voltStr = product.socketType?.lightType || ''
 
