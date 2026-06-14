@@ -68,7 +68,7 @@ axios.interceptors.response.use(
             if (originalRequest.url?.includes('/auth/refresh-token')) {
                 //Refresh token failed or revoked. Logging out.
                 isRefreshing = false
-                sessionStorage.removeItem('loggedinUser')
+                localStorage.removeItem('loggedinUser')
                 window.dispatchEvent(new Event('user-changed'))
                 window.location.assign('/login')
                 return Promise.reject(error);
@@ -96,7 +96,7 @@ axios.interceptors.response.use(
             } catch {
                 //Failed to renew token. Logging out.
                 isRefreshing = false
-                sessionStorage.removeItem('loggedinUser')
+                localStorage.removeItem('loggedinUser')
                 window.dispatchEvent(new Event('user-changed'))
                 window.location.assign('/login')
                 return Promise.reject(error);

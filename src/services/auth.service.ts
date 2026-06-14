@@ -17,18 +17,18 @@ async function register(newuser: User): Promise<Miniuser> {
 
 async function logout(): Promise<void> {
     await httpService.post('auth/logout', null)
-    sessionStorage.removeItem(STORAGE_KEY_LOGGEDIN_USER)
+    localStorage.removeItem(STORAGE_KEY_LOGGEDIN_USER)
     window.dispatchEvent(new Event('user-changed'))
 }
 
 function getLoggedinUser(): Miniuser | null {
-    const userStr = sessionStorage.getItem(STORAGE_KEY_LOGGEDIN_USER)
+    const userStr = localStorage.getItem(STORAGE_KEY_LOGGEDIN_USER)
     if (!userStr) return null
     return JSON.parse(userStr) as Miniuser
 }
 
 function _saveLocalUser(user: Miniuser) {
-    sessionStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(user))
+    localStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(user))
     window.dispatchEvent(new Event('user-changed'))
     return user
 }
