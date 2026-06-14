@@ -17,5 +17,5 @@ export const PRODUCT_OPTIONS = {
         { en: 'Glass', he: 'זכוכית' }
     ],
     SCREW_TYPES: ['E27', 'G9', 'GU10', 'LED (Integrated)', 'Mixed: GU10 + E27', 'Mixed: G9 + E27'],
-    LIGHT_TYPES: ['LED - Max 5W', 'LED - Max 7W', 'LED - Max 10W', 'LED - Max 15W', 'LED - Max 20W', 'LED - Max 35W']
+    LIGHT_TYPES: ['LED - Max 5W', 'LED - Max 7W', 'LED - Max 9W', 'LED - Max 10W', 'LED - Max 15W', 'LED - Max 20W', 'LED - Max 35W', 'LED - Max 36W']
 } as const;

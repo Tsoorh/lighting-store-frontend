@@ -527,6 +527,10 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                         <input type="number" value={s.width || ''} onChange={(e) => handleSizeChange(index, 'width', +e.target.value)} />
                                     </div>
                                     <div className="form-group">
+                                        <label>{isEn ? 'Depth' : 'עומק'}</label>
+                                        <input type="number" value={s.depth || ''} onChange={(e) => handleSizeChange(index, 'depth', +e.target.value)} />
+                                    </div>
+                                    <div className="form-group">
                                         <label>{isEn ? 'Height' : 'גובה'}</label>
                                         <input type="number" value={s.height || ''} onChange={(e) => handleSizeChange(index, 'height', +e.target.value)} />
                                     </div>
