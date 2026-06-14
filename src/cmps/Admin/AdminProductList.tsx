@@ -99,7 +99,8 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
         const imgName = cPhoto || hPhoto || numPhoto
         if (!imgName) return null
 
-        const cloudId = import.meta.env.VITE_CLOUDINARY_ID
+        // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
+        const cloudId = 'dhixlriwm'
         if (imgName.startsWith('C_') || imgName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/${imgName}.webp`
         return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/4G8A${imgName}.webp`
     }

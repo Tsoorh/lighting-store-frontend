@@ -205,7 +205,8 @@ export const AppHeader = () => {
                                 const displayPhoto = cPhoto || hPhoto || numPhoto
                                 
                                 const getImageUrl = (imgName: string) => {
-                                    const cloudId = import.meta.env.VITE_CLOUDINARY_ID
+                                    // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
+                                    const cloudId = 'dhixlriwm'
                                     if (imgName.startsWith('C_') || imgName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${imgName}.webp`
                                     return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${imgName}.webp`
                                 }

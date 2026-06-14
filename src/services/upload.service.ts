@@ -3,7 +3,7 @@ export const uploadService = {
 }
 
 async function uploadImg(file: File, publicId: string) {
-  const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_ID
+  const CLOUD_NAME = 'dhixlriwm'
   const UPLOAD_PRESET = "tiran_preset" // User needs to create this in Cloudinary
   const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`
 

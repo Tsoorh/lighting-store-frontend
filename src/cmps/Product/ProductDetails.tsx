@@ -45,7 +45,8 @@ export const ProductDetails = () => {
                     const otherPhotos = filteredUrls.filter((url: string) => !url.startsWith('C_') && !url.startsWith('H_'));
 
                     const getImageUrl = (cleanName: string) => {
-                        const cloudId = import.meta.env.VITE_CLOUDINARY_ID
+                        // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
+                        const cloudId = 'dhixlriwm'
                         if (cleanName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${cleanName}.webp`
                         return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${cleanName}.webp`
                     }

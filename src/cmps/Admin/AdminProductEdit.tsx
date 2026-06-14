@@ -593,8 +593,8 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                     <div key={url} className="img-preview-item" style={{ position: 'relative' }}>
                                         <img 
                                             src={url.startsWith('C_') || url.startsWith('H_') 
-                                                ? `https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_ID}/image/upload/${url}.webp`
-                                                : `https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_ID}/image/upload/4G8A${url}.webp`
+                                                ? `https://res.cloudinary.com/dhixlriwm/image/upload/${url}.webp`
+                                                : `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${url}.webp`
                                             } 
                                             alt="preview" 
                                             style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}

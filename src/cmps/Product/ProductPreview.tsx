@@ -40,7 +40,8 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     let photosToRender = cPhotos.length > 0 ? cPhotos : (hPhotos.length > 0 ? hPhotos : numPhotos)
 
     const getImageUrl = (imgName: string) => {
-        const cloudId = import.meta.env.VITE_CLOUDINARY_ID
+        // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
+        const cloudId = 'dhixlriwm'
         if (imgName.startsWith('C_') || imgName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${imgName}.webp`
         return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${imgName}.webp`
     }
