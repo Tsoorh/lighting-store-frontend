@@ -5,9 +5,10 @@
     /* box-shadow: 0px 8px 6px -6px rgb(199, 199, 199); */
     padding: 30px 80px;
     position: sticky;
+    top: 0;
     height: 104px;
     background: var(--header-bgc);
-    z-index: 10;
+    z-index: 1000;
 }
 
 .logo {
