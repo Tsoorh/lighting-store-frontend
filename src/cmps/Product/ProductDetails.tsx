@@ -77,6 +77,7 @@ export const ProductDetails = () => {
 
     const materialsStr = product.material.map(m => isEnglish ? m.en : m.he).join(', ')
     const woodStr = product.woodType.map(w => isEnglish ? w.en : w.he).join(', ')
+    const hasWood = woodStr && !product.woodType.some(w => w.en === 'No wood')
     const bulbStr = product.socketType?.screwType || ''
     const voltStr = product.socketType?.lightType || ''
 
@@ -193,12 +194,12 @@ export const ProductDetails = () => {
                             <div className="product-sec2">
                                 <h3>{specsTitle}</h3>
                                 <ul className="specs-list">
-                                    {woodStr && <li>{isEnglish ? 'Wood Type:' : 'סוג עץ:'} {woodStr}</li>}
+                                    {hasWood && <li>{isEnglish ? 'Wood Type:' : 'סוג עץ:'} {woodStr}</li>}
                                     {materialsStr && <li>{isEnglish ? 'Materials:' : 'חומרים:'} {materialsStr}</li>}
-                                    {voltStr && <li>{isEnglish ? 'Voltage:' : 'מתח:'} {voltStr}</li>}
+                                    {voltStr && <li>{isEnglish ? 'Wattage:' : 'הספק:'} {voltStr}</li>}
                                     {bulbStr && <li>{isEnglish ? 'Bulb Type:' : 'סוג נורה:'} {bulbStr}</li>}
                                 </ul>
-                                {woodStr && (
+                                {hasWood && (
                                     <p className="natural-material-note">
                                         {isEnglish 
                                             ? '* Slight variations in wood tone may occur due to the natural character of the material' 
