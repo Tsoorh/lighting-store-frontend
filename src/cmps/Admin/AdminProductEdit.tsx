@@ -226,7 +226,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             })
 
             // 1. Prune prices that are no longer available in ANY selected wood type
-            let updatedPrices = (formData.price || []).filter(p => 
+            const updatedPrices = (formData.price || []).filter(p => 
                 availableOptions.some(opt => opt.toLowerCase() === p.wood.en.toLowerCase())
             )
             
