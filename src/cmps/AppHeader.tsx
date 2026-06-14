@@ -120,7 +120,7 @@ export const AppHeader = () => {
     const onLogout = async () => {
         try {
             await authService.logout()
-            navigate('/')
+            window.location.assign('/')
         } catch (err) {
             console.error('Failed to logout', err)
         }

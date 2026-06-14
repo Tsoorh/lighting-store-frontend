@@ -23,7 +23,7 @@ export const LoginRegister = () => {
         
         try {
             await authService.login({ username: credentials.username, password: credentials.password })
-            navigate('/') // Go to homepage after successful login
+            window.location.assign('/') // Hard reload to clear query cache
         } catch (err: unknown) {
             if (err instanceof Error) {
                 console.error('Auth error:', err.message)
