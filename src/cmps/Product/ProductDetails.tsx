@@ -76,6 +76,7 @@ export const ProductDetails = () => {
     const linkLabel = isEnglish ? 'Request a Quote' : 'בקשה להצעת מחיר'
 
     const materialsStr = product.material.map(m => isEnglish ? m.en : m.he).join(', ')
+    const hasMetal = product.material.some(m => m.en === 'Metal')
     const woodStr = product.woodType.map(w => isEnglish ? w.en : w.he).join(', ')
     const hasWood = woodStr && !product.woodType.some(w => w.en === 'No wood')
     const bulbStr = product.socketType?.screwType || ''
@@ -204,6 +205,13 @@ export const ProductDetails = () => {
                                         {isEnglish 
                                             ? '* Slight variations in wood tone may occur due to the natural character of the material' 
                                             : '* ייתכנו שינויים קלים בגוון העץ בשל אופיו הטבעי של החומר'}
+                                    </p>
+                                )}
+                                {hasMetal && (
+                                    <p className="natural-material-note">
+                                        {isEnglish 
+                                            ? '* Metal color is customizable' 
+                                            : '* צבע המתכת ניתן לבחירה'}
                                     </p>
                                 )}
                             </div>
