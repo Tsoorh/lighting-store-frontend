@@ -35,11 +35,12 @@ const downloadPriceList = async (type: 'pdf' | 'excel'): Promise<void> => {
         document.body.appendChild(link)
         link.click()
         
-        // Cleanup with a slight delay to ensure the browser has triggered the download
+        // Cleanup with a delay to ensure the browser has triggered and finished the download
+        // Mobile Safari needs the blob to stay valid until the user confirms the system prompt
         setTimeout(() => {
             document.body.removeChild(link)
             window.URL.revokeObjectURL(url)
-        }, 100)
+        }, 10000)
     } catch (err) {
         console.error('Download failed:', err)
         throw err
