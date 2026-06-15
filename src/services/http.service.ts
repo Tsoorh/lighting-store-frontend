@@ -1,10 +1,10 @@
 import Axios, { type AxiosRequestConfig, type Method } from 'axios'
 
-const BASE_URL = import.meta.env.PROD 
-    ? '/api/' 
-    : 'https://lighting-store-backend-production.up.railway.app/api/'; 
+// const BASE_URL = import.meta.env.PROD 
+//     ? '/api/' 
+//     : 'https://lighting-store-backend-production.up.railway.app/api/'; 
     
-// const BASE_URL = 'https://lighting-store-backend-production.up.railway.app/api/' 
+const BASE_URL = 'https://lighting-store-backend-production.up.railway.app/api/' 
 // const BASE_URL = '/api/' 
 // const BASE_URL = 'http://localhost:3000/api/' 
 
