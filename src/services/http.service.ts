@@ -1,12 +1,11 @@
 import Axios, { type AxiosRequestConfig, type Method } from 'axios'
 
-// const BASE_URL = import.meta.env.PROD 
-//     ? '/api/' 
-//     : 'https://lighting-store-backend-production.up.railway.app/api/'; 
+const BASE_URL =  'https://api.tiranlasry.com/api/' ;
+
     
-const BASE_URL = 'https://lighting-store-backend-production.up.railway.app/api/' 
-// const BASE_URL = '/api/' 
-// const BASE_URL = 'http://localhost:3000/api/' 
+// const BASE_URL = 'https://api.tiranlasry.com/api/' 
+// const BASE_URL = 'https://lighting-store-backend-production.up.railway.app/api/' 
+
 
 const axios = Axios.create({ withCredentials: true, baseURL: BASE_URL })
 // const axiosNoIntercept = Axios.create({ withCredentials: true, baseURL: BASE_URL })
@@ -92,12 +91,17 @@ axios.interceptors.response.use(
         }
 
         if (status === 401 && !originalRequest._retry) {
+            // Check if this is a download request or if we should skip forced logout
+            const isDownload = originalRequest.responseType === 'blob' || originalRequest.url?.includes('export/')
+
             if (originalRequest.url?.includes('/auth/refresh-token')) {
-                //Refresh token failed or revoked. Logging out.
+                //Refresh token failed or revoked.
                 isRefreshing = false
-                localStorage.removeItem('loggedinUser')
-                window.dispatchEvent(new Event('user-changed'))
-                window.location.assign('/login')
+                if (!isDownload) {
+                    localStorage.removeItem('loggedinUser')
+                    window.dispatchEvent(new Event('user-changed'))
+                    window.location.assign('/login')
+                }
                 return Promise.reject(error);
             }
 
@@ -121,11 +125,15 @@ axios.interceptors.response.use(
                 //Token refreshed. Retrying original request...
                 return axios(originalRequest);
             } catch {
-                //Failed to renew token. Logging out.
+                //Failed to renew token.
                 isRefreshing = false
-                localStorage.removeItem('loggedinUser')
-                window.dispatchEvent(new Event('user-changed'))
-                window.location.assign('/login')
+                if (!isDownload) {
+                    localStorage.removeItem('loggedinUser')
+                    window.dispatchEvent(new Event('user-changed'))
+                    window.location.assign('/login')
+                } else {
+                    alert('Mobile Safari security settings are blocking the download. Please ensure "Prevent Cross-Site Tracking" is disabled in Settings > Safari, or try a different browser.')
+                }
                 return Promise.reject(error);
             }
         }
