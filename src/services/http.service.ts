@@ -1,12 +1,12 @@
 import Axios, { type AxiosRequestConfig, type Method } from 'axios'
 
-// const BASE_URL = import.meta.env.PROD 
-    // ? 'https://lighting-store-backend-production.up.railway.app/api/' 
-    // : 'http://localhost:3000/api/'; 
+const BASE_URL = import.meta.env.PROD 
+    ? '/api/' 
+    : 'https://lighting-store-backend-production.up.railway.app/api/'; 
     
-    const BASE_URL = 'https://lighting-store-backend-production.up.railway.app/api/' 
-    // const BASE_URL = '/api/' 
-    // const BASE_URL = 'http://localhost:3000/api/' 
+// const BASE_URL = 'https://lighting-store-backend-production.up.railway.app/api/' 
+// const BASE_URL = '/api/' 
+// const BASE_URL = 'http://localhost:3000/api/' 
 
 const axios = Axios.create({ withCredentials: true, baseURL: BASE_URL })
 // const axiosNoIntercept = Axios.create({ withCredentials: true, baseURL: BASE_URL })
@@ -85,10 +85,7 @@ axios.interceptors.response.use(
             try {
                 const text = await error.response.data.text();
                 const data = JSON.parse(text);
-                // Some backends might return status inside the JSON
                 if (data.status) status = data.status;
-                // If it's a 401, we want to treat it as such even if the outer status was different
-                if (data.message === 'Not Authorized' || data.error === 'Not Authorized') status = 401;
             } catch (err) {
                 console.error('Failed to parse error blob as JSON', err);
             }
