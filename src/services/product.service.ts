@@ -20,11 +20,25 @@ const remove = async (productId: string): Promise<string> => {
     return await httpService.delete<string>(`product/${productId}`)
 }
 
+const downloadPriceList = async (type: 'pdf' | 'excel'): Promise<void> => {
+    const timestamp = Date.now()
+    const blob = await httpService.download(`product/export/${type}?t=${timestamp}`)
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `price-list-${timestamp}.${type === 'pdf' ? 'pdf' : 'xlsx'}`)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(url)
+}
+
 
 export const productService = {
     query,
     getById,
     add,
     update,
-    remove
+    remove,
+    downloadPriceList
 }

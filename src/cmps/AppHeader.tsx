@@ -140,14 +140,14 @@ export const AppHeader = () => {
                 <img src={Logo} alt="Tiran-Logo" />
             </div>
             <nav className="nav-bar">
-                {user ? (
+                {user && !isMobile ? (
                     <div className="user-logged-in" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginInlineEnd: isMobile ? '12px' : '24px', fontSize: '14px', fontFamily: 'Heebo, sans-serif' }}>
                         <span style={{ color: 'rgba(126, 133, 136, 1)' }}>{isEnglish ? `Hi, ${user.fullname}` : `שלום, ${user.fullname}`}</span>
                         <button onClick={onLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', color: 'inherit', fontFamily: 'inherit' }}>
                             {isEnglish ? 'Logout' : 'התנתק'}
                         </button>
                     </div>
-                ) : (
+                ) : !user ? (
                     <button 
                         className="user-btn" 
                         onClick={() => navigate('/login')} 
@@ -156,7 +156,7 @@ export const AppHeader = () => {
                     >
                         <Icons iconName="user" />
                     </button>
-                )}
+                ) : null}
                 {isMobile ? <button className={`menu-icon ${isMenuOpen ? `active` : ``}`} onClick={handleOpenMenu} aria-expanded={isMenuOpen} aria-label={isEnglish ? 'Menu' : 'תפריט'} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}> <Icons iconName="menu" /> </button> :
                     <NavigationList navLinks={navbarProperties} handleSearch={handleSearch} />
                 }
@@ -168,6 +168,15 @@ export const AppHeader = () => {
                     <button className="exit-btn" onClick={handleOpenMenu} aria-label={isEnglish ? 'Close menu' : 'סגור תפריט'}><Icons iconName={"close"} /></button>
                     <h1>{isEnglish ? 'Menu' : 'תפריט'}</h1>
                     <NavigationList navLinks={navbarProperties} closeMenu={handleOpenMenu} />
+                    
+                    {isMobile && user && (
+                        <div className="mobile-user-actions" style={{ marginTop: 'auto', padding: '20px', borderTop: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            <span style={{ color: 'rgba(126, 133, 136, 1)', fontSize: '16px' }}>{isEnglish ? `Hi, ${user.fullname}` : `שלום, ${user.fullname}`}</span>
+                            <button onClick={onLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 0', textDecoration: 'underline', color: '#d32f2f', textAlign: 'inherit', fontSize: '16px', fontFamily: 'inherit' }}>
+                                {isEnglish ? 'Logout' : 'התנתק'}
+                            </button>
+                        </div>
+                    )}
                 </div>
             </MenuModal>}
 

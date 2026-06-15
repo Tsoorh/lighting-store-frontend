@@ -23,6 +23,22 @@ export const httpService = {
     },
     delete<TResponse, TData = undefined>(endpoint: string, data?: TData): Promise<TResponse> {
         return ajax<TResponse, TData>(endpoint, 'DELETE', data)
+    },
+    async download(endpoint: string): Promise<Blob> {
+        const options: AxiosRequestConfig = { 
+            url: endpoint, 
+            method: 'GET', 
+            responseType: 'blob', 
+            withCredentials: true 
+        }
+        try {
+            const res = await axios(options)
+            return res.data
+        } catch (err) {
+            console.log(`Had Issues downloading from the backend, endpoint: ${endpoint}`)
+            console.dir(err)
+            throw err
+        }
     }
 }
 

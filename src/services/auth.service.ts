@@ -16,9 +16,14 @@ async function register(newuser: User): Promise<Miniuser> {
 }
 
 async function logout(): Promise<void> {
-    await httpService.post('auth/logout', null)
-    localStorage.removeItem(STORAGE_KEY_LOGGEDIN_USER)
-    window.dispatchEvent(new Event('user-changed'))
+    try {
+        await httpService.post('auth/logout', null)
+    } catch (err) {
+        console.error('Failed to logout on backend', err)
+    } finally {
+        localStorage.removeItem(STORAGE_KEY_LOGGEDIN_USER)
+        window.dispatchEvent(new Event('user-changed'))
+    }
 }
 
 function getLoggedinUser(): Miniuser | null {
