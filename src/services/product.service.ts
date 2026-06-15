@@ -21,16 +21,29 @@ const remove = async (productId: string): Promise<string> => {
 }
 
 const downloadPriceList = async (type: 'pdf' | 'excel'): Promise<void> => {
-    const timestamp = Date.now()
-    const blob = await httpService.download(`product/export/${type}?t=${timestamp}`)
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', `price-list-${timestamp}.${type === 'pdf' ? 'pdf' : 'xlsx'}`)
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    window.URL.revokeObjectURL(url)
+    try {
+        const timestamp = Date.now()
+        const blob = await httpService.download(`product/export/${type}?t=${timestamp}`)
+        
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = url
+        link.setAttribute('download', `price-list-${timestamp}.${type === 'pdf' ? 'pdf' : 'xlsx'}`)
+        
+        // Mobile Safari often requires the link to be in the DOM
+        document.body.appendChild(link)
+        link.click()
+        
+        // Cleanup with a slight delay to ensure the browser has triggered the download
+        setTimeout(() => {
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(url)
+        }, 100)
+    } catch (err) {
+        console.error('Download failed:', err)
+        throw err
+    }
 }
 
 

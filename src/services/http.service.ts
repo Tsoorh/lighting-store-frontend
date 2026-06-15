@@ -80,15 +80,17 @@ axios.interceptors.response.use(
         const originalRequest = error.config;
         let status = error.response?.status;
 
-        // If the response is a blob (common in download requests), we need to parse it to check for errors
+        // If the response is a blob, it might be a JSON error hidden in a blob
         if (error.response?.data instanceof Blob && error.response.data.type === 'application/json') {
             try {
-                const text = await error.response.data.text()
-                const data = JSON.parse(text)
-                // If the backend returned a 401 in a json blob, we use that status
-                if (data.status) status = data.status
+                const text = await error.response.data.text();
+                const data = JSON.parse(text);
+                // Some backends might return status inside the JSON
+                if (data.status) status = data.status;
+                // If it's a 401, we want to treat it as such even if the outer status was different
+                if (data.message === 'Not Authorized' || data.error === 'Not Authorized') status = 401;
             } catch (err) {
-                console.error('Failed to parse error blob', err)
+                console.error('Failed to parse error blob as JSON', err);
             }
         }
 
