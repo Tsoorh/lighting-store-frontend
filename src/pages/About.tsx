@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import '../assets/styles/pages/AboutPage.css';
 import { Icons } from '../cmps/Icons';
 import { ContactSection } from '../cmps/ContactSection';
@@ -6,6 +7,10 @@ import { useLanguage } from '../hooks/useLanguage';
 export const About = () => {
     const { language } = useLanguage();
     const isEn = language === 'en';
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     return (
         <div className="about-layout" dir={isEn ? 'ltr' : 'rtl'}>
