@@ -16,7 +16,7 @@ export const ContactDetails = ({ showTitle = true }: ContactDetailsProps) => {
                 <div className="contact-socials">
                     <a href="https://wa.me/972524000102" target="_blank" rel="noopener noreferrer" aria-label={isEn ? "Contact us on WhatsApp" : "צור קשר בוואטסאפ"}><Icons iconName="whatsapp" /></a>
                     <a href="https://www.facebook.com/profile.php?id=61579487155503" target="_blank" rel="noopener noreferrer" aria-label={isEn ? "Visit our Facebook page" : "בקר בעמוד הפייסבוק שלנו"}><Icons iconName="facebook" /></a>
-                    <a href="#" target="_blank" rel="noopener noreferrer" aria-label={isEn ? "Visit our Instagram page" : "בקר בעמוד האינסטגרם שלנו"}><Icons iconName="instagram" /></a>
+                    <a href="https://www.instagram.com/tiran.lasry?igsh=M3A1NDA0bTdmaGR5" target="_blank" rel="noopener noreferrer" aria-label={isEn ? "Visit our Instagram page" : "בקר בעמוד האינסטגרם שלנו"}><Icons iconName="instagram" /></a>
                     <a href="mailto:tiranlasry@gmail.com" aria-label={isEn ? "Send us an email" : "שלח לנו אימייל"}><Icons iconName="gmail" /></a>
                 </div>
             </div>
