@@ -6,6 +6,7 @@ import { AdminUserEdit } from './AdminUserEdit'
 
 export const AdminUserList: React.FC = () => {
     const [users, setUsers] = useState<Miniuser[]>([])
+    const [isLoading, setIsLoading] = useState(true)
     const [editingUser, setEditingUser] = useState<Miniuser | null | 'new'>(null)
     const { language } = useLanguage()
     const isEn = language === 'en'
@@ -13,10 +14,13 @@ export const AdminUserList: React.FC = () => {
     useEffect(() => {
         async function loadUsers() {
             try {
+                setIsLoading(true)
                 const fetchedUsers = await userService.query()
                 setUsers(fetchedUsers)
             } catch (err) {
                 console.error('Failed to load users', err)
+            } finally {
+                setIsLoading(false)
             }
         }
 
@@ -65,31 +69,39 @@ export const AdminUserList: React.FC = () => {
                     {isEn ? 'Add User' : 'הוסף משתמש'}
                 </button>
             </header>
-            <div className="table-responsive">
-                <table className="admin-table">
-                    <thead>
-                        <tr>
-                            <th>{isEn ? 'Full Name' : 'שם מלא'}</th>
-                            <th>{isEn ? 'Username' : 'שם משתמש'}</th>
-                            <th>{isEn ? 'Role' : 'תפקיד'}</th>
-                            <th>{isEn ? 'Actions' : 'פעולות'}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {users.map(user => (
-                            <tr key={user._id?.toString()}>
-                                <td>{user.fullname}</td>
-                                <td>{user.username}</td>
-                                <td>{user.role || '-'}</td>
-                                <td className="actions">
-                                    <button onClick={() => setEditingUser(user)}>{isEn ? 'Edit' : 'ערוך'}</button>
-                                    <button onClick={() => onRemoveUser(user._id!.toString())}>{isEn ? 'Remove' : 'מחק'}</button>
-                                </td>
+
+            {isLoading ? (
+                <div className="admin-loader-container">
+                    <div className="admin-loader"></div>
+                    <p>{isEn ? 'Loading users...' : 'טוען משתמשים...'}</p>
+                </div>
+            ) : (
+                <div className="table-responsive">
+                    <table className="admin-table">
+                        <thead>
+                            <tr>
+                                <th>{isEn ? 'Full Name' : 'שם מלא'}</th>
+                                <th>{isEn ? 'Username' : 'שם משתמש'}</th>
+                                <th>{isEn ? 'Role' : 'תפקיד'}</th>
+                                <th>{isEn ? 'Actions' : 'פעולות'}</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            {users.map(user => (
+                                <tr key={user._id?.toString()}>
+                                    <td data-label={isEn ? 'Full Name' : 'שם מלא'}>{user.fullname}</td>
+                                    <td data-label={isEn ? 'Username' : 'שם משתמש'}>{user.username}</td>
+                                    <td data-label={isEn ? 'Role' : 'תפקיד'}>{user.role || '-'}</td>
+                                    <td className="actions" data-label={isEn ? 'Actions' : 'פעולות'}>
+                                        <button onClick={() => setEditingUser(user)}>{isEn ? 'Edit' : 'ערוך'}</button>
+                                        <button onClick={() => onRemoveUser(user._id!.toString())}>{isEn ? 'Remove' : 'מחק'}</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </section>
     )
 }

@@ -10,6 +10,7 @@ interface AdminProductListProps {
 
 export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProductId }) => {
     const [products, setProducts] = useState<FullProduct[]>([])
+    const [isLoading, setIsLoading] = useState(true)
     const [editingProduct, setEditingProduct] = useState<FullProduct | null | 'new'>(null)
     const [filterBy, setFilterBy] = useState({ txt: '' })
     const { language } = useLanguage()
@@ -18,6 +19,7 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
     useEffect(() => {
         async function loadProducts() {
             try {
+                setIsLoading(true)
                 const fetchedProducts = await productService.query({})
                 const prodList = fetchedProducts as FullProduct[]
                 setProducts(prodList)
@@ -28,6 +30,8 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
                 }
             } catch (err) {
                 console.error('Failed to load products', err)
+            } finally {
+                setIsLoading(false)
             }
         }
 
@@ -138,75 +142,87 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
                     </button>
                 </div>
             </header>
-            <div className="table-responsive">
-                <table className="admin-table">
-                    <thead>
-                        <tr>
-                            <th>{isEn ? 'Image' : 'תמונה'}</th>
-                            <th>{isEn ? 'Name' : 'שם'}</th>
-                            <th>{isEn ? 'Price' : 'מחיר'}</th>
-                            <th>{isEn ? 'Status' : 'סטטוס'}</th>
-                            <th>{isEn ? 'Actions' : 'פעולות'}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredProducts.map(product => {
-                            const imageUrl = getImageUrl(product.imgsUrl)
-                            return (
-                                <tr key={product._id?.toString()}>
-                                    <td className="product-img-td">
-                                        {imageUrl ? (
-                                            <img 
-                                                src={imageUrl} 
-                                                alt={isEn ? product.name.en : product.name.he} 
-                                                className="admin-list-img"
-                                            />
-                                        ) : (
-                                            <div className="admin-list-no-img" style={{ 
-                                                width: '50px', 
-                                                height: '50px', 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
-                                                justifyContent: 'center', 
-                                                backgroundColor: '#f4f4f4', 
-                                                fontSize: '10px', 
-                                                textAlign: 'center',
-                                                color: '#999',
-                                                borderRadius: '4px'
-                                            }}>
-                                                {isEn ? 'No photo' : 'אין תמונה'}
-                                            </div>
-                                        )}
-                                    </td>
-                                    <td>{isEn ? product.name.en : product.name.he}</td>
-                                    <td>
-                                        {(() => {
-                                            if (!product.price || !Array.isArray(product.price) || product.price.length === 0) return '-'
-                                            const amounts = product.price.map(p => p.amount)
-                                            const min = Math.min(...amounts)
-                                            const max = Math.max(...amounts)
-                                            if (min === max) return <span dir="ltr">₪{min}</span>
-                                            return <span dir="ltr">₪{min} - ₪{max}</span>
-                                        })()}
-                                    </td>
-                                    <td>
-                                        <button 
-                                            className={`status-btn ${product.isActive !== false ? 'active' : 'inactive'}`}
-                                            onClick={() => onToggleActive(product)}
-                                        >
-                                            {product.isActive !== false ? (isEn ? 'Active' : 'פעיל') : (isEn ? 'Inactive' : 'לא פעיל')}
-                                        </button>
-                                    </td>
-                                    <td className="actions">
-                                        <button onClick={() => setEditingProduct(product)}>{isEn ? 'Edit' : 'ערוך'}</button>
-                                        <button onClick={() => onRemoveProduct(product._id!.toString())}>{isEn ? 'Remove' : 'מחק'}</button>
-                                    </td>
-                                </tr>
-                            )
-                        })}
-                    </tbody>
-                </table>
-            </div>
+
+            {isLoading ? (
+                <div className="admin-loader-container">
+                    <div className="admin-loader"></div>
+                    <p>{isEn ? 'Loading products...' : 'טוען מוצרים...'}</p>
+                </div>
+            ) : (
+                <div className="table-responsive">
+                    <table className="admin-table">
+                        <thead>
+                            <tr>
+                                <th>{isEn ? 'Image' : 'תמונה'}</th>
+                                <th>{isEn ? 'Name' : 'שם'}</th>
+                                <th>{isEn ? 'Price' : 'מחיר'}</th>
+                                <th>{isEn ? 'Status' : 'סטטוס'}</th>
+                                <th>{isEn ? 'Actions' : 'פעולות'}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredProducts.map(product => {
+                                const imageUrl = getImageUrl(product.imgsUrl)
+                                return (
+                                    <tr key={product._id?.toString()}>
+                                        <td className="product-img-td">
+                                            {imageUrl ? (
+                                                <img 
+                                                    src={imageUrl} 
+                                                    alt={isEn ? product.name.en : product.name.he} 
+                                                    className="admin-list-img"
+                                                />
+                                            ) : (
+                                                <div className="admin-list-no-img" style={{ 
+                                                    width: '50px', 
+                                                    height: '50px', 
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    justifyContent: 'center', 
+                                                    backgroundColor: '#f4f4f4', 
+                                                    fontSize: '10px', 
+                                                    textAlign: 'center',
+                                                    color: '#999',
+                                                    borderRadius: '4px'
+                                                }}>
+                                                    {isEn ? 'No photo' : 'אין תמונה'}
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td data-label={isEn ? 'Name' : 'שם'}>{isEn ? product.name.en : product.name.he}</td>
+                                        <td data-label={isEn ? 'Price' : 'מחיר'}>
+                                            {(() => {
+                                                if (!product.price || !Array.isArray(product.price) || product.price.length === 0) return '-'
+                                                const amounts = product.price.map(p => p.amount)
+                                                const min = Math.min(...amounts)
+                                                const max = Math.max(...amounts)
+                                                if (min === max) return <span dir="ltr">₪{min}</span>
+                                                return <span dir="ltr">₪{min} - ₪{max}</span>
+                                            })()}
+                                        </td>
+                                        <td data-label={isEn ? 'Status' : 'סטטוס'}>
+                                            <button 
+                                                className={`status-btn ${product.isActive !== false ? 'active' : 'inactive'}`}
+                                                onClick={() => onToggleActive(product)}
+                                            >
+                                                {product.isActive !== false ? (isEn ? 'Active' : 'פעיל') : (isEn ? 'Inactive' : 'לא פעיל')}
+                                            </button>
+                                        </td>
+                                        <td className="actions" data-label={isEn ? 'Actions' : 'פעולות'}>
+                                            <button onClick={() => setEditingUserOrProduct(product)}>{isEn ? 'Edit' : 'ערוך'}</button>
+                                            <button onClick={() => onRemoveProduct(product._id!.toString())}>{isEn ? 'Remove' : 'מחק'}</button>
+                                        </td>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </section>
     )
+
+    function setEditingUserOrProduct(product: FullProduct) {
+        setEditingProduct(product)
+    }
 }

@@ -47,10 +47,10 @@ export const AdminPriceSettings: React.FC = () => {
 
     return (
         <section className="admin-price-settings">
-            <div className="admin-edit-form" style={{ maxWidth: '600px' }}>
-                <header className="list-header" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+            <div className="admin-edit-form">
+                <header className="list-header">
                     <h2>{isEn ? 'Global Price Multipliers' : 'מכפילי מחיר גלובליים'}</h2>
-                    <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>{isEn 
+                    <p className="description">{isEn 
                         ? 'Update the price multiplier for ALL users of a specific type at once.' 
                         : 'עדכן את מכפיל המחיר לכל המשתמשים מסוג מסוים בבת אחת.'}
                     </p>
@@ -79,7 +79,11 @@ export const AdminPriceSettings: React.FC = () => {
                         />
                     </div>
 
-                    {message && <p className={`message ${message.includes('Success') || message.includes('הצלחה') ? 'success' : 'error'}`} style={{ marginBottom: '15px', color: message.includes('Success') || message.includes('הצלחה') ? 'green' : 'red', fontSize: '0.9rem' }}>{message}</p>}
+                    {message && (
+                        <p className={`message ${message.includes('Success') || message.includes('הצלחה') ? 'success' : 'error'}`}>
+                            {message}
+                        </p>
+                    )}
 
                     <div className="form-actions">
                         <button type="submit" className="btn-save" disabled={isUpdating}>
