@@ -4,7 +4,7 @@ import { Icons } from "./Icons";
 import { useWindowWidth } from "../hooks/useWindowWidth";
 import type { FullProductsOrNull, hebrewEnglishObj } from '../model/product.model';
 import { NavigationList } from './NavigationList';
-import { useEffect, useState, useMemo, type ChangeEvent } from 'react';
+import { useEffect, useState, useMemo, useRef, type ChangeEvent } from 'react';
 import { MenuModal } from './MenuModal';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
@@ -14,6 +14,7 @@ import { productService } from '../services/product.service';
 import { authService } from '../services/auth.service';
 import type { Miniuser } from '../model/user.model';
 import { ImageWithSkeleton } from './Skeleton/ImageWithSkeleton';
+import '../assets/styles/cmps/AppHeader.css';
 
 
 
@@ -33,6 +34,10 @@ export const AppHeader = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isOnSearch, setIsOnSearch] = useState(false)
     const [inputSearch, setInputSearch] = useState('')
+    const [isVisible, setIsVisible] = useState(true)
+    const [isScrolled, setIsScrolled] = useState(false)
+    const lastScrollY = useRef(0)
+    
     const width = useWindowWidth()
     const navigate = useNavigate()
     const { language } = useLanguage()
@@ -41,6 +46,31 @@ export const AppHeader = () => {
     const [user, setUser] = useState<Miniuser | null>(authService.getLoggedinUser())
 
     const isMobile = width <= 768;
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY
+            
+            // Show shadow if scrolled at all
+            setIsScrolled(currentScrollY > 0)
+
+            // Logic for Smart Sticky
+            if (isMenuOpen) {
+                setIsVisible(true)
+            } else if (currentScrollY < 50) {
+                setIsVisible(true)
+            } else if (currentScrollY > lastScrollY.current) {
+                setIsVisible(false) // Scrolling down
+            } else {
+                setIsVisible(true) // Scrolling up
+            }
+            
+            lastScrollY.current = currentScrollY
+        }
+
+        window.addEventListener('scroll', handleScroll, { passive: true })
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [isMenuOpen])
 
     const navbarProperties: NavbarProperties = useMemo(() => {
         const props: NavbarProperties = [
@@ -128,7 +158,7 @@ export const AppHeader = () => {
 
     const isEnglish = language === 'en'
     return (
-        <header className={`app-header ${isEnglish?`en-dir`:`he-dir`}`}>
+        <header className={`app-header ${isEnglish?`en-dir`:`he-dir`} ${!isVisible ? 'header-hidden' : ''} ${isScrolled ? 'scrolled' : ''}`}>
             <div 
                 className="logo" 
                 role="link"

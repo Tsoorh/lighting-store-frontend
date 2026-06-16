@@ -1,0 +1,21 @@
+.app-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 80px;
+    background-color: var(--header-bgc);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    font-family: 'Heebo', sans-serif;
+    font-size: 14px;
+    color: rgba(30, 28, 25, 0.6);
+    grid-area: footer;
+}
+
+@media (max-width: 768px) {
+    .app-footer {
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px;
+        text-align: center;
+    }
+}

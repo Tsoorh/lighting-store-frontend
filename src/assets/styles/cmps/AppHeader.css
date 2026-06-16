@@ -9,6 +9,15 @@
     height: 104px;
     background: var(--header-bgc);
     z-index: 1000;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.app-header.header-hidden {
+    transform: translateY(-100%);
+}
+
+.app-header.scrolled {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .logo {
