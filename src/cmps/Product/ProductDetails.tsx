@@ -139,9 +139,9 @@ export const ProductDetails = () => {
                                         </button>
                                     )}
                                 </div>
-                                {product.price !== undefined && Array.isArray(product.price) && product.price.length > 0 && (
+                                {activePrice?.amount !== undefined && (
                                     <h2 className="product-price">
-                                        ₪{activePrice?.amount}
+                                        ₪{activePrice.amount}
                                     </h2>
                                 )}
                             </div>
