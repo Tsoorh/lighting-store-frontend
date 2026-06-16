@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './assets/styles/main.css'
 import { AppFooter } from './cmps/AppFooter'
@@ -25,6 +25,11 @@ const queryClient = new QueryClient({
   },
 })
 
+const ProductDetailsWrapper = () => {
+  const { productId } = useParams()
+  return <ProductDetails key={productId} />
+}
+
 function App() {
 
   return (
@@ -39,7 +44,7 @@ function App() {
               <Route path="/dashboard" element={<AdminPage />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/about" element={<About />} />
-              <Route path="/product/:productId" element={<ProductDetails />} />
+              <Route path="/product/:productId" element={<ProductDetailsWrapper />} />
               <Route path="/product/category/:categoryName" element={<ProductCategory/>} />
               <Route path="/terms" element={<TermsOfUse />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />

@@ -37,7 +37,7 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const hPhotos = filteredUrls.filter(url => url.startsWith('H_'))
     const numPhotos = filteredUrls.filter(url => !url.startsWith('C_') && !url.startsWith('H_'))
 
-    let photosToRender = cPhotos.length > 0 ? cPhotos : (hPhotos.length > 0 ? hPhotos : numPhotos)
+    const photosToRender = cPhotos.length > 0 ? cPhotos : (hPhotos.length > 0 ? hPhotos : numPhotos)
 
     const getImageUrl = (imgName: string) => {
         // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
