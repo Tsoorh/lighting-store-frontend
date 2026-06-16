@@ -128,7 +128,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         setFormData(prev => ({ ...prev, [field]: value }))
     }
 
-    function handlePriceChange(index: number, field: 'amount' | 'size', value: number | string) {
+    function handlePriceChange(index: number, field: 'amount' | 'size' | 'sku', value: number | string) {
         const newPrice = [...(formData.price || [])]
         newPrice[index] = { ...newPrice[index], [field]: value } as any
         setFormData(prev => ({ ...prev, price: newPrice }))
@@ -137,7 +137,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     function addPriceVariant(wood: hebrewEnglishObj) {
         setFormData(prev => ({
             ...prev,
-            price: [...(prev.price || []), { wood, amount: 0, size: '' }]
+            price: [...(prev.price || []), { wood, amount: 0, size: '', sku: '' }]
         }))
     }
 
@@ -179,7 +179,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             }
             setFormData(prev => ({ ...prev, price: remainingPrices }))
         } else {
-            const newPrices = [...currentPrices, { wood: woodOption, amount: 0, size: '' }]
+            const newPrices = [...currentPrices, { wood: woodOption, amount: 0, size: '', sku: '' }]
             setFormData(prev => ({ ...prev, price: newPrices }))
         }
     }
@@ -429,7 +429,16 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                 <div key={wood.en} className="wood-group" style={{ marginBottom: '20px', padding: '15px', background: '#fcfcfc', border: '1px solid #eee', borderRadius: '8px' }}>
                                     <h5 style={{ marginTop: 0, marginBottom: '15px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>{isEn ? wood.en : wood.he}</h5>
                                     {woodPrices.map((p) => (
-                                        <div key={p.originalIdx} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '15px', marginBottom: '15px', alignItems: 'end' }}>
+                                        <div key={p.originalIdx} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '15px', marginBottom: '15px', alignItems: 'end' }}>
+                                            <div className="form-group" style={{ marginBottom: 0 }}>
+                                                <label style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{isEn ? 'SKU / מקט (Optional)' : 'מקט / SKU (אופציונלי)'}</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={p.sku || ''} 
+                                                    onChange={(e) => handlePriceChange(p.originalIdx, 'sku', e.target.value)}
+                                                    placeholder={isEn ? 'e.g. TL-101' : 'למשל TL-101'}
+                                                />
+                                            </div>
                                             <div className="form-group" style={{ marginBottom: 0 }}>
                                                 <label style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{isEn ? 'Size Label (Optional)' : 'תווית מידה (אופציונלי)'}</label>
                                                 <input 

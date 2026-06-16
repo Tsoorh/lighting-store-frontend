@@ -196,6 +196,7 @@ export const ProductDetails = () => {
                             <div className="product-sec2">
                                 <h3>{specsTitle}</h3>
                                 <ul className="specs-list">
+                                    {activePrice?.sku && <li>{isEnglish ? 'SKU:' : 'מקט:'} {activePrice.sku}</li>}
                                     {hasWood && <li>{isEnglish ? 'Wood Type:' : 'סוג עץ:'} {woodStr}</li>}
                                     {materialsStr && <li>{isEnglish ? 'Materials:' : 'חומרים:'} {materialsStr}</li>}
                                     {voltStr && <li>{isEnglish ? 'Wattage:' : 'הספק:'} {voltStr}</li>}
