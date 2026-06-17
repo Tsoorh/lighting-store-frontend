@@ -187,6 +187,16 @@ export const AppHeader = () => {
                         <Icons iconName="user" />
                     </button>
                 ) : null}
+                {isMobile && (
+                    <button 
+                        className="search-btn-mobile" 
+                        onClick={handleSearch} 
+                        aria-label={isEnglish ? 'Search' : 'חיפוש'} 
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginInlineEnd: '12px', display: 'flex', alignItems: 'center', color: 'inherit' }}
+                    >
+                        <Icons iconName="search" />
+                    </button>
+                )}
                 {isMobile ? <button className={`menu-icon ${isMenuOpen ? `active` : ``}`} onClick={handleOpenMenu} aria-expanded={isMenuOpen} aria-label={isEnglish ? 'Menu' : 'תפריט'} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}> <Icons iconName="menu" /> </button> :
                     <NavigationList navLinks={navbarProperties} handleSearch={handleSearch} />
                 }
@@ -227,7 +237,7 @@ export const AppHeader = () => {
                                 '&:after': { borderBottomColor: '#000' }
                             }} 
                             dir={isEnglish ? 'ltr' : 'rtl'} 
-                            placeholder={isEnglish ? 'What would you like to light today?' : 'מה תרצו להאיר היום?'} 
+                            placeholder={isMobile ? (isEnglish ? 'Search...' : 'חיפוש...') : (isEnglish ? 'Search lighting fixtures...' : 'חפש גופי תאורה...')} 
                             inputProps={{ 'aria-label': isEnglish ? 'Search products' : 'חפש מוצרים' }} 
                         />
                     </div>
@@ -289,7 +299,7 @@ export const AppHeader = () => {
                                 )
                             })}
                         </ul>:
-                        <p>{isEnglish?`Start Searching...`:`...התחל בחיפוש`}</p>
+                        <p>{isEnglish?`Start Searching...`:`התחל בחיפוש...`}</p>
                         }
                     </div>
                 </div>
