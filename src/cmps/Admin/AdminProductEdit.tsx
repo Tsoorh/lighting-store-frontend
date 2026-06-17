@@ -348,7 +348,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     const renderSelectionList = (field: 'category' | 'material' | 'woodType', label: string, options: hebrewEnglishObj[]) => (
         <div className="form-section">
             <h4>{label}</h4>
-            <div className="options-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div className="options-grid">
                 {options.map(option => {
                     const isSelected = (formData[field] || []).some(item => 
                         (item.en && item.en.toLowerCase() === option.en.toLowerCase()) || 
@@ -373,7 +373,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     return (
         <section className="admin-edit-form">
             <h3>{product ? (isEn ? 'Edit Product' : 'ערוך מוצר') : (isEn ? 'Add Product' : 'הוסף מוצר')}</h3>
-            <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+            <form onSubmit={handleSubmit} className="admin-form-grid">
                 <div className="main-info">
                     <div className="form-group">
                         <label>{isEn ? 'Name (EN)' : 'שם (אנגלית)'}</label>
@@ -412,7 +412,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                     
                     <div className="form-section">
                         <h4>{isEn ? 'Prices by Wood Type' : 'מחירים לפי סוג עץ'}</h4>
-                        <div className="wood-price-toggles" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
+                        <div className="wood-price-toggles">
                             {_getAvailablePriceOptions().map(wood => {
                                 const isSelected = (formData.price || []).some(p => p.wood.en.toLowerCase() === wood.en.toLowerCase())
                                 return (
@@ -436,7 +436,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                 <div key={wood.en} className="wood-group" style={{ marginBottom: '20px', padding: '15px', background: '#fcfcfc', border: '1px solid #eee', borderRadius: '8px' }}>
                                     <h5 style={{ marginTop: 0, marginBottom: '15px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>{isEn ? wood.en : wood.he}</h5>
                                     {woodPrices.map((p) => (
-                                        <div key={p.originalIdx} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '15px', marginBottom: '15px', alignItems: 'end' }}>
+                                        <div key={p.originalIdx} className="price-row-grid">
                                             <div className="form-group" style={{ marginBottom: 0 }}>
                                                 <label style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{isEn ? 'SKU / מקט (Optional)' : 'מקט / SKU (אופציונלי)'}</label>
                                                 <input 
@@ -529,7 +529,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                     <label>{isEn ? 'Up to' : 'עד ל-'}</label>
                                     <input type="number" step="any" value={s.upTo || ''} onChange={(e) => handleSizeChange(index, 'upTo', +e.target.value)} />
                                 </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                <div className="size-row-grid">
                                     <div className="form-group">
                                         <label>{isEn ? 'Diameter' : 'קוטר'}</label>
                                         <input type="number" step="any" value={s.diameter || ''} onChange={(e) => handleSizeChange(index, 'diameter', +e.target.value)} />
@@ -566,7 +566,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                     <div className="image-upload-section" style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '5px', marginBottom: '20px' }}>
                         <h4>{isEn ? 'Product Images' : 'תמונות מוצר'}</h4>
                         
-                        <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
+                        <div className="image-upload-flex">
                             <div className="form-group" style={{ flex: 1 }}>
                                 <label>{isEn ? 'Type' : 'סוג'}</label>
                                 <select 
@@ -641,7 +641,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                     </div>
                 </div>
 
-                <div className="form-actions" style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
+                <div className="form-actions">
                     <button type="button" className="btn-cancel" onClick={onCancel}>{isEn ? 'Cancel' : 'ביטול'}</button>
                     <button type="submit" className="btn-save">{isEn ? 'Save' : 'שמור'}</button>
                 </div>
