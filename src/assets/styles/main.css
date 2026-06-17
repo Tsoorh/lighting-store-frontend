@@ -4,7 +4,7 @@
 
 /* base */
 @import "./base/reset.css";
-@import "./base/forms.css";
+/* @import "./base/forms.css"; */
 @import "./base/helpers.css";
 @import "./base/typography.css";
 

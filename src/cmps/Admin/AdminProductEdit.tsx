@@ -11,9 +11,12 @@ type Props = {
 }
 
 export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel }) => {
+    type ProductPrice = NonNullable<FullProduct['price']>[number];
+    type DirtyProductPrice = { wood?: Partial<hebrewEnglishObj>; amount?: number; size?: string; sku?: string; };
+
     // Helper to merge split objects like [{he: 'A'}, {en: 'B'}] into [{he: 'A', en: 'B'}]
-    function _healHebrewEnglishArray(arr: any[]): hebrewEnglishObj[] {
-        if (!arr || !Array.isArray(arr)) return []
+    function _healHebrewEnglishArray(arr: (Partial<hebrewEnglishObj> | null)[]): hebrewEnglishObj[] {
+        if (!arr) return []
         
         const healed: hebrewEnglishObj[] = []
         let current: Partial<hebrewEnglishObj> = {}
@@ -60,8 +63,8 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     }
 
     // Helper to ensure price entries have both languages if one is missing or inconsistent
-    function _healPriceArray(prices: any[]): any[] {
-        if (!prices || !Array.isArray(prices)) return []
+    function _healPriceArray(prices: DirtyProductPrice[]): ProductPrice[] {
+        if (!prices) return []
         return prices.map(p => {
             const woodNameEn = (p.wood?.en || '').trim()
             const woodNameHe = (p.wood?.he || '').trim()
@@ -72,7 +75,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                 woodNameEn.toLowerCase() === 'oak stained as walnut' ||
                 woodNameHe === 'אלון מגוון לאגוז'
             ) {
-                return { ...p, wood: { en: 'Oak stained Walnut', he: 'אלון מגוון לאגוז' } }
+                return { ...p, amount: p.amount ?? 0, wood: { en: 'Oak stained Walnut', he: 'אלון מגוון לאגוז' } }
             }
 
             // Try to find a match in constants by either English or Hebrew name
@@ -83,9 +86,9 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
               || (woodNameEn.toLowerCase() === 'oak' ? { en: 'Oak', he: 'אלון' } : null)
 
             if (found) {
-                return { ...p, wood: found }
+                return { ...p, amount: p.amount ?? 0, wood: found }
             }
-            return p
+            return { ...p, amount: p.amount ?? 0, wood: { en: woodNameEn, he: woodNameHe } }
         })
     }
 
@@ -110,7 +113,8 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             woodType: _healHebrewEnglishArray(initialState.woodType),
             size: (initialState.size && initialState.size.length > 0) ? initialState.size : [{}],
             imgsUrl: initialState.imgsUrl || [],
-            socketType: initialState.socketType || { screwType: '', lightType: '' },
+            socketType: initialState.socketType || { screwType: '', lightType: '' }, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             price: _healPriceArray((initialState.price && Array.isArray(initialState.price) && initialState.price.length > 0) ? initialState.price : [{ wood: { he: '', en: '' }, amount: 0 }]),
             name: initialState.name || { en: '', he: '' },
             description: initialState.description || { en: '', he: '' }
@@ -130,8 +134,8 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
 
     function handlePriceChange(index: number, field: 'amount' | 'size' | 'sku', value: number | string) {
         const newPrice = [...(formData.price || [])]
-        newPrice[index] = { ...newPrice[index], [field]: value } as any
-        setFormData(prev => ({ ...prev, price: newPrice }))
+        newPrice[index] = { ...newPrice[index], [field]: value } as ProductPrice
+        setFormData(prev => ({ ...prev, price: newPrice as ProductPrice[] }))
     }
 
     function addPriceVariant(wood: hebrewEnglishObj) {
@@ -185,10 +189,13 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     }
 
     function handleLangChange(field: 'name' | 'description', lang: 'en' | 'he', value: string) {
-        setFormData(prev => ({
-            ...prev,
-            [field]: { ...(prev[field] as any || {}), [lang]: value }
-        }))
+        setFormData(prev => {
+            const currentVal = prev[field] || { en: '', he: '' };
+            return {
+                ...prev,
+                [field]: { ...currentVal, [lang]: value }
+            }
+        })
     }
 
     function toggleOption(field: 'category' | 'material' | 'woodType', option: hebrewEnglishObj) {
