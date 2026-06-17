@@ -274,7 +274,7 @@ export const AppHeader = () => {
                                             </div>
                                             <p>{isEnglish ? product.name.en : product.name.he}</p>
                                         </div>
-                                        {product.price !== undefined && Array.isArray(product.price) && product.price.length > 0 && (
+                                        {user && product.price !== undefined && Array.isArray(product.price) && product.price.length > 0 && (
                                             <b dir="ltr">
                                                 {(() => {
                                                     const amounts = product.price.map(p => p.amount)
