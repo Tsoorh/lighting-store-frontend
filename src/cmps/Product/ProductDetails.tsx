@@ -293,7 +293,11 @@ export const ProductDetails = () => {
                             </div>
                         </div>
 
-                        <a href='https://wa.me/972524000102' target="_blank" rel="noopener noreferrer" className="quote-btn animated-link">
+                        <a href={`https://wa.me/972524000102?text=${encodeURIComponent(
+                            isEnglish 
+                                ? `Hi, I would like to request a quote for the lighting fixture "${nameLabel}".` 
+                                : `היי, אשמח לקבל הצעת מחיר עבור גוף התאורה "${nameLabel}".`
+                        )}`} target="_blank" rel="noopener noreferrer" className="quote-btn animated-link">
                             <span>{linkLabel}</span>
                             <Icons iconName={isEnglish ? 'next' : 'back'} />
                         </a>
