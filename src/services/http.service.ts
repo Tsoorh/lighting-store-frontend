@@ -1,6 +1,7 @@
 import Axios, { type AxiosRequestConfig, type Method } from 'axios'
 
-const BASE_URL =  'https://api.tiranlasry.com/api/' ;
+// for developement set VITE_API_URL in env to http://localhost:3000/api/
+const BASE_URL =  import.meta.env.VITE_API_URL || 'https://api.tiranlasry.com/api/' ;
 
     
 // const BASE_URL = 'https://api.tiranlasry.com/api/' 
