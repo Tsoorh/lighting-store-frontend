@@ -87,9 +87,20 @@ export const ProductDetails = () => {
         ? product.price
             .filter(p => p.sku)
             .map(p => {
-                const woodLabel = isEnglish ? p.wood.en : p.wood.he
-                const sizeLabel = p.size ? ` - ${p.size}` : ''
-                return `${p.sku}(${woodLabel}${sizeLabel})`
+                const isNoWood = p.wood.en.toLowerCase() === 'no wood'
+                const woodLabel = isNoWood ? '' : (isEnglish ? p.wood.en : p.wood.he)
+                const sizeLabel = p.size ? p.size : ''
+
+                let bracketContent = ''
+                if (woodLabel && sizeLabel) {
+                    bracketContent = `${woodLabel} - ${sizeLabel}`
+                } else if (woodLabel) {
+                    bracketContent = woodLabel
+                } else if (sizeLabel) {
+                    bracketContent = sizeLabel
+                }
+
+                return bracketContent ? `${p.sku}(${bracketContent})` : p.sku
             })
             .join(', ')
         : ''
