@@ -86,7 +86,11 @@ export const ProductDetails = () => {
     const skuStr = product.price
         ? product.price
             .filter(p => p.sku)
-            .map(p => `${p.sku}(${isEnglish ? p.wood.en : p.wood.he})`)
+            .map(p => {
+                const woodLabel = isEnglish ? p.wood.en : p.wood.he
+                const sizeLabel = p.size ? ` - ${p.size}` : ''
+                return `${p.sku}(${woodLabel}${sizeLabel})`
+            })
             .join(', ')
         : ''
 
