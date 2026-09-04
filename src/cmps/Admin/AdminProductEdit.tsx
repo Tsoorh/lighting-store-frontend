@@ -121,7 +121,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         }
     })
     const [uploadConfig, setUploadConfig] = useState({
-        type: 'C' as 'C' | 'H',
+        type: 'C' as 'C' | 'H' | 'S',
         category: 'P' as 'P' | 'C' | 'W' | 'A'
     })
     const [isUploading, setIsUploading] = useState(false)
@@ -571,10 +571,11 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                 <label>{isEn ? 'Type' : 'סוג'}</label>
                                 <select 
                                     value={uploadConfig.type} 
-                                    onChange={(e) => setUploadConfig(prev => ({ ...prev, type: e.target.value as 'C' | 'H' }))}
+                                    onChange={(e) => setUploadConfig(prev => ({ ...prev, type: e.target.value as 'C' | 'H' | 'S' }))}
                                 >
                                     <option value="C">{isEn ? 'Card' : 'כרטיס (C)'}</option>
                                     <option value="H">{isEn ? 'Hero' : 'ראשי (H)'}</option>
+                                    <option value="S">{isEn ? 'Scratch' : 'שרטוט (S)'}</option>
                                 </select>
                             </div>
                             <div className="form-group" style={{ flex: 1 }}>
@@ -605,16 +606,32 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                         <div className="images-preview" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px', maxHeight: '200px', overflowY: 'auto' }}>
                             {formData.imgsUrl?.map(url => {
                                 if (!url) return null
+                                const isDirectUpload = url.startsWith('C_') || url.startsWith('H_') || url.startsWith('S_')
                                 return (
                                     <div key={url} className="img-preview-item" style={{ position: 'relative' }}>
                                         <img 
-                                            src={url.startsWith('C_') || url.startsWith('H_') 
+                                            src={isDirectUpload 
                                                 ? `https://res.cloudinary.com/dhixlriwm/image/upload/${url}.webp`
                                                 : `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${url}.webp`
                                             } 
                                             alt="preview" 
                                             style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
                                         />
+                                        {url.startsWith('S_') && (
+                                            <span style={{ 
+                                                position: 'absolute', 
+                                                bottom: '2px', 
+                                                left: '2px', 
+                                                background: 'rgba(0,0,0,0.7)', 
+                                                color: 'white', 
+                                                fontSize: '9px', 
+                                                padding: '1px 3px', 
+                                                borderRadius: '2px',
+                                                pointerEvents: 'none'
+                                            }}>
+                                                {isEn ? 'Scratch' : 'שרטוט'}
+                                            </span>
+                                        )}
                                         <button 
                                             type="button" 
                                             onClick={() => onRemoveImg(url)}

@@ -35,14 +35,15 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const filteredUrls = cleanUrls.filter(url => url !== 'coming-soon')
     const cPhotos = filteredUrls.filter(url => url.startsWith('C_'))
     const hPhotos = filteredUrls.filter(url => url.startsWith('H_'))
-    const numPhotos = filteredUrls.filter(url => !url.startsWith('C_') && !url.startsWith('H_'))
+    const numPhotos = filteredUrls.filter(url => !url.startsWith('C_') && !url.startsWith('H_') && !url.startsWith('S_'))
+    const sPhotos = filteredUrls.filter(url => url.startsWith('S_'))
 
-    const photosToRender = cPhotos.length > 0 ? cPhotos : (hPhotos.length > 0 ? hPhotos : numPhotos)
+    const photosToRender = cPhotos.length > 0 ? cPhotos : (hPhotos.length > 0 ? hPhotos : (numPhotos.length > 0 ? numPhotos : sPhotos))
 
     const getImageUrl = (imgName: string) => {
         // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
         const cloudId = 'dhixlriwm'
-        if (imgName.startsWith('C_') || imgName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${imgName}.webp`
+        if (imgName.startsWith('C_') || imgName.startsWith('H_') || imgName.startsWith('S_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${imgName}.webp`
         return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${imgName}.webp`
     }
 

@@ -249,14 +249,15 @@ export const AppHeader = () => {
                                 const filteredUrls = cleanUrls.filter(url => url !== 'coming-soon')
                                 const cPhoto = filteredUrls.find(url => url.startsWith('C_'))
                                 const hPhoto = filteredUrls.find(url => url.startsWith('H_'))
-                                const numPhoto = filteredUrls.find(url => !url.startsWith('C_') && !url.startsWith('H_'))
+                                const numPhoto = filteredUrls.find(url => !url.startsWith('C_') && !url.startsWith('H_') && !url.startsWith('S_'))
+                                const sPhoto = filteredUrls.find(url => url.startsWith('S_'))
                                 
-                                const displayPhoto = cPhoto || hPhoto || numPhoto
+                                const displayPhoto = cPhoto || hPhoto || numPhoto || sPhoto
                                 
                                 const getImageUrl = (imgName: string) => {
                                     // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
                                     const cloudId = 'dhixlriwm'
-                                    if (imgName.startsWith('C_') || imgName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${imgName}.webp`
+                                    if (imgName.startsWith('C_') || imgName.startsWith('H_') || imgName.startsWith('S_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${imgName}.webp`
                                     return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${imgName}.webp`
                                 }
 

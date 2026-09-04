@@ -42,17 +42,34 @@ export const ProductDetails = () => {
                     const filteredUrls = cleanUrls.filter((url: string) => url !== 'coming-soon');
                     
                     const hPhotos = filteredUrls.filter((url: string) => url.startsWith('H_'));
-                    const otherPhotos = filteredUrls.filter((url: string) => !url.startsWith('C_') && !url.startsWith('H_'));
+                    const sPhotos = filteredUrls.filter((url: string) => url.startsWith('S_'));
+                    const otherPhotos = filteredUrls.filter((url: string) => !url.startsWith('C_') && !url.startsWith('H_') && !url.startsWith('S_'));
+                    const cPhotos = filteredUrls.filter((url: string) => url.startsWith('C_'));
+
+                    let nonScratchPhotos = [...hPhotos, ...otherPhotos];
+                    if (nonScratchPhotos.length === 0 && cPhotos.length > 0) {
+                        nonScratchPhotos = cPhotos;
+                    }
 
                     const getImageUrl = (cleanName: string) => {
                         // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
                         const cloudId = 'dhixlriwm'
-                        if (cleanName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${cleanName}.webp`
+                        if (cleanName.startsWith('H_') || cleanName.startsWith('C_') || cleanName.startsWith('S_')) {
+                            return `https://res.cloudinary.com/${cloudId}/image/upload/${cleanName}.webp`
+                        }
                         return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${cleanName}.webp`
                     }
 
-                    // Combine and take up to 5 photos (1 main + 4 thumbs)
-                    const sortedPhotos = [...hPhotos, ...otherPhotos].slice(0, 5).map(getImageUrl);
+                    // Combine and take up to 5 photos (1 main + 4 thumbs), ensuring scratch photos are at the end
+                    let combinedPhotos: string[] = [];
+                    if (sPhotos.length > 0) {
+                        const maxNonScratch = Math.max(0, 5 - sPhotos.length);
+                        combinedPhotos = [...nonScratchPhotos.slice(0, maxNonScratch), ...sPhotos];
+                    } else {
+                        combinedPhotos = nonScratchPhotos.slice(0, 5);
+                    }
+
+                    const sortedPhotos = combinedPhotos.map(getImageUrl);
                     
                     setGallery(sortedPhotos);
                     if (sortedPhotos.length > 0) setMainImage(sortedPhotos[0]);

@@ -98,14 +98,15 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
 
         const cPhoto = filteredUrls.find(url => url.startsWith('C_'))
         const hPhoto = filteredUrls.find(url => url.startsWith('H_'))
-        const numPhoto = filteredUrls.find(url => !url.startsWith('C_') && !url.startsWith('H_'))
+        const numPhoto = filteredUrls.find(url => !url.startsWith('C_') && !url.startsWith('H_') && !url.startsWith('S_'))
+        const sPhoto = filteredUrls.find(url => url.startsWith('S_'))
         
-        const imgName = cPhoto || hPhoto || numPhoto
+        const imgName = cPhoto || hPhoto || numPhoto || sPhoto
         if (!imgName) return null
 
         // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
         const cloudId = 'dhixlriwm'
-        if (imgName.startsWith('C_') || imgName.startsWith('H_')) return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/${imgName}.webp`
+        if (imgName.startsWith('C_') || imgName.startsWith('H_') || imgName.startsWith('S_')) return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/${imgName}.webp`
         return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/4G8A${imgName}.webp`
     }
 
