@@ -59,7 +59,7 @@ export const ProductDetails = () => {
                         const nameWithout4G8A = cleanName.replace(/^4G8A/i, '')
                         const upper = nameWithout4G8A.toUpperCase()
                         if (upper.startsWith('H_') || upper.startsWith('C_') || upper.startsWith('S_')) {
-                            return `https://res.cloudinary.com/${cloudId}/image/upload/w_250,c_limit,q_100,f_png/${nameWithout4G8A}.webp`
+                            return `https://res.cloudinary.com/${cloudId}/image/upload/${nameWithout4G8A}.webp`
                         }
                         return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${nameWithout4G8A}.webp`
                     }
