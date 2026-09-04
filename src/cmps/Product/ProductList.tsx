@@ -10,7 +10,7 @@ type ProductListProps = {
 }
 
 export const ProductList = ({ products, page, onPageChange }: ProductListProps) => {
-    const itemsPerPage = 9
+    const itemsPerPage = 100
 
     // גלילה אוטומטית למעלה כשעוברים עמוד
     useEffect(() => {

@@ -62,16 +62,26 @@ async function ajax<TResponse, TData = undefined>(endpoint: string, method: Meth
     }
 }
 
+type RefreshSubscriber = {
+    resolve: (value: unknown) => void
+    reject: (reason?: unknown) => void
+}
+
 let isRefreshing = false
-let refreshSubscribers: ((() => void))[] = []
+let refreshSubscribers: RefreshSubscriber[] = []
 
 function onRefreshed() {
-    refreshSubscribers.forEach(callback => callback())
+    refreshSubscribers.forEach(sub => sub.resolve(true))
     refreshSubscribers = []
 }
 
-function addRefreshSubscriber(callback: () => void) {
-    refreshSubscribers.push(callback)
+function onRefreshFailed(error: unknown) {
+    refreshSubscribers.forEach(sub => sub.reject(error))
+    refreshSubscribers = []
+}
+
+function addRefreshSubscriber(subscriber: RefreshSubscriber) {
+    refreshSubscribers.push(subscriber)
 }
 
 axios.interceptors.response.use(
@@ -96,9 +106,10 @@ axios.interceptors.response.use(
             const isDownload = originalRequest.responseType === 'blob' || originalRequest.url?.includes('export/')
 
             if (originalRequest.url?.includes('/auth/refresh-token')) {
-                //Refresh token failed or revoked.
+                // Refresh token endpoint itself failed
                 isRefreshing = false
-                if (!isDownload) {
+                onRefreshFailed(error)
+                if (!isDownload && status === 401) {
                     localStorage.removeItem('loggedinUser')
                     window.dispatchEvent(new Event('user-changed'))
                     window.location.assign('/login')
@@ -109,33 +120,39 @@ axios.interceptors.response.use(
             originalRequest._retry = true
 
             if (isRefreshing) {
-                return new Promise((resolve) => {
-                    addRefreshSubscriber(() => {
-                        resolve(axios(originalRequest))
+                return new Promise((resolve, reject) => {
+                    addRefreshSubscriber({
+                        resolve: () => resolve(axios(originalRequest)),
+                        reject: (err) => reject(err)
                     })
                 })
             }
 
             isRefreshing = true
 
-            //Access Token expired. Attempting to refresh...
+            // Access Token expired. Attempting to refresh...
             try {
                 await _renewAccessToken();
                 isRefreshing = false
                 onRefreshed()
-                //Token refreshed. Retrying original request...
+                // Token refreshed. Retrying original request...
                 return axios(originalRequest);
-            } catch {
-                //Failed to renew token.
+            } catch (refreshErr: any) {
                 isRefreshing = false
-                if (!isDownload) {
+                onRefreshFailed(refreshErr)
+
+                // Only force logout if the backend explicitly rejected the session with 401.
+                // Transient network errors or timeouts should NOT log the user out!
+                const isSessionExpired = refreshErr.response?.status === 401;
+
+                if (!isDownload && isSessionExpired) {
                     localStorage.removeItem('loggedinUser')
                     window.dispatchEvent(new Event('user-changed'))
                     window.location.assign('/login')
-                } else {
+                } else if (isDownload && isSessionExpired) {
                     alert('Mobile Safari security settings are blocking the download. Please ensure "Prevent Cross-Site Tracking" is disabled in Settings > Safari, or try a different browser.')
                 }
-                return Promise.reject(error);
+                return Promise.reject(refreshErr);
             }
         }
         return Promise.reject(error);
@@ -144,5 +161,9 @@ axios.interceptors.response.use(
 
 
 async function _renewAccessToken() {
-    await axios.post('auth/refresh-token')
+    const res = await axios.post('auth/refresh-token')
+    if (res.data && typeof res.data === 'object' && res.data._id) {
+        localStorage.setItem('loggedinUser', JSON.stringify(res.data))
+        window.dispatchEvent(new Event('user-changed'))
+    }
 }
