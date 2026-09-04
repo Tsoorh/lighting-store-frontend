@@ -245,20 +245,22 @@ export const AppHeader = () => {
                         {debouncedSearch?
                         <ul>
                             {resultProduct?.map(product => {
-                                const cleanUrls = product.imgsUrl.map(url => url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, ""))
+                                const cleanUrls = product.imgsUrl.map(url => url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, "").replace(/^4G8A/i, ""))
                                 const filteredUrls = cleanUrls.filter(url => url !== 'coming-soon')
-                                const cPhoto = filteredUrls.find(url => url.startsWith('C_'))
-                                const hPhoto = filteredUrls.find(url => url.startsWith('H_'))
-                                const numPhoto = filteredUrls.find(url => !url.startsWith('C_') && !url.startsWith('H_') && !url.startsWith('S_'))
-                                const sPhoto = filteredUrls.find(url => url.startsWith('S_'))
+                                const cPhoto = filteredUrls.find(url => url.toUpperCase().startsWith('C_'))
+                                const hPhoto = filteredUrls.find(url => url.toUpperCase().startsWith('H_'))
+                                const numPhoto = filteredUrls.find(url => !url.toUpperCase().startsWith('C_') && !url.toUpperCase().startsWith('H_') && !url.toUpperCase().startsWith('S_'))
+                                const sPhoto = filteredUrls.find(url => url.toUpperCase().startsWith('S_'))
                                 
                                 const displayPhoto = cPhoto || hPhoto || numPhoto || sPhoto
                                 
                                 const getImageUrl = (imgName: string) => {
                                     // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
                                     const cloudId = 'dhixlriwm'
-                                    if (imgName.startsWith('C_') || imgName.startsWith('H_') || imgName.startsWith('S_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${imgName}.webp`
-                                    return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${imgName}.webp`
+                                    const nameWithout4G8A = imgName.replace(/^4G8A/i, '')
+                                    const upper = nameWithout4G8A.toUpperCase()
+                                    if (upper.startsWith('C_') || upper.startsWith('H_') || upper.startsWith('S_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${nameWithout4G8A}.webp`
+                                    return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${nameWithout4G8A}.webp`
                                 }
 
                                 return (

@@ -38,13 +38,15 @@ export const ProductDetails = () => {
                 }
 
                 if (productFromDb && productFromDb.imgsUrl) {
-                    const cleanUrls = productFromDb.imgsUrl.map((url: string) => url.replace(/[\r\n\s]+/g, "").replace(/\.[^/.]+$/, ""));
+                    const cleanUrls = productFromDb.imgsUrl.map((url: string) => 
+                        url.replace(/[\r\n\s]+/g, "").replace(/\.[^/.]+$/, "").replace(/^4G8A/i, "")
+                    );
                     const filteredUrls = cleanUrls.filter((url: string) => url !== 'coming-soon');
                     
-                    const hPhotos = filteredUrls.filter((url: string) => url.startsWith('H_'));
-                    const sPhotos = filteredUrls.filter((url: string) => url.startsWith('S_'));
-                    const otherPhotos = filteredUrls.filter((url: string) => !url.startsWith('C_') && !url.startsWith('H_') && !url.startsWith('S_'));
-                    const cPhotos = filteredUrls.filter((url: string) => url.startsWith('C_'));
+                    const hPhotos = filteredUrls.filter((url: string) => url.toUpperCase().startsWith('H_'));
+                    const sPhotos = filteredUrls.filter((url: string) => url.toUpperCase().startsWith('S_'));
+                    const otherPhotos = filteredUrls.filter((url: string) => !url.toUpperCase().startsWith('C_') && !url.toUpperCase().startsWith('H_') && !url.toUpperCase().startsWith('S_'));
+                    const cPhotos = filteredUrls.filter((url: string) => url.toUpperCase().startsWith('C_'));
 
                     let nonScratchPhotos = [...hPhotos, ...otherPhotos];
                     if (nonScratchPhotos.length === 0 && cPhotos.length > 0) {
@@ -54,10 +56,12 @@ export const ProductDetails = () => {
                     const getImageUrl = (cleanName: string) => {
                         // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
                         const cloudId = 'dhixlriwm'
-                        if (cleanName.startsWith('H_') || cleanName.startsWith('C_') || cleanName.startsWith('S_')) {
-                            return `https://res.cloudinary.com/${cloudId}/image/upload/${cleanName}.webp`
+                        const nameWithout4G8A = cleanName.replace(/^4G8A/i, '')
+                        const upper = nameWithout4G8A.toUpperCase()
+                        if (upper.startsWith('H_') || upper.startsWith('C_') || upper.startsWith('S_')) {
+                            return `https://res.cloudinary.com/${cloudId}/image/upload/${nameWithout4G8A}.webp`
                         }
-                        return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${cleanName}.webp`
+                        return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${nameWithout4G8A}.webp`
                     }
 
                     // Combine and take up to 5 photos (1 main + 4 thumbs), ensuring scratch photos are at the end

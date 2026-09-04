@@ -606,13 +606,15 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                         <div className="images-preview" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px', maxHeight: '200px', overflowY: 'auto' }}>
                             {formData.imgsUrl?.map(url => {
                                 if (!url) return null
-                                const isDirectUpload = url.startsWith('C_') || url.startsWith('H_') || url.startsWith('S_')
+                                const clean = url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, "").replace(/^4G8A/i, "")
+                                const upper = clean.toUpperCase()
+                                const isDirectUpload = upper.startsWith('C_') || upper.startsWith('H_') || upper.startsWith('S_')
                                 return (
                                     <div key={url} className="img-preview-item" style={{ position: 'relative' }}>
                                         <img 
                                             src={isDirectUpload 
-                                                ? `https://res.cloudinary.com/dhixlriwm/image/upload/${url}.webp`
-                                                : `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${url}.webp`
+                                                ? `https://res.cloudinary.com/dhixlriwm/image/upload/${clean}.webp`
+                                                : `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${clean}.webp`
                                             } 
                                             alt="preview" 
                                             style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
