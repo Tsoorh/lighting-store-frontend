@@ -17,7 +17,12 @@ export const ProductDetails = () => {
     const [product, setProduct] = useState<FullProduct | null>(null)
     const [selectedWoodEn, setSelectedWoodEn] = useState<string>('')
     const [selectedPriceIdx, setSelectedPriceIdx] = useState<number>(0)
-    const [gallery, setGallery] = useState<string[]>([])
+    type GalleryItem = {
+        mainUrl: string
+        thumbUrl: string
+    }
+
+    const [gallery, setGallery] = useState<GalleryItem[]>([])
     const [mainImage, setMainImage] = useState<string>('')
     const { language } = useLanguage()
     const user = authService.getLoggedinUser()
@@ -53,15 +58,23 @@ export const ProductDetails = () => {
                         nonScratchPhotos = cPhotos;
                     }
 
-                    const getImageUrl = (cleanName: string) => {
+                    const getImageUrls = (cleanName: string): GalleryItem => {
                         // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
                         const cloudId = 'dhixlriwm'
                         const nameWithout4G8A = cleanName.replace(/^4G8A/i, '')
                         const upper = nameWithout4G8A.toUpperCase()
-                        if (upper.startsWith('H_') || upper.startsWith('C_') || upper.startsWith('S_')) {
-                            return `https://res.cloudinary.com/${cloudId}/image/upload/${nameWithout4G8A}.webp`
+                        if (upper.startsWith('S_')) {
+                            return {
+                                mainUrl: `https://res.cloudinary.com/${cloudId}/image/upload/${nameWithout4G8A}.webp`,
+                                thumbUrl: `https://res.cloudinary.com/${cloudId}/image/upload/w_250,c_limit,q_100,f_png/${nameWithout4G8A}.webp`
+                            }
                         }
-                        return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${nameWithout4G8A}.webp`
+                        if (upper.startsWith('H_') || upper.startsWith('C_')) {
+                            const url = `https://res.cloudinary.com/${cloudId}/image/upload/${nameWithout4G8A}.webp`
+                            return { mainUrl: url, thumbUrl: url }
+                        }
+                        const url = `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${nameWithout4G8A}.webp`
+                        return { mainUrl: url, thumbUrl: url }
                     }
 
                     // Combine and take up to 5 photos (1 main + 4 thumbs), ensuring scratch photos are at the end
@@ -73,10 +86,10 @@ export const ProductDetails = () => {
                         combinedPhotos = nonScratchPhotos.slice(0, 5);
                     }
 
-                    const sortedPhotos = combinedPhotos.map(getImageUrl);
+                    const sortedPhotos = combinedPhotos.map(getImageUrls);
                     
                     setGallery(sortedPhotos);
-                    if (sortedPhotos.length > 0) setMainImage(sortedPhotos[0]);
+                    if (sortedPhotos.length > 0) setMainImage(sortedPhotos[0].mainUrl);
                 }
             } catch (err) {
                 console.log("Error loading product:", err)
@@ -346,17 +359,17 @@ export const ProductDetails = () => {
                         )}
                     </div>
                     <div className="gallery-bottom">
-                        {gallery.map((imgUrl, idx) => (
+                        {gallery.map((item, idx) => (
                             <div 
                                 key={idx} 
                                 role="button"
                                 tabIndex={0}
                                 aria-label={`${isEnglish ? 'View image' : 'הצג תמונה'} ${idx + 1}`}
-                                className={`thumbnail-wrapper ${mainImage === imgUrl ? 'active' : ''}`}
-                                onClick={() => setMainImage(imgUrl)}
-                                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setMainImage(imgUrl)}
+                                className={`thumbnail-wrapper ${mainImage === item.mainUrl ? 'active' : ''}`}
+                                onClick={() => setMainImage(item.mainUrl)}
+                                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setMainImage(item.mainUrl)}
                             >
-                                <ImageWithSkeleton src={imgUrl} alt={`${nameLabel} thumb ${idx}`} />
+                                <ImageWithSkeleton src={item.thumbUrl} alt={`${nameLabel} thumb ${idx}`} />
                             </div>
                         ))}
                     </div>
