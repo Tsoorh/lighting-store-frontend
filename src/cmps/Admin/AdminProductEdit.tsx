@@ -65,17 +65,31 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     // Helper to ensure price entries have both languages if one is missing or inconsistent
     function _healPriceArray(prices: DirtyProductPrice[]): ProductPrice[] {
         if (!prices) return []
-        return prices.map(p => {
+        const result: ProductPrice[] = []
+
+        prices.forEach(p => {
             const woodNameEn = (p.wood?.en || '').trim()
             const woodNameHe = (p.wood?.he || '').trim()
+            const amount = p.amount ?? 0
             
+            // Handle "Oak/American walnut" mapping - expand to both so individual prices are editable
+            if (
+                woodNameEn.toLowerCase() === 'oak/american walnut' || 
+                woodNameHe === 'אלון/אגוז אמריקאי'
+            ) {
+                result.push({ ...p, amount, wood: { en: 'Oak', he: 'אלון' } })
+                result.push({ ...p, amount, wood: { en: 'American walnut', he: 'אגוז אמריקאי' } })
+                return
+            }
+
             // Handle "Oak stained Walnut" mapping
             if (
                 woodNameEn.toLowerCase() === 'oak stained walnut' || 
                 woodNameEn.toLowerCase() === 'oak stained as walnut' ||
                 woodNameHe === 'אלון מגוון לאגוז'
             ) {
-                return { ...p, amount: p.amount ?? 0, wood: { en: 'Oak stained Walnut', he: 'אלון מגוון לאגוז' } }
+                result.push({ ...p, amount, wood: { en: 'Oak stained Walnut', he: 'אלון מגוון לאגוז' } })
+                return
             }
 
             // Try to find a match in constants by either English or Hebrew name
@@ -86,17 +100,22 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
               || (woodNameEn.toLowerCase() === 'oak' ? { en: 'Oak', he: 'אלון' } : null)
 
             if (found) {
-                return { ...p, amount: p.amount ?? 0, wood: found }
+                result.push({ ...p, amount, wood: found })
+            } else if (woodNameEn || woodNameHe) {
+                result.push({ ...p, amount, wood: { en: woodNameEn || woodNameHe, he: woodNameHe || woodNameEn } })
+            } else {
+                result.push({ ...p, amount, wood: { en: 'Standard / No wood', he: 'מחיר כללי / ללא עץ' } })
             }
-            return { ...p, amount: p.amount ?? 0, wood: { en: woodNameEn, he: woodNameHe } }
         })
+
+        return result
     }
 
     const [formData, setFormData] = useState<Partial<FullProduct>>(() => {
         const initialState = product || {
             name: { en: '', he: '' },
             description: { en: '', he: '' },
-            price: [{ wood: { he: '', en: '' }, amount: 0 }],
+            price: [{ wood: { he: 'מחיר כללי / ללא עץ', en: 'Standard / No wood' }, amount: 0 }],
             isActive: true,
             category: [],
             imgsUrl: [],
@@ -115,7 +134,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             imgsUrl: initialState.imgsUrl || [],
             socketType: initialState.socketType || { screwType: '', lightType: '' }, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            price: _healPriceArray((initialState.price && Array.isArray(initialState.price) && initialState.price.length > 0) ? initialState.price : [{ wood: { he: '', en: '' }, amount: 0 }]),
+            price: _healPriceArray((initialState.price && Array.isArray(initialState.price) && initialState.price.length > 0) ? initialState.price : [{ wood: { he: 'מחיר כללי / ללא עץ', en: 'Standard / No wood' }, amount: 0 }]),
             name: initialState.name || { en: '', he: '' },
             description: initialState.description || { en: '', he: '' }
         }
@@ -155,28 +174,66 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         setFormData(prev => ({ ...prev, price: newPrices }))
     }
 
+    function _matchesWood(w1?: { en?: string; he?: string }, w2?: { en?: string; he?: string }): boolean {
+        if (!w1 || !w2) return false
+        const en1 = (w1.en || '').trim().toLowerCase()
+        const en2 = (w2.en || '').trim().toLowerCase()
+        if (en1 && en2 && en1 === en2) return true
+
+        const he1 = (w1.he || '').trim()
+        const he2 = (w2.he || '').trim()
+        if (he1 && he2 && he1 === he2) return true
+
+        return false
+    }
+
     function _getAvailablePriceOptions(): hebrewEnglishObj[] {
         const woodSpecs = formData.woodType || []
         const optionsMap = new Map<string, hebrewEnglishObj>()
 
         woodSpecs.forEach(spec => {
-            if (spec.en.toLowerCase() === 'oak/american walnut') {
+            const enLower = (spec.en || '').toLowerCase()
+            if (enLower === 'oak/american walnut' || spec.he === 'אלון/אגוז אמריקאי') {
                 optionsMap.set('oak', { en: 'Oak', he: 'אלון' })
                 optionsMap.set('american walnut', { en: 'American walnut', he: 'אגוז אמריקאי' })
-            } else {
-                optionsMap.set(spec.en.toLowerCase(), spec)
+            } else if (spec.en || spec.he) {
+                optionsMap.set((spec.en || spec.he).toLowerCase(), spec)
+            }
+        });
+
+        // ALSO ensure any wood already existing in formData.price is present so it is never hidden!
+        const existingPrices = (formData.price || []) as ProductPrice[];
+        existingPrices.forEach(p => {
+            if (p.wood) {
+                const en = (p.wood.en || '').trim()
+                const he = (p.wood.he || '').trim()
+                const enLower = en.toLowerCase()
+                if (enLower === 'oak/american walnut' || he === 'אלון/אגוז אמריקאי') {
+                    optionsMap.set('oak', { en: 'Oak', he: 'אלון' })
+                    optionsMap.set('american walnut', { en: 'American walnut', he: 'אגוז אמריקאי' })
+                } else if (en || he) {
+                    const key = (en || he).toLowerCase()
+                    if (!optionsMap.has(key)) {
+                        optionsMap.set(key, { en: en || he, he: he || en })
+                    }
+                }
             }
         })
+
+        // Fallback for products with no wood so prices are always editable
+        if (optionsMap.size === 0) {
+            optionsMap.set('standard', { en: 'Standard / No wood', he: 'מחיר כללי / ללא עץ' })
+        }
 
         return Array.from(optionsMap.values())
     }
 
     function toggleWoodPrice(woodOption: hebrewEnglishObj) {
         const currentPrices = [...(formData.price || [])]
-        const isCurrentlySelected = currentPrices.some(p => p.wood.en.toLowerCase() === woodOption.en.toLowerCase())
+        const isCurrentlySelected = currentPrices.some(p => _matchesWood(p.wood, woodOption))
         
         if (isCurrentlySelected) {
-            const remainingPrices = currentPrices.filter(p => p.wood.en.toLowerCase() !== woodOption.en.toLowerCase())
+            const remainingPrices = currentPrices.filter(p => !_matchesWood(p.wood, woodOption))
             if (remainingPrices.length === 0) {
                 alert(isEn ? 'At least one price is required' : 'חובה להזין לפחות מחיר אחד')
                 return
@@ -225,33 +282,35 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         if (field === 'woodType') {
             const availableOptions: string[] = []
             newList.forEach(spec => {
-                if (spec.en === 'Oak/American walnut') {
+                const enLower = (spec.en || '').toLowerCase()
+                if (enLower === 'oak/american walnut' || spec.he === 'אלון/אגוז אמריקאי') {
                     availableOptions.push('Oak', 'American walnut')
                 } else {
                     availableOptions.push(spec.en)
                 }
             })
 
-            // 1. Prune prices that are no longer available in ANY selected wood type
-            const updatedPrices = (formData.price || []).filter(p => 
-                availableOptions.some(opt => opt.toLowerCase() === p.wood.en.toLowerCase())
+            // 1. Prune prices that are no longer available if wood types exist, otherwise preserve
+            let updatedPrices = (formData.price || []).filter(p => 
+                availableOptions.length === 0 || 
+                availableOptions.some(opt => opt.toLowerCase() === (p.wood?.en || '').toLowerCase())
             )
             
             // 2. If an option was added, automatically add its corresponding price entries
             if (addedOption) {
                 const optionsToAdd: hebrewEnglishObj[] = []
-                const addedEnLower = addedOption.en.toLowerCase()
-                if (addedEnLower === 'oak/american walnut') {
+                const addedEnLower = (addedOption.en || '').toLowerCase()
+                if (addedEnLower === 'oak/american walnut' || addedOption.he === 'אלון/אגוז אמריקאי') {
                     optionsToAdd.push({ en: 'Oak', he: 'אלון' })
                     optionsToAdd.push({ en: 'American walnut', he: 'אגוז אמריקאי' })
-                } else if (addedEnLower === 'oak stained walnut' || addedEnLower === 'oak stained as walnut') {
+                } else if (addedEnLower === 'oak stained walnut' || addedEnLower === 'oak stained as walnut' || addedOption.he === 'אלון מגוון לאגוז') {
                     optionsToAdd.push({ en: 'Oak stained Walnut', he: 'אלון מגוון לאגוז' })
                 } else {
                     optionsToAdd.push(addedOption)
                 }
                 
                 optionsToAdd.forEach(opt => {
-                    if (!updatedPrices.some(p => p.wood.en.toLowerCase() === opt.en.toLowerCase())) {
+                    if (!updatedPrices.some(p => _matchesWood(p.wood, opt))) {
                         updatedPrices.push({ wood: opt, amount: 0 })
                     }
                 })
@@ -259,10 +318,12 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
 
             // 3. Safety: If we have wood types but no prices, add the first available
             if (updatedPrices.length === 0 && availableOptions.length > 0) {
-                const firstOpt = newList[0].en === 'Oak/American walnut' 
+                const firstOpt = (newList[0].en?.toLowerCase() === 'oak/american walnut' || newList[0].he === 'אלון/אגוז אמריקאי')
                     ? { en: 'Oak', he: 'אלון' }
                     : newList[0]
                 updatedPrices.push({ wood: firstOpt, amount: 0 })
+            } else if (updatedPrices.length === 0) {
+                updatedPrices.push({ wood: { en: 'Standard / No wood', he: 'מחיר כללי / ללא עץ' }, amount: 0 })
             }
             newFormData.price = updatedPrices
         }
@@ -414,7 +475,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                         <h4>{isEn ? 'Prices by Wood Type' : 'מחירים לפי סוג עץ'}</h4>
                         <div className="wood-price-toggles">
                             {_getAvailablePriceOptions().map(wood => {
-                                const isSelected = (formData.price || []).some(p => p.wood.en.toLowerCase() === wood.en.toLowerCase())
+                                const isSelected = (formData.price || []).some(p => _matchesWood(p.wood, wood))
                                 return (
                                     <label key={wood.en} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', padding: '8px', background: isSelected ? '#f0f7ff' : '#f9f9f9', borderRadius: '4px', border: `1px solid ${isSelected ? '#007bff' : '#ddd'}` }}>
                                         <input 
@@ -429,8 +490,8 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                             })}
                         </div>
 
-                        {_getAvailablePriceOptions().filter(wood => (formData.price || []).some(p => p.wood.en.toLowerCase() === wood.en.toLowerCase())).map(wood => {
-                            const woodPrices = (formData.price || []).map((p, originalIdx) => ({...p, originalIdx})).filter(p => p.wood.en.toLowerCase() === wood.en.toLowerCase())
+                        {_getAvailablePriceOptions().filter(wood => (formData.price || []).some(p => _matchesWood(p.wood, wood))).map(wood => {
+                            const woodPrices = (formData.price || []).map((p, originalIdx) => ({...p, originalIdx})).filter(p => _matchesWood(p.wood, wood))
                             
                             return (
                                 <div key={wood.en} className="wood-group" style={{ marginBottom: '20px', padding: '15px', background: '#fcfcfc', border: '1px solid #eee', borderRadius: '8px' }}>
@@ -459,8 +520,8 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                                 <label style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{isEn ? 'Amount' : 'מחיר'}</label>
                                                 <input 
                                                     type="number" 
-                                                    value={p.amount || ''} 
-                                                    onChange={(e) => handlePriceChange(p.originalIdx, 'amount', +e.target.value)} 
+                                                    value={p.amount !== undefined && p.amount !== null ? p.amount : ''} 
+                                                    onChange={(e) => handlePriceChange(p.originalIdx, 'amount', e.target.value === '' ? 0 : +e.target.value)} 
                                                 />
                                             </div>
                                             <button 
