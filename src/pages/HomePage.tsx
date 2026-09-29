@@ -127,7 +127,7 @@ export const HomePage = () => {
                 <div className="gradient-divider"></div>
                 
                 <a 
-                    href={`https://wa.me/972524000102?text=${encodeURIComponent(
+                    href={`https://wa.me/972547513434?text=${encodeURIComponent(
                         isEn 
                             ? "Hi, I reached out through the website and would like to consult regarding a lighting project." 
                             : "היי, הגעתי דרך האתר ואשמח להתייעץ לגבי פרויקט תאורה."

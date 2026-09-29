@@ -80,7 +80,7 @@ export const AccessibilityStatement = () => {
                 </p>
                 <ul>
                     <li>{isEn ? 'Accessibility Coordinator Name: Tiran Lasry' : 'שם רכז/ת הנגישות: טירן לסרי'}</li>
-                    <li>{isEn ? 'Phone: 052-40-00-102' : 'טלפון: 052-40-00-102'}</li>
+                    <li>{isEn ? 'Phone: 052-4000-102/054-7513-434' : 'טלפון: 052-4000-102/054-7513-434'}</li>
                     <li>{isEn ? 'Email: Tiranlasry@gmail.com' : 'דואר אלקטרוני: Tiranlasry@gmail.com'}</li>
                 </ul>
                 <p style={{ marginTop: '24px' }}>
