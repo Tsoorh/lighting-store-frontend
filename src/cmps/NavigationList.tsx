@@ -170,22 +170,6 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
                     </Select>
                 </FormControl>
             </li>
-            {!isMobile &&
-                <li>
-                    <a href={`https://wa.me/972547513434?text=${encodeURIComponent(
-                        isEnglish 
-                            ? "Hi, I reached out through Tiran Lasry's website and would like to get more details." 
-                            : "היי, הגעתי דרך האתר של טירן לסרי ואשמח לקבל פרטים נוספים."
-                       )}`} 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       aria-label={isEnglish ? "Contact on WhatsApp" : "צור קשר בוואטסאפ"}
-                       style={{ display: 'flex', color: 'inherit' }}
-                    >
-                        <Icons iconName="whatsapp" />
-                    </a>
-                </li>
-            }
             {!isMobile && <li 
                 role="button" 
                 tabIndex={0} 

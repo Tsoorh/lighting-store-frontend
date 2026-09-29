@@ -13,6 +13,7 @@ import { PrivacyPolicy } from './pages/PrivacyPolicy'
 import { AccessibilityStatement } from './pages/AccessibilityStatement'
 import { LoginRegister } from './pages/LoginRegister'
 import { AdminPage } from './pages/AdminPage'
+import { FloatingWhatsApp } from './cmps/FloatingWhatsApp'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,6 +53,7 @@ function App() {
             </Routes>
           </main>
           <AppFooter />
+          <FloatingWhatsApp />
         </div>
       </BrowserRouter>
     </QueryClientProvider>
