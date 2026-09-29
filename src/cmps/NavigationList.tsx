@@ -172,7 +172,7 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
             </li>
             {!isMobile &&
                 <li>
-                    <a href={`https://wa.me/972524000102?text=${encodeURIComponent(
+                    <a href={`https://wa.me/972547513434?text=${encodeURIComponent(
                         isEnglish 
                             ? "Hi, I reached out through Tiran Lasry's website and would like to get more details." 
                             : "היי, הגעתי דרך האתר של טירן לסרי ואשמח לקבל פרטים נוספים."

@@ -63,8 +63,8 @@ async function ajax<TResponse, TData = undefined>(endpoint: string, method: Meth
 }
 
 type RefreshSubscriber = {
-    resolve: (value: unknown) => void
-    reject: (reason?: unknown) => void
+    resolve: (value: any) => void
+    reject: (reason?: any) => void
 }
 
 let isRefreshing = false
@@ -75,7 +75,7 @@ function onRefreshed() {
     refreshSubscribers = []
 }
 
-function onRefreshFailed(error: unknown) {
+function onRefreshFailed(error: any) {
     refreshSubscribers.forEach(sub => sub.reject(error))
     refreshSubscribers = []
 }
