@@ -49,7 +49,7 @@
 }
 
 /* LTR/RTL Flex directions */
-.product-details-page.rtl .product-top-section { flex-direction: row; }
+.product-details-page.rtl .product-top-section { flex-direction: row-reverse; }
 .product-details-page.ltr .product-top-section { flex-direction: row-reverse; }
 
 /* --- RIGHT SIDE: PRODUCT INFO --- */
