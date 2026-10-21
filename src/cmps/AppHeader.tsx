@@ -54,14 +54,22 @@ export const AppHeader = () => {
             // Show shadow if scrolled at all
             setIsScrolled(currentScrollY > 0)
 
+            // Temporarily ignore scroll events triggered by accordion / drilldown layout shifts
+            if ((window as any).__disableHeaderScrollUntil && Date.now() < (window as any).__disableHeaderScrollUntil) {
+                lastScrollY.current = currentScrollY
+                return
+            }
+
+            const delta = currentScrollY - lastScrollY.current
+
             // Logic for Smart Sticky
             if (isMenuOpen) {
                 setIsVisible(true)
             } else if (currentScrollY < 50) {
                 setIsVisible(true)
-            } else if (currentScrollY > lastScrollY.current) {
+            } else if (delta > 10) {
                 setIsVisible(false) // Scrolling down
-            } else {
+            } else if (delta < -10) {
                 setIsVisible(true) // Scrolling up
             }
             

@@ -15,6 +15,8 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import EmailIcon from '@mui/icons-material/Email';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 type IconName = string;
 
@@ -43,7 +45,9 @@ export const Icons = ({ iconName }: IconsProps): JSX.Element | null => {
         back: <ArrowBackIcon sx={{fontSize:12,fontWeight: 100}} aria-hidden='true'/>,
         next: <ArrowForwardIcon sx={{fontSize:12,fontWeight: 100}} aria-hidden='true'/>,
         user: <PersonOutlineIcon aria-hidden='true'/>,
-        edit: <EditIcon fontSize='small' aria-hidden='true'/>
+        edit: <EditIcon fontSize='small' aria-hidden='true'/>,
+        plus: <AddIcon fontSize='small' aria-hidden='true'/>,
+        minus: <RemoveIcon fontSize='small' aria-hidden='true'/>
     };
 
     return icons[key] ?? null;

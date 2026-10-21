@@ -41,14 +41,14 @@ export const SkeletonProductDetails = () => {
                                 <Skeleton variant="rectangular" width="100%" height={80} />
                             </div>
 
-                            <div className="product-sec2">
-                                <Skeleton variant="text" width="30%" height={24} />
-                                <Skeleton variant="rectangular" width="100%" height={60} />
-                            </div>
-
                             <div className="product-sec3">
                                 <Skeleton variant="text" width="20%" height={24} />
                                 <Skeleton variant="rectangular" width="100%" height={40} />
+                            </div>
+
+                            <div className="product-sec2">
+                                <Skeleton variant="text" width="30%" height={24} />
+                                <Skeleton variant="rectangular" width="100%" height={60} />
                             </div>
 
                             <div className="product-sec4">

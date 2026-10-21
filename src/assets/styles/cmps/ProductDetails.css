@@ -68,7 +68,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between; /* Spreads header, sections, and button */
-    height: 100%; /* Match gallery height */
+    min-height: 100%; /* Match gallery height without overflow */
     gap: 30px; /* Minimum gap between distributed items */
 }
 
@@ -171,8 +171,8 @@
     display: flex;
     flex-direction: column;
     gap: 32px;
-    flex: 1; /* Allow sections to take available space and center content */
-    justify-content: center;
+    flex: 1; /* Allow sections to take available space */
+    justify-content: flex-start;
 }
 
 .product-sections h3 {
@@ -198,6 +198,99 @@
 .sizes-list, .specs-list {
     padding: 0;
     margin: 0;
+}
+
+/* Drilldown Section */
+.product-sec2.drilldown {
+    border-top: 1px solid rgba(184, 180, 174, 0.45);
+    border-bottom: 1px solid rgba(184, 180, 174, 0.45);
+    padding: 12px 0;
+    transition: border-color 0.3s ease;
+}
+
+.drilldown-toggle-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 8px 6px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    color: rgba(30, 28, 25, 1);
+    font-family: inherit;
+    text-align: inherit;
+    border-radius: 4px;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.drilldown-toggle-btn:hover {
+    background-color: rgba(30, 28, 25, 0.04);
+}
+
+.drilldown-toggle-btn h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.drilldown-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid rgba(30, 28, 25, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(30, 28, 25, 0.03);
+    color: rgba(30, 28, 25, 0.85);
+    flex-shrink: 0;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+                background-color 0.25s ease,
+                border-color 0.25s ease,
+                color 0.25s ease;
+}
+
+.drilldown-toggle-btn:hover .drilldown-icon {
+    background-color: rgba(30, 28, 25, 0.08);
+    border-color: rgba(30, 28, 25, 0.7);
+    color: rgba(30, 28, 25, 1);
+}
+
+.drilldown-toggle-btn[aria-expanded="true"] .drilldown-icon {
+    transform: rotate(45deg);
+    background-color: rgba(30, 28, 25, 0.1);
+    border-color: rgba(30, 28, 25, 0.85);
+    color: rgba(30, 28, 25, 1);
+}
+
+/* Smooth slow expand/collapse animation via grid-template-rows */
+.drilldown-collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.drilldown-collapse.open {
+    grid-template-rows: 1fr;
+}
+
+.drilldown-inner {
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.1s,
+                transform 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.1s;
+}
+
+.drilldown-collapse.open .drilldown-inner {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.drilldown-inner .specs-list {
+    padding-top: 14px;
 }
 
 /* Sec 4 (Terms) Layout */

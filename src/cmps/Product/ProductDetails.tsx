@@ -17,6 +17,7 @@ export const ProductDetails = () => {
     const [product, setProduct] = useState<FullProduct | null>(null)
     const [selectedWoodEn, setSelectedWoodEn] = useState<string>('')
     const [selectedPriceIdx, setSelectedPriceIdx] = useState<number>(0)
+    const [isSpecsOpen, setIsSpecsOpen] = useState<boolean>(false)
     type GalleryItem = {
         mainUrl: string
         thumbUrl: string
@@ -156,6 +157,12 @@ export const ProductDetails = () => {
         }
     }
 
+    const onToggleSpecs = (e: React.SyntheticEvent) => {
+        e.preventDefault()
+        ;(window as any).__disableHeaderScrollUntil = Date.now() + 1000
+        setIsSpecsOpen(prev => !prev)
+    }
+
     return (
         <div className={`product-details-page ${isEnglish ? 'ltr' : 'rtl'}`} dir={isEnglish ? 'ltr' : 'rtl'}>
             
@@ -251,31 +258,6 @@ export const ProductDetails = () => {
                                 <p className="description">{descriptionLabel}</p>
                             </div>
 
-                            <div className="product-sec2">
-                                <h3>{specsTitle}</h3>
-                                <ul className="specs-list">
-                                    {skuStr && <li>{isEnglish ? 'SKU:' : 'מקט:'} {skuStr}</li>}
-                                    {hasWood && <li>{isEnglish ? 'Wood Type:' : 'סוג עץ:'} {woodStr}</li>}
-                                    {materialsStr && <li>{isEnglish ? 'Materials:' : 'חומרים:'} {materialsStr}</li>}
-                                    {voltStr && <li>{isEnglish ? 'Wattage:' : 'הספק:'} {voltStr}</li>}
-                                    {bulbStr && <li>{isEnglish ? 'Bulb Type:' : 'סוג נורה:'} {bulbStr}</li>}
-                                </ul>
-                                {hasWood && (
-                                    <p className="natural-material-note">
-                                        {isEnglish 
-                                            ? '* Slight variations in wood tone may occur due to the natural character of the material' 
-                                            : '* ייתכנו שינויים קלים בגוון העץ בשל אופיו הטבעי של החומר'}
-                                    </p>
-                                )}
-                                {hasMetal && (
-                                    <p className="natural-material-note">
-                                        {isEnglish 
-                                            ? '* Metal color is customizable' 
-                                            : '* צבע המתכת ניתן לבחירה'}
-                                    </p>
-                                )}
-                            </div>
-
                             <div className="product-sec3">
                                 <h3>{sizeTitle}</h3>
                                 <ul className="sizes-list">
@@ -303,6 +285,45 @@ export const ProductDetails = () => {
                                         )
                                     })}
                                 </ul>
+                            </div>
+
+                            <div className="product-sec2 drilldown">
+                                <button 
+                                    type="button"
+                                    className="drilldown-toggle-btn"
+                                    onClick={onToggleSpecs}
+                                    aria-expanded={isSpecsOpen}
+                                >
+                                    <span className="drilldown-icon">
+                                        <Icons iconName="plus" />
+                                    </span>
+                                    <h3>{specsTitle}</h3>
+                                </button>
+                                <div className={`drilldown-collapse ${isSpecsOpen ? 'open' : ''}`}>
+                                    <div className="drilldown-inner">
+                                        <ul className="specs-list">
+                                            {skuStr && <li>{isEnglish ? 'SKU:' : 'מקט:'} {skuStr}</li>}
+                                            {hasWood && <li>{isEnglish ? 'Wood Type:' : 'סוג עץ:'} {woodStr}</li>}
+                                            {materialsStr && <li>{isEnglish ? 'Materials:' : 'חומרים:'} {materialsStr}</li>}
+                                            {voltStr && <li>{isEnglish ? 'Wattage:' : 'הספק:'} {voltStr}</li>}
+                                            {bulbStr && <li>{isEnglish ? 'Bulb Type:' : 'סוג נורה:'} {bulbStr}</li>}
+                                        </ul>
+                                        {hasWood && (
+                                            <p className="natural-material-note">
+                                                {isEnglish 
+                                                    ? '* Slight variations in wood tone may occur due to the natural character of the material' 
+                                                    : '* ייתכנו שינויים קלים בגוון העץ בשל אופיו הטבעי של החומר'}
+                                            </p>
+                                        )}
+                                        {hasMetal && (
+                                            <p className="natural-material-note">
+                                                {isEnglish 
+                                                    ? '* Metal color is customizable' 
+                                                    : '* צבע המתכת ניתן לבחירה'}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
 
                             {isSupplier && (
