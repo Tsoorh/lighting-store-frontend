@@ -4,13 +4,14 @@ import { authService } from '../services/auth.service'
 import { AdminProductList } from '../cmps/Admin/AdminProductList'
 import { AdminUserList } from '../cmps/Admin/AdminUserList'
 import { AdminPriceSettings } from '../cmps/Admin/AdminPriceSettings'
+import { AdminSiteDesign } from '../cmps/Admin/AdminSiteDesign'
 import { useLanguage } from '../hooks/useLanguage'
 import '../assets/styles/pages/AdminPage.css'
 
 export const AdminPage: React.FC = () => {
     const [searchParams] = useSearchParams()
     const editProductId = searchParams.get('edit')
-    const [activeTab, setActiveTab] = useState<'products' | 'users' | 'settings'>(editProductId ? 'products' : 'products')
+    const [activeTab, setActiveTab] = useState<'products' | 'users' | 'settings' | 'design'>(editProductId ? 'products' : 'products')
     const [user, setUser] = useState(authService.getLoggedinUser())
     const navigate = useNavigate()
     const { language } = useLanguage()
@@ -56,6 +57,12 @@ export const AdminPage: React.FC = () => {
                     >
                         {isEn ? 'Price Settings' : 'הגדרות מחירים'}
                     </button>
+                    <button 
+                        className={activeTab === 'design' ? 'active' : ''} 
+                        onClick={() => setActiveTab('design')}
+                    >
+                        {isEn ? 'Site Design' : 'עיצוב האתר'}
+                    </button>
                 </nav>
             </header>
 
@@ -63,6 +70,7 @@ export const AdminPage: React.FC = () => {
                 {activeTab === 'products' && <AdminProductList initialProductId={editProductId} />}
                 {activeTab === 'users' && <AdminUserList />}
                 {activeTab === 'settings' && <AdminPriceSettings />}
+                {activeTab === 'design' && <AdminSiteDesign />}
             </main>
         </div>
     )

@@ -13,6 +13,7 @@ import { PrivacyPolicy } from './pages/PrivacyPolicy'
 import { AccessibilityStatement } from './pages/AccessibilityStatement'
 import { LoginRegister } from './pages/LoginRegister'
 import { AdminPage } from './pages/AdminPage'
+import { PreviewHomePage } from './pages/PreviewHomePage'
 import { FloatingWhatsApp } from './cmps/FloatingWhatsApp'
 
 const queryClient = new QueryClient({
@@ -36,25 +37,30 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <div className='home-grid'>
-          <AppHeader />
-          <main>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginRegister />} />
-              <Route path="/dashboard" element={<AdminPage />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/product/:productId" element={<ProductDetailsWrapper />} />
-              <Route path="/product/category/:categoryName" element={<ProductCategory/>} />
-              <Route path="/terms" element={<TermsOfUse />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/accessibility" element={<AccessibilityStatement />} />
-            </Routes>
-          </main>
-          <AppFooter />
-          <FloatingWhatsApp />
-        </div>
+        <Routes>
+          <Route path="/preview-homepage" element={<PreviewHomePage />} />
+          <Route path="*" element={
+            <div className='home-grid'>
+              <AppHeader />
+              <main>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/login" element={<LoginRegister />} />
+                  <Route path="/dashboard" element={<AdminPage />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/product/:productId" element={<ProductDetailsWrapper />} />
+                  <Route path="/product/category/:categoryName" element={<ProductCategory/>} />
+                  <Route path="/terms" element={<TermsOfUse />} />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/accessibility" element={<AccessibilityStatement />} />
+                </Routes>
+              </main>
+              <AppFooter />
+              <FloatingWhatsApp />
+            </div>
+          } />
+        </Routes>
       </BrowserRouter>
     </QueryClientProvider>
   )

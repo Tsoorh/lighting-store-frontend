@@ -5,15 +5,30 @@ import { ContactSection } from '../cmps/ContactSection';
 import { useLanguage } from '../hooks/useLanguage';
 import { authService } from '../services/auth.service';
 import { productService } from '../services/product.service';
-import { useState } from 'react';
+import { siteMediaService } from '../services/site-media.service';
+import type { SiteMediaConfig } from '../model/site-media.model';
+import { useState, useEffect } from 'react';
 import type { Miniuser } from '../model/user.model';
 
 export const HomePage = () => {
     const navigate = useNavigate()
     const { language } = useLanguage()
     const [user] = useState<Miniuser | null>(authService.getLoggedinUser())
+    const [media, setMedia] = useState<SiteMediaConfig>(siteMediaService.getCachedSiteMedia())
     
     const isEn = language === 'en'
+
+    useEffect(() => {
+        let isMounted = true
+        siteMediaService.getSiteMedia()
+            .then(liveMedia => {
+                if (isMounted && liveMedia && liveMedia.gallery) {
+                    setMedia(liveMedia)
+                }
+            })
+            .catch(err => console.error('Failed to load site media on HomePage', err))
+        return () => { isMounted = false }
+    }, [])
     
     const canDownloadPriceList = user?.role && ['admin', 'supplier', 'architect'].includes(user.role.trim().toLowerCase())
 
@@ -25,17 +40,25 @@ export const HomePage = () => {
         }
     }
 
+    const heroVid = media.heroVideo
+    const g = media.gallery
+
     return (
         <div className="main-layout" dir={isEn ? 'ltr' : 'rtl'}>
             <section className="hero-section">
                 <div className="entry-vid">
                     <video 
-                        src="/images/Figma/Main_video.mp4" 
+                        key={heroVid.url}
+                        src={heroVid.url} 
+                        poster={heroVid.posterUrl || undefined}
                         autoPlay 
                         loop 
                         muted 
                         playsInline
                         className="cover-img"
+                        style={{
+                            objectPosition: `${heroVid.objectPosition?.x ?? 50}% ${heroVid.objectPosition?.y ?? 50}%`
+                        }}
                     />
                     <img src="/images/Figma/bright_logo_horizontal.png" alt="Bright Logo" className="entry-logo entry-logo-desktop" />
                     <div className="entry-logo entry-logo-mobile">
@@ -144,7 +167,14 @@ export const HomePage = () => {
             <section className="gallery-sec page-section">
                 <div className="gallery-grid">
                     <div className="gallery-item">
-                        <img src="/images/Figma/Tiran_Frame.png" alt="Tiran frame" className="cover-img" />
+                        <img 
+                            src={g.slot_1.url} 
+                            alt={isEn ? g.slot_1.alt.en : g.slot_1.alt.he} 
+                            className="cover-img" 
+                            style={{
+                                objectPosition: `${g.slot_1.objectPosition?.x ?? 50}% ${g.slot_1.objectPosition?.y ?? 50}%`
+                            }}
+                        />
                     </div>
                     <div className="gallery-item gallery-about-card" dir={isEn ? 'ltr' : 'rtl'}>
                         <h3 className="gallery-about-title">
@@ -163,16 +193,44 @@ export const HomePage = () => {
                         </div>
                     </div>
                     <div className="gallery-item">
-                        <img src="/images/Figma/Green_light.png" alt="Green light" className="cover-img" />
+                        <img 
+                            src={g.slot_3.url} 
+                            alt={isEn ? g.slot_3.alt.en : g.slot_3.alt.he} 
+                            className="cover-img" 
+                            style={{
+                                objectPosition: `${g.slot_3.objectPosition?.x ?? 50}% ${g.slot_3.objectPosition?.y ?? 50}%`
+                            }}
+                        />
                     </div>
                     <div className="gallery-item">
-                        <img src="/images/Figma/Living_room.png" alt="Living room" className="cover-img" />
+                        <img 
+                            src={g.slot_4.url} 
+                            alt={isEn ? g.slot_4.alt.en : g.slot_4.alt.he} 
+                            className="cover-img" 
+                            style={{
+                                objectPosition: `${g.slot_4.objectPosition?.x ?? 50}% ${g.slot_4.objectPosition?.y ?? 50}%`
+                            }}
+                        />
                     </div>
                     <div className="gallery-item">
-                        <img src="/images/Figma/Table_light.png" alt="Table light" className="cover-img" />
+                        <img 
+                            src={g.slot_5.url} 
+                            alt={isEn ? g.slot_5.alt.en : g.slot_5.alt.he} 
+                            className="cover-img" 
+                            style={{
+                                objectPosition: `${g.slot_5.objectPosition?.x ?? 50}% ${g.slot_5.objectPosition?.y ?? 50}%`
+                            }}
+                        />
                     </div>
                     <div className="gallery-item">
-                        <img src="/images/Figma/Wall_light.png" alt="Wall light" className="cover-img" />
+                        <img 
+                            src={g.slot_6.url} 
+                            alt={isEn ? g.slot_6.alt.en : g.slot_6.alt.he} 
+                            className="cover-img" 
+                            style={{
+                                objectPosition: `${g.slot_6.objectPosition?.x ?? 50}% ${g.slot_6.objectPosition?.y ?? 50}%`
+                            }}
+                        />
                     </div>
                 </div>
                 <div 
