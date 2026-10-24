@@ -351,9 +351,14 @@ export const AdminSiteDesign: React.FC = () => {
                         : 'השינויים נשמרו בדפדפן! שים לב: השרת החזיר 404 מכיוון שקוד ה-backend החדש עדיין לא נפרס ל-api.tiranlasry.com. יש לפרוס את ה-backend או להריץ שרת מקומי בפורט 3000.'
                 })
             } else {
+                const serverErrMsg = typeof err?.response?.data === 'string'
+                    ? err.response.data
+                    : err?.response?.data?.error || err?.message || ''
                 setStatusMessage({
                     type: 'error',
-                    text: isEn ? 'Failed to publish changes to live site.' : 'פרסום השינויים לאתר נכשל.'
+                    text: isEn 
+                        ? `Failed to publish changes to live site.${serverErrMsg ? ' (' + serverErrMsg + ')' : ''}` 
+                        : `פרסום השינויים לאתר נכשל.${serverErrMsg ? ' (' + serverErrMsg + ')' : ''}`
                 })
             }
         } finally {
