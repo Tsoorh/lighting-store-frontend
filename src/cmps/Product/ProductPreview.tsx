@@ -1,4 +1,3 @@
-import { useRef, useState } from "react"
 import { useLanguage } from "../../hooks/useLanguage"
 import type { FullProduct } from "../../model/product.model"
 import { useNavigate } from "react-router-dom"
@@ -13,8 +12,6 @@ type ProductPreviewProp = {
 export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const { language } = useLanguage()
     const navigate = useNavigate()
-    const scrollRef = useRef<HTMLDivElement>(null)
-    const [currentIndex, setCurrentIndex] = useState(0)
     const user = authService.getLoggedinUser()
     const isAdmin = user?.role?.trim().toLowerCase() === 'admin'
 
@@ -31,14 +28,20 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const isEnglish = language === "en"
 
     // מנקים תווים נסתרים, רווחים וירידות שורות מכל השמות
-    const cleanUrls = product.imgsUrl.map(url => url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, "").replace(/^4G8A/i, ""))
+    const rawImgs = Array.isArray(product?.imgsUrl) ? product.imgsUrl : []
+    const cleanUrls = rawImgs.map(url => url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, "").replace(/^4G8A/i, ""))
     const filteredUrls = cleanUrls.filter(url => url !== 'coming-soon')
     const cPhotos = filteredUrls.filter(url => url.toUpperCase().startsWith('C_'))
     const hPhotos = filteredUrls.filter(url => url.toUpperCase().startsWith('H_'))
     const numPhotos = filteredUrls.filter(url => !url.toUpperCase().startsWith('C_') && !url.toUpperCase().startsWith('H_') && !url.toUpperCase().startsWith('S_'))
     const sPhotos = filteredUrls.filter(url => url.toUpperCase().startsWith('S_'))
 
-    const photosToRender = cPhotos.length > 0 ? cPhotos : (hPhotos.length > 0 ? hPhotos : (numPhotos.length > 0 ? numPhotos : sPhotos))
+    // תמונה ראשית: כרטיס ראשי (C_), או הירו (H_), או תמונה ממוספרת, או שרטוט טכני אם אין ברירה
+    const primaryImg = cPhotos[0] || hPhotos[0] || numPhotos[0] || sPhotos[0] || null
+
+    // תמונת מעבר (Hover): אך ורק תמונת אווירה/הירו (H_) או תמונה ממוספרת (ללא כרטיס C_ וללא שרטוט S_)
+    const hoverCandidates = [...hPhotos, ...numPhotos].filter(url => url !== primaryImg)
+    const hoverImg = hoverCandidates.length > 0 ? hoverCandidates[0] : null
 
     const getImageUrl = (imgName: string) => {
         // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
@@ -47,34 +50,6 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
         const upper = nameWithout4G8A.toUpperCase()
         if (upper.startsWith('C_') || upper.startsWith('H_') || upper.startsWith('S_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${nameWithout4G8A}.webp`
         return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${nameWithout4G8A}.webp`
-    }
-
-    const handleScroll = () => {
-        if (!scrollRef.current) return
-        const { scrollLeft, clientWidth } = scrollRef.current
-        if (clientWidth === 0) return
-        const newIndex = Math.round(Math.abs(scrollLeft) / clientWidth)
-        if (newIndex !== currentIndex) {
-            setCurrentIndex(newIndex)
-        }
-    }
-
-    const canScrollLeft = currentIndex > 0
-    const canScrollRight = currentIndex < photosToRender.length - 1
-
-    const scroll = (direction: 'left' | 'right', ev: React.MouseEvent) => {
-        ev.stopPropagation()
-        ev.preventDefault()
-        if ((direction === 'left' && !canScrollLeft) || (direction === 'right' && !canScrollRight)) return
-        if (scrollRef.current) {
-            const { clientWidth } = scrollRef.current
-            // In RTL, "next" (right button) should scroll left (negative)
-            // In LTR, "next" (right button) should scroll right (positive)
-            let scrollAmount = direction === 'left' ? -clientWidth : clientWidth
-            if (!isEnglish) scrollAmount = -scrollAmount
-            
-            scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
-        }
     }
 
     return (
@@ -92,23 +67,18 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
                         <Icons iconName="edit" />
                     </button>
                 )}
-                {photosToRender.length > 1 && (
-                    <>
-                        <button className={`nav-btn prev ${!canScrollLeft ? 'inactive' : ''}`} onClick={(e) => scroll('left', e)} aria-label={isEnglish ? 'Previous image' : 'תמונה קודמת'} tabIndex={-1}>
-                            <Icons iconName="left" />
-                        </button>
-                        <button className={`nav-btn next ${!canScrollRight ? 'inactive' : ''}`} onClick={(e) => scroll('right', e)} aria-label={isEnglish ? 'Next image' : 'תמונה הבאה'} tabIndex={-1}>
-                            <Icons iconName="right" />
-                        </button>
-                    </>
-                )}
-                <div className="product-preview-images" ref={scrollRef} onScroll={handleScroll}>
-                    {photosToRender.length > 0 ? (
-                        photosToRender.map((img, idx) => (
-                            <div className="img-wrapper" key={idx}>
-                                <ImageWithSkeleton src={getImageUrl(img)} alt={isEnglish ? product.name.en : product.name.he} loading="lazy" />
+                <div className="product-preview-images">
+                    {primaryImg ? (
+                        <>
+                            <div className={`img-wrapper primary-layer ${hoverImg ? 'has-hover' : ''}`}>
+                                <ImageWithSkeleton src={getImageUrl(primaryImg)} alt={isEnglish ? product.name.en : product.name.he} loading="lazy" />
                             </div>
-                        ))
+                            {hoverImg && (
+                                <div className="img-wrapper hover-layer" aria-hidden="true">
+                                    <ImageWithSkeleton src={getImageUrl(hoverImg)} alt={`${isEnglish ? product.name.en : product.name.he} alternate`} loading="lazy" />
+                                </div>
+                            )}
+                        </>
                     ) : (
                         <div className="no-image-placeholder-preview" style={{ 
                             width: '100%', 
