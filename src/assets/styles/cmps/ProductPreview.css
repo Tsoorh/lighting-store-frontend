@@ -5,11 +5,11 @@
     gap: 10px;
     cursor: pointer;
     background-color: transparent;
-    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .product-preview:hover {
-    transform: translateY(-4px);
+    transform: translateY(-5px);
 }
 
 .product-preview-image-container {
@@ -54,6 +54,19 @@
     overflow: hidden;
     background-color: #f7f7f7;
     border-radius: 4px;
+    transition: box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* אפקט תאורת אווירה גלריסטית - הארת גוף התאורה במעבר עכבר */
+.ambient-light-bloom {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 247, 232, 0.95) 0%, rgba(255, 250, 242, 0.55) 45%, rgba(247, 247, 247, 0) 75%);
+    opacity: 0;
+    transform: scale(0.92);
+    transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .product-preview-images .img-wrapper {
@@ -61,22 +74,12 @@
     inset: 0;
     width: 100%;
     height: 100%;
+    z-index: 2;
     overflow: hidden;
     background-position: center;
     transform: scale(1);
-    transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.45s cubic-bezier(0.25, 1, 0.5, 1);
-    will-change: transform, opacity;
-}
-
-.product-preview-images .img-wrapper.primary-layer {
-    z-index: 1;
-    opacity: 1;
-}
-
-.product-preview-images .img-wrapper.hover-layer {
-    z-index: 2;
-    opacity: 0;
-    pointer-events: none;
+    transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
 }
 
 .product-preview-images .img-wrapper img {
@@ -85,13 +88,55 @@
     display: block;
 }
 
+/* כפתור/תווית יוקרתית מינימליסטית בצפיפה חצי-שקופה */
+.hover-view-pill {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 18px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 20px;
+    font-family: Heebo, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #1a1a1a;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    white-space: nowrap;
+}
+
 @media (hover: hover) {
-    .product-preview:hover .product-preview-images .img-wrapper {
-        transform: scale(1.03);
+    .product-preview:hover .product-preview-images {
+        box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(220, 180, 140, 0.06);
     }
 
-    .product-preview:hover .product-preview-images .img-wrapper.hover-layer {
+    .product-preview:hover .ambient-light-bloom {
         opacity: 1;
+        transform: scale(1.08);
+    }
+
+    .product-preview:hover .product-preview-images .img-wrapper {
+        transform: scale(1.04);
+    }
+
+    .product-preview:hover .hover-view-pill {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .product-preview:hover .product-name {
+        color: #000;
     }
 }
 
@@ -102,6 +147,7 @@
     line-height: 1.25;
     width: 100%;
     margin-top: 2px;
+    transition: color 0.25s ease;
 }
 
 .product-preview .product-name.rtl {
@@ -123,3 +169,10 @@
 
 .product-preview .product-price-preview.rtl { text-align: right; }
 .product-preview .product-price-preview.ltr { text-align: left; }
+
+/* במסכי מגע אין hover - הסתרת התווית למניעת עומס ויזואלי במובייל */
+@media (hover: none), (max-width: 768px) {
+    .hover-view-pill {
+        display: none !important;
+    }
+}

@@ -36,12 +36,8 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     const numPhotos = filteredUrls.filter(url => !url.toUpperCase().startsWith('C_') && !url.toUpperCase().startsWith('H_') && !url.toUpperCase().startsWith('S_'))
     const sPhotos = filteredUrls.filter(url => url.toUpperCase().startsWith('S_'))
 
-    // תמונה ראשית: כרטיס ראשי (C_), או הירו (H_), או תמונה ממוספרת, או שרטוט טכני אם אין ברירה
+    // תמונה ראשית: כרטיס קטלוגי (C_), או הירו (H_), או תמונה ממוספרת, או שרטוט טכני
     const primaryImg = cPhotos[0] || hPhotos[0] || numPhotos[0] || sPhotos[0] || null
-
-    // תמונת מעבר (Hover): אך ורק תמונת אווירה/הירו (H_) או תמונה ממוספרת (ללא כרטיס C_ וללא שרטוט S_)
-    const hoverCandidates = [...hPhotos, ...numPhotos].filter(url => url !== primaryImg)
-    const hoverImg = hoverCandidates.length > 0 ? hoverCandidates[0] : null
 
     const getImageUrl = (imgName: string) => {
         // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
@@ -68,17 +64,11 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
                     </button>
                 )}
                 <div className="product-preview-images">
+                    <div className="ambient-light-bloom" aria-hidden="true" />
                     {primaryImg ? (
-                        <>
-                            <div className={`img-wrapper primary-layer ${hoverImg ? 'has-hover' : ''}`}>
-                                <ImageWithSkeleton src={getImageUrl(primaryImg)} alt={isEnglish ? product.name.en : product.name.he} loading="lazy" />
-                            </div>
-                            {hoverImg && (
-                                <div className="img-wrapper hover-layer" aria-hidden="true">
-                                    <ImageWithSkeleton src={getImageUrl(hoverImg)} alt={`${isEnglish ? product.name.en : product.name.he} alternate`} loading="lazy" />
-                                </div>
-                            )}
-                        </>
+                        <div className="img-wrapper">
+                            <ImageWithSkeleton src={getImageUrl(primaryImg)} alt={isEnglish ? product.name.en : product.name.he} loading="lazy" />
+                        </div>
                     ) : (
                         <div className="no-image-placeholder-preview" style={{ 
                             width: '100%', 
@@ -95,6 +85,9 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
                             {isEnglish ? 'No photo available' : 'אין תמונה זמינה'}
                         </div>
                     )}
+                    <div className="hover-view-pill" aria-hidden="true">
+                        <span>{isEnglish ? 'View Piece' : 'צפה בפריט'}</span>
+                    </div>
                 </div>
             </div>
             <span className={`product-name ${isEnglish ? 'ltr' : 'rtl'}`}>
