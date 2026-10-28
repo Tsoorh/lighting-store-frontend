@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { 
     type SiteMediaConfig, 
     DEFAULT_SITE_MEDIA, 
+    DEFAULT_FULL_WIDTH_BANNER,
     type CanonicalSlotId, 
     type SiteMediaLogEntry,
     type ObjectPosition
@@ -24,7 +25,7 @@ export const AdminSiteDesign: React.FC = () => {
     const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null)
 
     // Modal & Positioning States
-    const [activeModalSlot, setActiveModalSlot] = useState<CanonicalSlotId | 'hero_video' | null>(null)
+    const [activeModalSlot, setActiveModalSlot] = useState<CanonicalSlotId | 'hero_video' | 'full_width_banner' | null>(null)
     const [tempPosition, setTempPosition] = useState<ObjectPosition>({ x: 50, y: 50 })
     const [uploadProgress, setUploadProgress] = useState<number | null>(null)
     const [aspectRatioWarning, setAspectRatioWarning] = useState<string | null>(null)
@@ -87,9 +88,12 @@ export const AdminSiteDesign: React.FC = () => {
     }, [publishedConfig, draftConfig])
 
     // Detect per-slot modifications
-    const isSlotModified = (slotId: CanonicalSlotId | 'hero_video') => {
+    const isSlotModified = (slotId: CanonicalSlotId | 'hero_video' | 'full_width_banner') => {
         if (slotId === 'hero_video') {
             return JSON.stringify(publishedConfig.heroVideo) !== JSON.stringify(draftConfig.heroVideo)
+        }
+        if (slotId === 'full_width_banner') {
+            return JSON.stringify(publishedConfig.fullWidthBanner) !== JSON.stringify(draftConfig.fullWidthBanner)
         }
         return JSON.stringify(publishedConfig.gallery[slotId]) !== JSON.stringify(draftConfig.gallery[slotId])
     }
@@ -133,7 +137,7 @@ export const AdminSiteDesign: React.FC = () => {
     }, [draftConfig])
 
     // Open file selection / replace modal
-    function onOpenReplaceModal(slotId: CanonicalSlotId | 'hero_video') {
+    function onOpenReplaceModal(slotId: CanonicalSlotId | 'hero_video' | 'full_width_banner') {
         setActiveModalSlot(slotId)
         setPendingFile(null)
         setPreviewFileUrl(null)
@@ -142,6 +146,8 @@ export const AdminSiteDesign: React.FC = () => {
         
         const currentPos = slotId === 'hero_video' 
             ? draftConfig.heroVideo.objectPosition 
+            : slotId === 'full_width_banner'
+            ? (draftConfig.fullWidthBanner?.objectPosition || { x: 50, y: 50 })
             : draftConfig.gallery[slotId].objectPosition
         setTempPosition({ ...currentPos })
     }
@@ -174,6 +180,8 @@ export const AdminSiteDesign: React.FC = () => {
                 const ratio = img.naturalWidth / img.naturalHeight
                 const targetRatio = activeModalSlot === 'hero_video' 
                     ? 1.778 
+                    : activeModalSlot === 'full_width_banner'
+                    ? (draftConfig.fullWidthBanner?.targetRatio || 2.4)
                     : draftConfig.gallery[activeModalSlot as CanonicalSlotId].targetRatio
                 
                 const ratioDiff = Math.abs(ratio - targetRatio) / targetRatio
@@ -240,6 +248,12 @@ export const AdminSiteDesign: React.FC = () => {
                         next.heroVideo.url = uploadRes.secure_url
                         next.heroVideo.publicId = uploadRes.public_id
                         next.heroVideo.objectPosition = tempPosition
+                    } else if (activeModalSlot === 'full_width_banner') {
+                        const banner = next.fullWidthBanner ? { ...next.fullWidthBanner } : JSON.parse(JSON.stringify(DEFAULT_FULL_WIDTH_BANNER))
+                        banner.url = uploadRes.secure_url
+                        banner.publicId = uploadRes.public_id
+                        banner.objectPosition = tempPosition
+                        next.fullWidthBanner = banner
                     } else {
                         next.gallery[activeModalSlot].url = uploadRes.secure_url
                         next.gallery[activeModalSlot].publicId = uploadRes.public_id
@@ -253,6 +267,10 @@ export const AdminSiteDesign: React.FC = () => {
                     const next = JSON.parse(JSON.stringify(prev)) as SiteMediaConfig
                     if (activeModalSlot === 'hero_video') {
                         next.heroVideo.objectPosition = tempPosition
+                    } else if (activeModalSlot === 'full_width_banner') {
+                        const banner = next.fullWidthBanner ? { ...next.fullWidthBanner } : JSON.parse(JSON.stringify(DEFAULT_FULL_WIDTH_BANNER))
+                        banner.objectPosition = tempPosition
+                        next.fullWidthBanner = banner
                     } else {
                         next.gallery[activeModalSlot].objectPosition = tempPosition
                     }
@@ -284,16 +302,72 @@ export const AdminSiteDesign: React.FC = () => {
     }
 
     // Reset single slot back to published
-    function onUndoSlot(slotId: CanonicalSlotId | 'hero_video') {
+    function onUndoSlot(slotId: CanonicalSlotId | 'hero_video' | 'full_width_banner') {
         setDraftConfig(prev => {
             const next = JSON.parse(JSON.stringify(prev)) as SiteMediaConfig
             if (slotId === 'hero_video') {
                 next.heroVideo = JSON.parse(JSON.stringify(publishedConfig.heroVideo))
+            } else if (slotId === 'full_width_banner') {
+                next.fullWidthBanner = publishedConfig.fullWidthBanner 
+                    ? JSON.parse(JSON.stringify(publishedConfig.fullWidthBanner))
+                    : JSON.parse(JSON.stringify(DEFAULT_FULL_WIDTH_BANNER))
             } else {
                 next.gallery[slotId] = JSON.parse(JSON.stringify(publishedConfig.gallery[slotId]))
             }
             return next
         })
+    }
+
+    // Banner specific handlers
+    function onToggleBannerEnabled(enabled: boolean) {
+        setDraftConfig(prev => {
+            const next = JSON.parse(JSON.stringify(prev)) as SiteMediaConfig
+            const banner = next.fullWidthBanner ? { ...next.fullWidthBanner } : JSON.parse(JSON.stringify(DEFAULT_FULL_WIDTH_BANNER))
+            banner.enabled = enabled
+            next.fullWidthBanner = banner
+            return next
+        })
+    }
+
+    function onMoveBanner(direction: 'up' | 'down') {
+        setDraftConfig(prev => {
+            const next = JSON.parse(JSON.stringify(prev)) as SiteMediaConfig
+            const banner = next.fullWidthBanner ? { ...next.fullWidthBanner } : JSON.parse(JSON.stringify(DEFAULT_FULL_WIDTH_BANNER))
+            const curPos = banner.position ?? 2
+            const newPos = direction === 'up' ? Math.max(1, curPos - 1) : Math.min(5, curPos + 1)
+            banner.position = newPos
+            next.fullWidthBanner = banner
+            return next
+        })
+    }
+
+    function onUpdateBannerField(field: 'linkUrl' | 'altEn' | 'altHe', val: string) {
+        setDraftConfig(prev => {
+            const next = JSON.parse(JSON.stringify(prev)) as SiteMediaConfig
+            const banner = next.fullWidthBanner ? { ...next.fullWidthBanner } : JSON.parse(JSON.stringify(DEFAULT_FULL_WIDTH_BANNER))
+            if (field === 'linkUrl') banner.linkUrl = val
+            if (field === 'altEn') banner.alt = { ...(banner.alt || { en: '', he: '' }), en: val }
+            if (field === 'altHe') banner.alt = { ...(banner.alt || { en: '', he: '' }), he: val }
+            next.fullWidthBanner = banner
+            return next
+        })
+    }
+
+    function getPositionLabel(position: number, isEn: boolean) {
+        switch (position) {
+            case 1:
+                return isEn ? '1. Below Hero (Above Collection)' : '1. מתחת לוידאו הראשי (לפני הקולקציה)'
+            case 2:
+                return isEn ? '2. Below Collection (Above Quote)' : '2. מתחת לקולקציה (לפני באנר הציטוט)'
+            case 3:
+                return isEn ? '3. Below Quote (Above Gallery)' : '3. מתחת לציטוט (לפני הגלריה)'
+            case 4:
+                return isEn ? '4. Below Gallery (Above Experience)' : '4. מתחת לגלריה (לפני הניסיון)'
+            case 5:
+                return isEn ? '5. Below Experience (Above Contact)' : '5. מתחת לניסיון (לפני יצירת קשר)'
+            default:
+                return isEn ? `Position ${position}` : `מיקום ${position}`
+        }
     }
 
     // Discard all draft changes
@@ -382,6 +456,14 @@ export const AdminSiteDesign: React.FC = () => {
                 if (logEntry.previousAsset.objectPosition) {
                     next.heroVideo.objectPosition = logEntry.previousAsset.objectPosition
                 }
+            } else if (logEntry.slotId === 'full_width_banner') {
+                const banner = next.fullWidthBanner ? { ...next.fullWidthBanner } : JSON.parse(JSON.stringify(DEFAULT_FULL_WIDTH_BANNER))
+                banner.url = logEntry.previousAsset.url
+                banner.publicId = logEntry.previousAsset.publicId
+                if (logEntry.previousAsset.objectPosition) {
+                    banner.objectPosition = logEntry.previousAsset.objectPosition
+                }
+                next.fullWidthBanner = banner
             } else {
                 const sId = logEntry.slotId as CanonicalSlotId
                 if (next.gallery[sId]) {
@@ -412,7 +494,7 @@ export const AdminSiteDesign: React.FC = () => {
         )
     }
 
-    const currentModalSlotItem = activeModalSlot && activeModalSlot !== 'hero_video' 
+    const currentModalSlotItem = activeModalSlot && activeModalSlot !== 'hero_video' && activeModalSlot !== 'full_width_banner'
         ? draftConfig.gallery[activeModalSlot] 
         : null
 
@@ -551,6 +633,169 @@ export const AdminSiteDesign: React.FC = () => {
                                     onClick={() => onUndoSlot('hero_video')}
                                 >
                                     {isEn ? 'Undo Video Changes' : 'בטל שינויי וידאו'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Full-Width Image Section Card */}
+                    <div className={`cms-banner-card ${isSlotModified('full_width_banner') ? 'modified' : ''}`}>
+                        <div className="cms-card-header">
+                            <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <h3>{isEn ? 'Full-Width Image Section' : 'באנר תמונה ברוחב מלא'}</h3>
+                                    <span className={`cms-toggle-badge ${draftConfig.fullWidthBanner?.enabled ? 'enabled' : 'disabled'}`}>
+                                        {draftConfig.fullWidthBanner?.enabled 
+                                            ? (isEn ? '● Active' : '● פעיל') 
+                                            : (isEn ? '○ Inactive (Hidden)' : '○ כבוי (מוסתר)')}
+                                    </span>
+                                </div>
+                                <p style={{ margin: '4px 0 0 0', color: '#666', fontSize: '0.85rem' }}>
+                                    {isEn 
+                                        ? 'A 100% full-bleed image section. Can be shown/hidden and moved up/down across page sections.' 
+                                        : 'מקטע תמונה ברוחב 100% מלא. ניתן להפעיל/לכבות ולהזיז למעלה ולמטה בין חלקי העמוד.'}
+                                </p>
+                            </div>
+                            <span className="cms-specs-pill">
+                                21:9 • 1920×800 / 2560×1080 • WebP/JPG • Max 5MB
+                            </span>
+                        </div>
+
+                        {/* Top Controls: Toggle and Position */}
+                        <div className="cms-banner-controls-bar">
+                            <div className="cms-banner-switch-group">
+                                <label className="cms-switch-label">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={!!draftConfig.fullWidthBanner?.enabled} 
+                                        onChange={(e) => onToggleBannerEnabled(e.target.checked)}
+                                    />
+                                    <span className="cms-switch-slider"></span>
+                                    <span className="cms-switch-text">
+                                        {draftConfig.fullWidthBanner?.enabled 
+                                            ? (isEn ? 'Show Section on Homepage' : 'הצג מקטע בעמוד הבית') 
+                                            : (isEn ? 'Hidden from Homepage' : 'מוסתר מעמוד הבית')}
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div className="cms-banner-position-group">
+                                <span className="cms-position-title">
+                                    {isEn ? 'Page Location:' : 'מיקום בעמוד:'}
+                                </span>
+                                <span className="cms-position-current-badge">
+                                    {getPositionLabel(draftConfig.fullWidthBanner?.position ?? 2, isEn)}
+                                </span>
+                                <div className="cms-position-buttons">
+                                    <button 
+                                        type="button" 
+                                        className="btn-cms-reorder" 
+                                        onClick={() => onMoveBanner('up')}
+                                        disabled={(draftConfig.fullWidthBanner?.position ?? 2) <= 1}
+                                        title={isEn ? 'Move Higher up the page' : 'הזז למעלה בעמוד'}
+                                    >
+                                        ▲ {isEn ? 'Move Up' : 'למעלה'}
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        className="btn-cms-reorder" 
+                                        onClick={() => onMoveBanner('down')}
+                                        disabled={(draftConfig.fullWidthBanner?.position ?? 2) >= 5}
+                                        title={isEn ? 'Move Lower down the page' : 'הזז למטה בעמוד'}
+                                    >
+                                        ▼ {isEn ? 'Move Down' : 'למטה'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Visual Position Breadcrumb Map */}
+                        <div className="cms-position-map">
+                            <span className="cms-map-node">Hero</span>
+                            <span className={`cms-map-slot ${(draftConfig.fullWidthBanner?.position ?? 2) === 1 ? 'active' : ''}`}>
+                                {(draftConfig.fullWidthBanner?.position ?? 2) === 1 && (draftConfig.fullWidthBanner?.enabled ? '⭐ Banner' : 'Banner')}
+                            </span>
+                            <span className="cms-map-node">Collection</span>
+                            <span className={`cms-map-slot ${(draftConfig.fullWidthBanner?.position ?? 2) === 2 ? 'active' : ''}`}>
+                                {(draftConfig.fullWidthBanner?.position ?? 2) === 2 && (draftConfig.fullWidthBanner?.enabled ? '⭐ Banner' : 'Banner')}
+                            </span>
+                            <span className="cms-map-node">Quote Banner</span>
+                            <span className={`cms-map-slot ${(draftConfig.fullWidthBanner?.position ?? 2) === 3 ? 'active' : ''}`}>
+                                {(draftConfig.fullWidthBanner?.position ?? 2) === 3 && (draftConfig.fullWidthBanner?.enabled ? '⭐ Banner' : 'Banner')}
+                            </span>
+                            <span className="cms-map-node">Gallery</span>
+                            <span className={`cms-map-slot ${(draftConfig.fullWidthBanner?.position ?? 2) === 4 ? 'active' : ''}`}>
+                                {(draftConfig.fullWidthBanner?.position ?? 2) === 4 && (draftConfig.fullWidthBanner?.enabled ? '⭐ Banner' : 'Banner')}
+                            </span>
+                            <span className="cms-map-node">Experience</span>
+                            <span className={`cms-map-slot ${(draftConfig.fullWidthBanner?.position ?? 2) === 5 ? 'active' : ''}`}>
+                                {(draftConfig.fullWidthBanner?.position ?? 2) === 5 && (draftConfig.fullWidthBanner?.enabled ? '⭐ Banner' : 'Banner')}
+                            </span>
+                            <span className="cms-map-node">Contact</span>
+                        </div>
+
+                        {/* Banner Image Preview */}
+                        <div className="cms-banner-preview-box">
+                            <img 
+                                src={draftConfig.fullWidthBanner?.url || DEFAULT_FULL_WIDTH_BANNER.url} 
+                                alt="Full width banner preview"
+                                style={{
+                                    objectPosition: `${draftConfig.fullWidthBanner?.objectPosition?.x ?? 50}% ${draftConfig.fullWidthBanner?.objectPosition?.y ?? 50}%`
+                                }}
+                            />
+                            {!draftConfig.fullWidthBanner?.enabled && (
+                                <div className="cms-banner-disabled-overlay">
+                                    <span>{isEn ? 'Section is currently turned OFF' : 'המקטע במצב כבוי כרגע'}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Optional Click-through link & Alt text inputs */}
+                        <div className="cms-banner-extra-fields">
+                            <div className="cms-field-group">
+                                <label>{isEn ? 'Optional Link URL (Clickable destination):' : 'קישור אופציונלי (לחיצה על הבאנר):'}</label>
+                                <input 
+                                    type="text" 
+                                    placeholder={isEn ? 'e.g. /product/category/ceiling or https://...' : 'לדוגמה: /product/category/ceiling'}
+                                    value={draftConfig.fullWidthBanner?.linkUrl || ''}
+                                    onChange={(e) => onUpdateBannerField('linkUrl', e.target.value)}
+                                />
+                            </div>
+                            <div className="cms-field-group">
+                                <label>{isEn ? 'Alt Text (English):' : 'תיאור תמונה (אנגלית):'}</label>
+                                <input 
+                                    type="text" 
+                                    placeholder="Descriptive alt text for accessibility"
+                                    value={draftConfig.fullWidthBanner?.alt?.en || ''}
+                                    onChange={(e) => onUpdateBannerField('altEn', e.target.value)}
+                                />
+                            </div>
+                            <div className="cms-field-group">
+                                <label>{isEn ? 'Alt Text (Hebrew):' : 'תיאור תמונה (עברית):'}</label>
+                                <input 
+                                    type="text" 
+                                    placeholder="תיאור התמונה לנגישות"
+                                    value={draftConfig.fullWidthBanner?.alt?.he || ''}
+                                    onChange={(e) => onUpdateBannerField('altHe', e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="cms-banner-actions">
+                            <button 
+                                type="button" 
+                                className="btn-slot-replace" 
+                                onClick={() => onOpenReplaceModal('full_width_banner')}
+                            >
+                                {isEn ? 'Replace Image & Adjust Focus' : 'החלף תמונה וכַוונן מיקוד'}
+                            </button>
+                            {isSlotModified('full_width_banner') && (
+                                <button 
+                                    type="button" 
+                                    className="btn-slot-undo" 
+                                    onClick={() => onUndoSlot('full_width_banner')}
+                                >
+                                    {isEn ? 'Undo Banner Changes' : 'בטל שינויי באנר'}
                                 </button>
                             )}
                         </div>
@@ -795,6 +1040,7 @@ export const AdminSiteDesign: React.FC = () => {
                             >
                                 <option value="all">{isEn ? 'All Slots' : 'כל המשבצות'}</option>
                                 <option value="hero_video">{isEn ? 'Hero Video' : 'וידאו ראשי'}</option>
+                                <option value="full_width_banner">{isEn ? 'Full-Width Banner' : 'באנר ברוחב מלא'}</option>
                                 <option value="slot_1">{isEn ? 'Slot 1' : 'משבצת 1'}</option>
                                 <option value="slot_3">{isEn ? 'Slot 3' : 'משבצת 3'}</option>
                                 <option value="slot_4">{isEn ? 'Slot 4' : 'משבצת 4'}</option>
@@ -900,6 +1146,8 @@ export const AdminSiteDesign: React.FC = () => {
                             <h3>
                                 {activeModalSlot === 'hero_video' 
                                     ? (isEn ? 'Hero Main Video Settings' : 'הגדרות וידאו ראשי')
+                                    : activeModalSlot === 'full_width_banner'
+                                    ? (isEn ? 'Full-Width Showcase Banner Settings' : 'הגדרות באנר תמונה ברוחב מלא')
                                     : (isEn ? `Edit ${currentModalSlotItem?.title.en}` : `עריכת ${currentModalSlotItem?.title.he}`)
                                 }
                             </h3>
@@ -907,6 +1155,19 @@ export const AdminSiteDesign: React.FC = () => {
                         </div>
 
                         <div className="cms-modal-body">
+                            {/* Full-Width Banner Advice & Guidelines */}
+                            {activeModalSlot === 'full_width_banner' && (
+                                <div className="cms-guidance-box">
+                                    <strong>{isEn ? '💡 Upload Advice for Full-Width Banner:' : '💡 המלצות להעלאת באנר ברוחב מלא:'}</strong>
+                                    <ul>
+                                        <li>{isEn ? 'Suggested Dimensions: 1920 × 800 px (or 2560 × 1080 px for 4K/Retina displays).' : 'רזולוציה מומלצת: 1920 × 800 פיקסלים (או 2560 × 1080 פיקסלים למסכי Retina/4K).'}</li>
+                                        <li>{isEn ? 'Suggested Aspect Ratio: 21:9 or ~2.4:1 panoramic wide format.' : 'יחס גובה-רוחב מומלץ: 21:9 או כ-2.4:1 פנורמי רחב.'}</li>
+                                        <li>{isEn ? 'Recommended Formats: WebP (best loading speed), JPG, or PNG (Max 5MB).' : 'פורמטים מומלצים: WebP (מהירות טעינה מיטבית), JPG או PNG (עד 5MB).'}</li>
+                                        <li>{isEn ? 'Use the Horizontal & Vertical Focus sliders below to keep the focal subject centered on mobile screens.' : 'השתמש במחווני המיקוד למטה כדי שהנושא המרכזי יישאר בפוקוס במסכי טלפון.'}</li>
+                                    </ul>
+                                </div>
+                            )}
+
                             {/* File Selector */}
                             <div>
                                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '6px' }}>
@@ -921,6 +1182,8 @@ export const AdminSiteDesign: React.FC = () => {
                                 <span style={{ fontSize: '0.78rem', color: '#666', marginTop: '4px', display: 'block' }}>
                                     {activeModalSlot === 'hero_video' 
                                         ? (isEn ? 'Max 25MB • Recommended 16:9 MP4' : 'עד 25MB • מומלץ 16:9 MP4')
+                                        : activeModalSlot === 'full_width_banner'
+                                        ? (isEn ? 'Max 5MB • Panoramic 21:9 • WebP, PNG, JPG' : 'עד 5MB • פנורמי 21:9 • WebP, PNG, JPG')
                                         : (isEn ? 'Max 5MB • Formats: WebP, PNG, JPG' : 'עד 5MB • פורמטים: WebP, PNG, JPG')
                                     }
                                 </span>
@@ -943,6 +1206,27 @@ export const AdminSiteDesign: React.FC = () => {
                                             loop 
                                             muted 
                                             playsInline
+                                            style={{
+                                                width: '100%',
+                                                height: '100%',
+                                                objectFit: 'cover',
+                                                objectPosition: `${tempPosition.x}% ${tempPosition.y}%`
+                                            }}
+                                        />
+                                    </div>
+                                ) : activeModalSlot === 'full_width_banner' ? (
+                                    <div 
+                                        style={{ 
+                                            width: '100%', 
+                                            aspectRatio: '21 / 9', 
+                                            background: '#222', 
+                                            overflow: 'hidden',
+                                            borderRadius: '4px'
+                                        }}
+                                    >
+                                        <img 
+                                            src={previewFileUrl || draftConfig.fullWidthBanner?.url || DEFAULT_FULL_WIDTH_BANNER.url} 
+                                            alt="Full width banner crop preview" 
                                             style={{
                                                 width: '100%',
                                                 height: '100%',

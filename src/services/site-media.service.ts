@@ -2,6 +2,7 @@ import { httpService } from './http.service'
 import { 
     type SiteMediaConfig, 
     DEFAULT_SITE_MEDIA, 
+    DEFAULT_FULL_WIDTH_BANNER,
     type SiteMediaLogEntry, 
     type CanonicalSlotId 
 } from '../model/site-media.model'
@@ -32,6 +33,9 @@ function getCachedSiteMedia(): SiteMediaConfig {
         if (item) {
             const parsed = JSON.parse(item)
             if (parsed && parsed.heroVideo && parsed.gallery && parsed.gallery.slot_1) {
+                if (!parsed.fullWidthBanner) {
+                    parsed.fullWidthBanner = DEFAULT_FULL_WIDTH_BANNER
+                }
                 return parsed
             }
         }
@@ -45,6 +49,9 @@ async function getSiteMedia(): Promise<SiteMediaConfig> {
     try {
         const config = await httpService.get<SiteMediaConfig>('site-media')
         if (config && config.gallery) {
+            if (!config.fullWidthBanner) {
+                config.fullWidthBanner = DEFAULT_FULL_WIDTH_BANNER
+            }
             try {
                 localStorage.setItem(CACHE_KEY, JSON.stringify(config))
             } catch (storageErr) {
@@ -60,11 +67,11 @@ async function getSiteMedia(): Promise<SiteMediaConfig> {
 }
 
 async function getUploadSignature(
-    slotId: CanonicalSlotId | 'hero_video', 
+    slotId: CanonicalSlotId | 'hero_video' | 'full_width_banner', 
     resourceType: 'image' | 'video'
 ): Promise<UploadSignatureResponse> {
     const payload = {
-        target: slotId === 'hero_video' ? 'hero_video' : 'gallery',
+        target: slotId === 'hero_video' ? 'hero_video' : slotId === 'full_width_banner' ? 'full_width_banner' : 'gallery',
         slotId,
         resourceType
     }

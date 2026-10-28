@@ -2,6 +2,7 @@ import '../assets/styles/pages/HomePage.css'
 import { Icons } from '../cmps/Icons';
 import { useNavigate } from 'react-router-dom';
 import { ContactSection } from '../cmps/ContactSection';
+import { FullWidthBanner } from '../cmps/FullWidthBanner';
 import { useLanguage } from '../hooks/useLanguage';
 import { authService } from '../services/auth.service';
 import { productService } from '../services/product.service';
@@ -42,6 +43,9 @@ export const HomePage = () => {
 
     const heroVid = media.heroVideo
     const g = media.gallery
+    const banner = media.fullWidthBanner
+    const bannerPos = banner?.position ?? 2
+    const isBannerVisible = !!(banner?.enabled && banner?.url)
 
     return (
         <div className="main-layout" dir={isEn ? 'ltr' : 'rtl'}>
@@ -77,6 +81,11 @@ export const HomePage = () => {
                         : 'גופי תאורה בעבודת יד, המשלבים 40 שנות ניסיון בעולם התאורה עם מלאכה מדויקת ורגישות חומרית. מיועד לאדריכלים, מעצבי פנים ולחללים המחפשים נוכחות על זמנית.'}
                 </div>
             </section>
+
+            {isBannerVisible && bannerPos === 1 && (
+                <FullWidthBanner bannerConfig={banner} />
+            )}
+
             <div className="works-sec page-section" id="works-section">
                 <div className="section-title-container" style={{ width: '100%', maxWidth: '1280px', marginBottom: '40px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
@@ -141,6 +150,10 @@ export const HomePage = () => {
                 </div>
             </div>
 
+            {isBannerVisible && bannerPos === 2 && (
+                <FullWidthBanner bannerConfig={banner} />
+            )}
+
             <section className="gradient-sec">
                 <div className="gradient-text-wrapper">
                     <span className="gradient-text-light">{isEn ? 'Small details. ' : 'פרטים קטנים. '}</span>
@@ -163,6 +176,10 @@ export const HomePage = () => {
                     <Icons iconName={isEn ? 'next' : 'back'} />
                 </a>
             </section>
+
+            {isBannerVisible && bannerPos === 3 && (
+                <FullWidthBanner bannerConfig={banner} />
+            )}
 
             <section className="gallery-sec page-section">
                 <div className="gallery-grid">
@@ -245,6 +262,10 @@ export const HomePage = () => {
                     <Icons iconName={isEn ? 'next' : 'back'} />
                 </div>
             </section>
+
+            {isBannerVisible && bannerPos === 4 && (
+                <FullWidthBanner bannerConfig={banner} />
+            )}
             
             <section className="experience-sec">
                 <div className="experience-top">
@@ -276,6 +297,10 @@ export const HomePage = () => {
                     <Icons iconName={isEn ? 'next' : 'back'} />
                 </a>
             </section>
+
+            {isBannerVisible && bannerPos === 5 && (
+                <FullWidthBanner bannerConfig={banner} />
+            )}
 
             <ContactSection />
         </div>

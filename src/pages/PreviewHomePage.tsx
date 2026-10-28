@@ -4,6 +4,8 @@ import { authService } from '../services/auth.service'
 import { type SiteMediaConfig, DEFAULT_SITE_MEDIA } from '../model/site-media.model'
 import { useLanguage } from '../hooks/useLanguage'
 import { Icons } from '../cmps/Icons'
+import { FullWidthBanner } from '../cmps/FullWidthBanner'
+import { ContactSection } from '../cmps/ContactSection'
 import '../assets/styles/pages/HomePage.css'
 
 export const PreviewHomePage: React.FC = () => {
@@ -43,9 +45,13 @@ export const PreviewHomePage: React.FC = () => {
 
     const heroVid = media.heroVideo
     const g = media.gallery
+    const banner = media.fullWidthBanner
+    const bannerPos = banner?.position ?? 2
+    const isBannerVisible = !!(banner?.enabled && banner?.url)
 
     return (
         <div className="main-layout preview-mode-container" dir={isEn ? 'ltr' : 'rtl'}>
+            {/* Section 1: Hero */}
             <section className="hero-section">
                 <div className="entry-vid">
                     <video 
@@ -79,7 +85,62 @@ export const PreviewHomePage: React.FC = () => {
                 </div>
             </section>
 
-            <section className="gallery-sec page-section" style={{ marginTop: '40px', marginBottom: '60px' }}>
+            {/* Position 1 Banner */}
+            {isBannerVisible && bannerPos === 1 && (
+                <FullWidthBanner bannerConfig={banner} interactive={false} />
+            )}
+
+            {/* Section 2: Works / Collection */}
+            <div className="works-sec page-section" id="works-section">
+                <div className="section-title-container" style={{ width: '100%', maxWidth: '1280px', marginBottom: '40px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <h2 className="section-title" style={{ width: 'auto', margin: 0 }}>{isEn ? 'Collection' : 'גופי התאורה'}</h2>
+                    </div>
+                </div>
+                <div className="works-grid">
+                    <div className="work-item" style={{ pointerEvents: 'none' }}>
+                        <img src="/images/Figma/CAT_CEILING.jpg" alt="ceiling" />
+                        <span className="work-item-title white-text">{isEn ? 'Ceiling Lighting' : 'גופי תאורה צמודי תקרה'}</span>
+                        <p className="work-item-desc">{isEn ? 'Ceiling mounted fixtures combining deep technical understanding with meticulous aesthetics.' : 'גופי תאורה צמודי תקרה המשלבים הבנה טכנית עמוקה עם אסתטיקה מוקפדת.'}</p>
+                    </div>
+                    <div className="work-item" style={{ pointerEvents: 'none' }}>
+                        <img src="/images/Figma/CAT_WALL.jpg" alt="wall" />
+                        <span className="work-item-title white-text">{isEn ? 'Wall Lighting' : 'גופי תאורה לקיר'}</span>
+                        <p className="work-item-desc">{isEn ? 'Functional lighting solutions with a clean design language and precise material integration.' : 'פתרונות תאורה פונקציונליים עם שפה עיצובית נקייה ושילוב חומרי מדויק.'}</p>
+                    </div>
+                    <div className="work-item" style={{ pointerEvents: 'none' }}>
+                        <img src="/images/Figma/CAT_PENDANT.jpg" alt="pendant" />
+                        <span className="work-item-title">{isEn ? 'Pendant Lighting' : 'גופי תאורה תלויים'}</span>
+                        <p className="work-item-desc">{isEn ? 'Pendant lighting fixtures with a pleasant presence, combining wood and metal, suitable for private and commercial spaces.' : 'גופי תאורה תלויים בעלי נוכחות נעימה, המשלבים עץ ומתכת ומתאימים לחללים פרטיים ומסחריים.'}</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Position 2 Banner */}
+            {isBannerVisible && bannerPos === 2 && (
+                <FullWidthBanner bannerConfig={banner} interactive={false} />
+            )}
+
+            {/* Section 3: Gradient / Quote */}
+            <section className="gradient-sec">
+                <div className="gradient-text-wrapper">
+                    <span className="gradient-text-light">{isEn ? 'Small details. ' : 'פרטים קטנים. '}</span>
+                    <span className="gradient-text-medium">{isEn ? 'Big presence.' : 'נוכחות גדולה.'}</span>
+                </div>
+                <div className="gradient-divider"></div>
+                <div className="gradient-cta animated-link" style={{ pointerEvents: 'none' }}>
+                    <span>{isEn ? 'Contact us about a project' : 'צור קשר לגבי פרויקט'}</span>
+                    <Icons iconName={isEn ? 'next' : 'back'} />
+                </div>
+            </section>
+
+            {/* Position 3 Banner */}
+            {isBannerVisible && bannerPos === 3 && (
+                <FullWidthBanner bannerConfig={banner} interactive={false} />
+            )}
+
+            {/* Section 4: Gallery */}
+            <section className="gallery-sec page-section">
                 <div className="gallery-grid">
                     {/* Item 1: slot_1 */}
                     <div className="gallery-item">
@@ -153,6 +214,32 @@ export const PreviewHomePage: React.FC = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Position 4 Banner */}
+            {isBannerVisible && bannerPos === 4 && (
+                <FullWidthBanner bannerConfig={banner} interactive={false} />
+            )}
+
+            {/* Section 5: Experience */}
+            <section className="experience-sec">
+                <div className="experience-top">
+                    <h2 className="experience-title">
+                        <span className="experience-title-medium">{isEn ? 'A lifetime of experience. ' : 'ניסיון של חיים. '}</span>
+                        <span className="experience-title-light">{isEn ? 'Creation of a moment.' : 'יצירה של רגע.'}</span>
+                    </h2>
+                </div>
+                <div className="experience-bottom animated-link" style={{ pointerEvents: 'none' }}>
+                    <span className="experience-bottom-text">{isEn ? 'Request a Quote' : 'בקשה להצעת מחיר'}</span>
+                    <Icons iconName={isEn ? 'next' : 'back'} />
+                </div>
+            </section>
+
+            {/* Position 5 Banner */}
+            {isBannerVisible && bannerPos === 5 && (
+                <FullWidthBanner bannerConfig={banner} interactive={false} />
+            )}
+
+            <ContactSection />
         </div>
     )
 }
