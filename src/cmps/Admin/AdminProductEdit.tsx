@@ -143,7 +143,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     })
     const [uploadConfig, setUploadConfig] = useState({
         type: 'C' as 'C' | 'H' | 'S',
-        category: 'P' as 'P' | 'C' | 'W' | 'A'
+        category: 'P' as 'P' | 'C' | 'W'
     })
     const [isUploading, setIsUploading] = useState(false)
     const { language } = useLanguage()
@@ -326,7 +326,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             })
 
             // 1. Prune prices that are no longer available if wood types exist, otherwise preserve
-            let updatedPrices = (formData.price || []).filter(p => 
+            const updatedPrices = (formData.price || []).filter(p => 
                 availableOptions.length === 0 || 
                 availableOptions.some(opt => opt.toLowerCase() === (p.wood?.en || '').toLowerCase())
             )
@@ -406,7 +406,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             handleSocketChange(category === 'screw' ? 'screwType' : 'lightType', trimmed)
             setInlineAddType(null)
             setNewOptionValue('')
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to add socket option', err)
             setOptionError({
                 category,
@@ -903,12 +903,11 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                 <label>{isEn ? 'Category' : 'קטגוריה'}</label>
                                 <select 
                                     value={uploadConfig.category} 
-                                    onChange={(e) => setUploadConfig(prev => ({ ...prev, category: e.target.value as 'P' | 'C' | 'W' | 'A' }))}
+                                    onChange={(e) => setUploadConfig(prev => ({ ...prev, category: e.target.value as 'P' | 'C' | 'W' }))}
                                 >
                                     <option value="P">{isEn ? 'Pendant' : 'תלייה (P)'}</option>
                                     <option value="C">{isEn ? 'Ceiling' : 'צמוד תקרה (C)'}</option>
                                     <option value="W">{isEn ? 'Wall' : 'קיר (W)'}</option>
-                                    <option value="A">{isEn ? 'Accessories' : 'אביזרים (A)'}</option>
                                 </select>
                             </div>
                         </div>

@@ -12,6 +12,7 @@
 /* cmps */
 @import "./cmps/AppHeader.css";
 @import "./cmps/ProductPreview.css";
+@import "./cmps/ProductFilter.css";
 @import "./cmps/ProductList.css";
 @import "./cmps/ProductDetails.css";
 @import "./cmps/MenuModal.css";

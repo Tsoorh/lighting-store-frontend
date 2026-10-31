@@ -8,14 +8,14 @@ export const PRODUCT_OPTIONS = {
     CATEGORIES: [
         { en: 'Hanging', he: 'תליה' },
         { en: 'Wall', he: 'קיר' },
-        { en: 'Ceiling', he: 'תקרה' },
-        { en: 'Accessories', he: 'אביזרים' }
+        { en: 'Ceiling', he: 'תקרה' }
     ],
     MATERIALS: [
         { en: 'Wood', he: 'עץ' },
         { en: 'Metal', he: 'מתכת' },
-        { en: 'Glass', he: 'זכוכית' }
+        { en: 'Glass', he: 'זכוכית' },
+        { en: 'Marble', he: 'שיש' }
     ],
-    SCREW_TYPES: ['E27', 'G9', 'GU10', 'LED (Integrated)', 'Mixed: GU10 + E27', 'Mixed: G9 + E27'],
+    SCREW_TYPES: ['E27', 'G9', 'GU10', 'Linestra Bulb', 'LED (Integrated)', 'Mixed: GU10 + E27', 'Mixed: G9 + E27'],
     LIGHT_TYPES: ['LED - Max 5W', 'LED - Max 7W', 'LED - Max 9W', 'LED - Max 10W', 'LED - Max 15W', 'LED - Max 20W', 'LED - Max 35W', 'LED - Max 36W']
 } as const;

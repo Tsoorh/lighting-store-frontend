@@ -7,6 +7,16 @@ export type FilterBy = {
     isActive?: boolean
 }
 
+export type ProductFilterCriteria = {
+    txt?: string
+    category?: string[]
+    material?: string[]
+    woodType?: string[]
+    screwType?: string[]
+    minPrice?: number
+    maxPrice?: number
+}
+
 export type hebrewEnglishObj = {
     he:string
     en:string
