@@ -438,8 +438,9 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
 
         setIsUploading(true)
         try {
-            const randomNum = Math.floor(Math.random() * 9000) + 1000
-            const publicId = `${uploadConfig.type}_${uploadConfig.category}${randomNum}`
+            const timestamp = Date.now()
+            const randomSalt = Math.random().toString(36).substring(2, 8).toUpperCase()
+            const publicId = `${uploadConfig.type}_${uploadConfig.category}_${timestamp}_${randomSalt}`
             
             const res = await uploadService.uploadImg(file, publicId)
             const newImgUrl = res.public_id
