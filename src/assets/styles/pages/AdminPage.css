@@ -561,3 +561,177 @@
         margin: 0 !important;
     }
 }
+
+/* ==========================================================================
+   Socket Options (Screw & Light Types) Management Styles
+   ========================================================================== */
+.section-header-with-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.section-header-with-action h4 {
+    margin: 0;
+}
+
+.btn-manage-options {
+    background: #f7f7f7;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px 12px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    color: #333;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-manage-options:hover {
+    background: #eaeaea;
+    border-color: #999;
+}
+
+.btn-manage-options.active {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.btn-manage-options.active:hover {
+    background: #333;
+}
+
+.socket-options-manager {
+    background: #f8f9fa;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+}
+
+.socket-options-manager-help {
+    font-size: 0.82rem;
+    color: #666;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+}
+
+.socket-options-chips-section {
+    margin-top: 10px;
+}
+
+.socket-options-chips-section h5 {
+    font-size: 0.85rem;
+    margin: 0 0 8px 0;
+    font-weight: 600;
+    color: #333;
+}
+
+.socket-chips-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.socket-chip {
+    display: inline-flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 16px;
+    padding: 4px 10px;
+    font-size: 0.82rem;
+    gap: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.chip-remove-btn {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 0 2px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease;
+}
+
+.chip-remove-btn:hover {
+    color: #d9534f;
+}
+
+.socket-option-inline-add {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 12px;
+    background: #f0f4f8;
+    border-radius: 6px;
+    border: 1px solid #d0dbe5;
+}
+
+.socket-option-inline-add input {
+    padding: 8px 12px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+.inline-add-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-save-option {
+    padding: 6px 16px;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s ease;
+}
+
+.btn-save-option:hover:not(:disabled) {
+    background: #333;
+}
+
+.btn-save-option:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-cancel-option {
+    padding: 6px 14px;
+    background: #fff;
+    color: #444;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-cancel-option:hover {
+    background: #f0f0f0;
+}
+
+.socket-option-error {
+    color: #d9534f;
+    font-size: 0.8rem;
+    margin-top: 2px;
+}
+

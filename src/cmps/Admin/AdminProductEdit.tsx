@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import type { FullProduct, hebrewEnglishObj, ProductSize } from '../../model/product.model'
+import type { SocketOptions } from '../../model/options.model'
 import { useLanguage } from '../../hooks/useLanguage'
 import { uploadService } from '../../services/upload.service'
+import { optionsService } from '../../services/options.service'
 import { PRODUCT_OPTIONS } from '../../constants/product.constants'
 
 type Props = {
@@ -146,6 +148,39 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     const [isUploading, setIsUploading] = useState(false)
     const { language } = useLanguage()
     const isEn = language === 'en'
+
+    // Dynamic socket options state
+    const [socketOptions, setSocketOptions] = useState<SocketOptions>(optionsService.getDefaultOptions())
+    const [inlineAddType, setInlineAddType] = useState<'screw' | 'light' | null>(null)
+    const [newOptionValue, setNewOptionValue] = useState('')
+    const [isAddingOption, setIsAddingOption] = useState(false)
+    const [showManageOptions, setShowManageOptions] = useState(false)
+    const [optionError, setOptionError] = useState<{ category: 'screw' | 'light'; message: string } | null>(null)
+
+    useEffect(() => {
+        let isMounted = true
+        async function loadSocketOptions() {
+            try {
+                const opts = await optionsService.getSocketOptions()
+                if (isMounted) setSocketOptions(opts)
+            } catch (err) {
+                console.error('Failed to load socket options', err)
+            }
+        }
+        loadSocketOptions()
+
+        const onSocketOptionsChanged = (e: Event) => {
+            const detail = (e as CustomEvent).detail
+            if (detail && isMounted) {
+                setSocketOptions(detail)
+            }
+        }
+        window.addEventListener('socket-options-changed', onSocketOptionsChanged)
+        return () => {
+            isMounted = false
+            window.removeEventListener('socket-options-changed', onSocketOptionsChanged)
+        }
+    }, [])
 
     function handleChange<K extends keyof FullProduct>(field: K, value: FullProduct[K]) {
         setFormData(prev => ({ ...prev, [field]: value }))
@@ -360,6 +395,43 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         }))
     }
 
+    async function onSaveNewOption(category: 'screw' | 'light') {
+        const trimmed = newOptionValue.trim()
+        if (!trimmed) return
+        setIsAddingOption(true)
+        setOptionError(null)
+        try {
+            const updated = await optionsService.addSocketOption(category, trimmed)
+            setSocketOptions(updated)
+            handleSocketChange(category === 'screw' ? 'screwType' : 'lightType', trimmed)
+            setInlineAddType(null)
+            setNewOptionValue('')
+        } catch (err: any) {
+            console.error('Failed to add socket option', err)
+            setOptionError({
+                category,
+                message: isEn ? 'Failed to add option' : 'שגיאה בהוספת האפשרות'
+            })
+        } finally {
+            setIsAddingOption(false)
+        }
+    }
+
+    async function onRemoveOption(category: 'screw' | 'light', value: string) {
+        const confirmMsg = isEn 
+            ? `Remove "${value}" from available ${category === 'screw' ? 'screw' : 'light'} options?` 
+            : `האם להסיר את "${value}" מאפשרויות ה${category === 'screw' ? 'הברגה' : 'נורה'}?`
+        if (!window.confirm(confirmMsg)) return
+
+        try {
+            const updated = await optionsService.removeSocketOption(category, value)
+            setSocketOptions(updated)
+        } catch (err) {
+            console.error('Failed to remove socket option', err)
+            alert(isEn ? 'Failed to remove option' : 'שגיאה בהסרת האפשרות')
+        }
+    }
+
     async function onUploadImg(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0]
         if (!file) return
@@ -552,32 +624,219 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                         )}
                     </div>
 
-                    <div className="form-section">
-                        <h4>{isEn ? 'Socket Type' : 'סוג הברגה/נורה'}</h4>
+                    <div className="form-section socket-type-form-section">
+                        <div className="section-header-with-action">
+                            <h4>{isEn ? 'Socket Type' : 'סוג הברגה/נורה'}</h4>
+                            <button
+                                type="button"
+                                className={`btn-manage-options ${showManageOptions ? 'active' : ''}`}
+                                onClick={() => setShowManageOptions(prev => !prev)}
+                            >
+                                {showManageOptions 
+                                    ? (isEn ? 'Done Managing' : 'סיום ניהול אפשרויות') 
+                                    : (isEn ? 'Manage Options' : 'ניהול אפשרויות')}
+                            </button>
+                        </div>
+
+                        {showManageOptions && (
+                            <div className="socket-options-manager">
+                                <p className="socket-options-manager-help">
+                                    {isEn 
+                                        ? 'Click × on any option to remove it from future selections. Existing products will retain their values.' 
+                                        : 'לחץ על × כדי להסיר אפשרות מרשימת הבחירה בעתיד. מוצרים קיימים ישמרו על ערכיהם.'}
+                                </p>
+                                
+                                <div className="socket-options-chips-section">
+                                    <h5>{isEn ? 'Available Screw Types' : 'סוגי הברגה קיימים'}:</h5>
+                                    <div className="socket-chips-list">
+                                        {socketOptions.screwTypes.map(type => (
+                                            <span key={type} className="socket-chip">
+                                                <span>{type}</span>
+                                                <button
+                                                    type="button"
+                                                    className="chip-remove-btn"
+                                                    onClick={() => onRemoveOption('screw', type)}
+                                                    title={isEn ? `Remove "${type}"` : `הסר את "${type}"`}
+                                                >
+                                                    ×
+                                                </button>
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="socket-options-chips-section">
+                                    <h5>{isEn ? 'Available Light Types' : 'סוגי נורה קיימים'}:</h5>
+                                    <div className="socket-chips-list">
+                                        {socketOptions.lightTypes.map(type => (
+                                            <span key={type} className="socket-chip">
+                                                <span>{type}</span>
+                                                <button
+                                                    type="button"
+                                                    className="chip-remove-btn"
+                                                    onClick={() => onRemoveOption('light', type)}
+                                                    title={isEn ? `Remove "${type}"` : `הסר את "${type}"`}
+                                                >
+                                                    ×
+                                                </button>
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="stacked-fields">
                             <div className="form-group">
                                 <label>{isEn ? 'Screw Type' : 'סוג הברגה'}</label>
                                 <select 
-                                    value={formData.socketType?.screwType || ''} 
-                                    onChange={(e) => handleSocketChange('screwType', e.target.value)}
+                                    value={inlineAddType === 'screw' ? '__ADD_NEW__' : (formData.socketType?.screwType || '')} 
+                                    onChange={(e) => {
+                                        if (e.target.value === '__ADD_NEW__') {
+                                            setInlineAddType('screw')
+                                            setNewOptionValue('')
+                                            setOptionError(null)
+                                        } else {
+                                            setInlineAddType(null)
+                                            setOptionError(null)
+                                            handleSocketChange('screwType', e.target.value)
+                                        }
+                                    }}
                                 >
                                     <option value="">{isEn ? '-- Select --' : '-- בחר --'}</option>
-                                    {PRODUCT_OPTIONS.SCREW_TYPES.map(type => (
+                                    {formData.socketType?.screwType && !socketOptions.screwTypes.includes(formData.socketType.screwType) && (
+                                        <option value={formData.socketType.screwType}>
+                                            {formData.socketType.screwType} {isEn ? '(Saved)' : '(שמור)'}
+                                        </option>
+                                    )}
+                                    {socketOptions.screwTypes.map(type => (
                                         <option key={type} value={type}>{type}</option>
                                     ))}
+                                    <option value="__ADD_NEW__">
+                                        {isEn ? '+ Add new screw type...' : '+ הוסף סוג הברגה חדש...'}
+                                    </option>
                                 </select>
+
+                                {inlineAddType === 'screw' && (
+                                    <div className="socket-option-inline-add">
+                                        <input
+                                            type="text"
+                                            placeholder={isEn ? "e.g. E14, GU5.3" : 'לדוגמה: E14, GU5.3'}
+                                            value={newOptionValue}
+                                            onChange={(e) => setNewOptionValue(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault()
+                                                    onSaveNewOption('screw')
+                                                } else if (e.key === 'Escape') {
+                                                    setInlineAddType(null)
+                                                    setOptionError(null)
+                                                }
+                                            }}
+                                            autoFocus
+                                        />
+                                        <div className="inline-add-actions">
+                                            <button
+                                                type="button"
+                                                className="btn-save-option"
+                                                disabled={isAddingOption || !newOptionValue.trim()}
+                                                onClick={() => onSaveNewOption('screw')}
+                                            >
+                                                {isAddingOption ? (isEn ? 'Adding...' : 'מוסיף...') : (isEn ? 'Add' : 'הוסף')}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn-cancel-option"
+                                                onClick={() => {
+                                                    setInlineAddType(null)
+                                                    setNewOptionValue('')
+                                                    setOptionError(null)
+                                                }}
+                                            >
+                                                {isEn ? 'Cancel' : 'ביטול'}
+                                            </button>
+                                        </div>
+                                        {optionError?.category === 'screw' && (
+                                            <span className="socket-option-error">{optionError.message}</span>
+                                        )}
+                                    </div>
+                                )}
                             </div>
+
                             <div className="form-group">
                                 <label>{isEn ? 'Light Type' : 'סוג נורה'}</label>
                                 <select 
-                                    value={formData.socketType?.lightType || ''} 
-                                    onChange={(e) => handleSocketChange('lightType', e.target.value)}
+                                    value={inlineAddType === 'light' ? '__ADD_NEW__' : (formData.socketType?.lightType || '')} 
+                                    onChange={(e) => {
+                                        if (e.target.value === '__ADD_NEW__') {
+                                            setInlineAddType('light')
+                                            setNewOptionValue('')
+                                            setOptionError(null)
+                                        } else {
+                                            setInlineAddType(null)
+                                            setOptionError(null)
+                                            handleSocketChange('lightType', e.target.value)
+                                        }
+                                    }}
                                 >
                                     <option value="">{isEn ? '-- Select --' : '-- בחר --'}</option>
-                                    {PRODUCT_OPTIONS.LIGHT_TYPES.map(type => (
+                                    {formData.socketType?.lightType && !socketOptions.lightTypes.includes(formData.socketType.lightType) && (
+                                        <option value={formData.socketType.lightType}>
+                                            {formData.socketType.lightType} {isEn ? '(Saved)' : '(שמור)'}
+                                        </option>
+                                    )}
+                                    {socketOptions.lightTypes.map(type => (
                                         <option key={type} value={type}>{type}</option>
                                     ))}
+                                    <option value="__ADD_NEW__">
+                                        {isEn ? '+ Add new light type...' : '+ הוסף סוג נורה חדש...'}
+                                    </option>
                                 </select>
+
+                                {inlineAddType === 'light' && (
+                                    <div className="socket-option-inline-add">
+                                        <input
+                                            type="text"
+                                            placeholder={isEn ? "e.g. LED - Max 12W" : 'לדוגמה: LED - Max 12W'}
+                                            value={newOptionValue}
+                                            onChange={(e) => setNewOptionValue(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault()
+                                                    onSaveNewOption('light')
+                                                } else if (e.key === 'Escape') {
+                                                    setInlineAddType(null)
+                                                    setOptionError(null)
+                                                }
+                                            }}
+                                            autoFocus
+                                        />
+                                        <div className="inline-add-actions">
+                                            <button
+                                                type="button"
+                                                className="btn-save-option"
+                                                disabled={isAddingOption || !newOptionValue.trim()}
+                                                onClick={() => onSaveNewOption('light')}
+                                            >
+                                                {isAddingOption ? (isEn ? 'Adding...' : 'מוסיף...') : (isEn ? 'Add' : 'הוסף')}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn-cancel-option"
+                                                onClick={() => {
+                                                    setInlineAddType(null)
+                                                    setNewOptionValue('')
+                                                    setOptionError(null)
+                                                }}
+                                            >
+                                                {isEn ? 'Cancel' : 'ביטול'}
+                                            </button>
+                                        </div>
+                                        {optionError?.category === 'light' && (
+                                            <span className="socket-option-error">{optionError.message}</span>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
