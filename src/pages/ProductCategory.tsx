@@ -19,6 +19,9 @@ export const ProductCategory = () => {
         queryKey: ['products', 'category', categoryName],
         queryFn: () => {
             if (!categoryName) return []
+            if (categoryName.toLowerCase() === 'all') {
+                return productService.query({})
+            }
             const dbCategory = categoryName.toLowerCase() === 'pendant' ? 'hanging' : categoryName
             return productService.query({ category: dbCategory })
         },
@@ -62,9 +65,13 @@ export const ProductCategory = () => {
     
     let titleHe = 'גופי תאורה'
     let titleEn = 'Lighting'
-    let imgName = 'Header_Pendant.png'
+    let imgName: string | null = 'Header_Pendant.png'
 
-    if (categoryKey.includes('wall')) {
+    if (categoryKey === 'all') {
+        titleHe = 'כל גופי התאורה'
+        titleEn = 'All Lighting Fixtures'
+        imgName = null
+    } else if (categoryKey.includes('wall')) {
         titleHe = 'גופי תאורה לקיר'
         titleEn = 'Wall Lights'
         imgName = 'Header_Wall.png'
@@ -96,9 +103,11 @@ export const ProductCategory = () => {
                     <div className="strip-line"></div>
                     <h1>{title}</h1>
                 </div>
-                <div className="strip-image-container">
-                    <img src={`/images/Figma/${imgName}`} alt={title} />
-                </div>
+                {imgName && (
+                    <div className="strip-image-container">
+                        <img src={`/images/Figma/${imgName}`} alt={title} />
+                    </div>
+                )}
             </section>
             
             <section className={`category-products-container ${isEnglish ? 'ltr' : 'rtl'}`}>
