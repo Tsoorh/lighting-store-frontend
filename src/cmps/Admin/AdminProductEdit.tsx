@@ -119,6 +119,7 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             description: { en: '', he: '' },
             price: [{ wood: { he: 'מחיר כללי / ללא עץ', en: 'Standard / No wood' }, amount: 0 }],
             isActive: true,
+            isNew: false,
             category: [],
             imgsUrl: [],
             material: [],
@@ -129,6 +130,8 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         
         return {
             ...initialState,
+            isActive: initialState.isActive !== false,
+            isNew: !!initialState.isNew,
             category: _healHebrewEnglishArray(initialState.category),
             material: _healHebrewEnglishArray(initialState.material),
             woodType: _healHebrewEnglishArray(initialState.woodType),
@@ -967,16 +970,29 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                         </div>
                     </div>
 
-                    <div className="form-group checkbox">
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-                            <input 
-                                type="checkbox" 
-                                checked={formData.isActive !== false} 
-                                onChange={(e) => handleChange('isActive', e.target.checked)} 
-                                style={{ width: '18px', height: '18px' }}
-                            />
-                            {isEn ? 'Active' : 'פעיל'}
-                        </label>
+                    <div style={{ display: 'flex', gap: '24px', alignItems: 'center', margin: '15px 0', flexWrap: 'wrap' }}>
+                        <div className="form-group checkbox" style={{ margin: 0 }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                                <input 
+                                    type="checkbox" 
+                                    checked={formData.isActive !== false} 
+                                    onChange={(e) => handleChange('isActive', e.target.checked)} 
+                                    style={{ width: '18px', height: '18px' }}
+                                />
+                                {isEn ? 'Active' : 'פעיל'}
+                            </label>
+                        </div>
+                        <div className="form-group checkbox" style={{ margin: 0 }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                                <input 
+                                    type="checkbox" 
+                                    checked={!!formData.isNew} 
+                                    onChange={(e) => handleChange('isNew', e.target.checked)} 
+                                    style={{ width: '18px', height: '18px' }}
+                                />
+                                {isEn ? 'New Product (חדש / New)' : 'מוצר חדש (חדש / New)'}
+                            </label>
+                        </div>
                     </div>
                 </div>
 

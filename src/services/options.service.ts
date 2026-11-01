@@ -1,8 +1,9 @@
 import { httpService } from './http.service';
-import type { SocketOptions, SocketOptionCategory } from '../model/options.model';
+import type { SocketOptions, SocketOptionCategory, SiteOptions } from '../model/options.model';
 import { PRODUCT_OPTIONS } from '../constants/product.constants';
 
 const CACHE_KEY = 'tl_socket_options_cache';
+const SITE_OPTIONS_CACHE_KEY = 'tl_site_options_cache';
 
 const DEFAULT_OPTIONS: SocketOptions = {
     _id: 'socket_options',
@@ -10,13 +11,21 @@ const DEFAULT_OPTIONS: SocketOptions = {
     lightTypes: [...PRODUCT_OPTIONS.LIGHT_TYPES]
 };
 
+const DEFAULT_SITE_OPTIONS: SiteOptions = {
+    _id: 'site_options',
+    isNewCollectionActive: true
+};
+
 let inMemoryOptions: SocketOptions | null = null;
+let inMemorySiteOptions: SiteOptions | null = null;
 
 export const optionsService = {
     getSocketOptions,
     addSocketOption,
     removeSocketOption,
-    getDefaultOptions
+    getDefaultOptions,
+    getSiteOptions,
+    updateSiteOptions
 };
 
 function getDefaultOptions(): SocketOptions {
@@ -102,4 +111,44 @@ async function removeSocketOption(category: SocketOptionCategory, value: string)
         console.error(`Failed to remove socket option for ${category}: ${trimmed}`, err);
         throw err;
     }
+}
+
+async function getSiteOptions(forceRefresh = false): Promise<SiteOptions> {
+    if (!forceRefresh && inMemorySiteOptions) {
+        return inMemorySiteOptions;
+    }
+
+    try {
+        const siteOptions = await httpService.get<SiteOptions>('options/site');
+        if (siteOptions && typeof siteOptions.isNewCollectionActive === 'boolean') {
+            inMemorySiteOptions = siteOptions;
+            localStorage.setItem(SITE_OPTIONS_CACHE_KEY, JSON.stringify(siteOptions));
+            return siteOptions;
+        }
+    } catch (err) {
+        console.warn('Failed to fetch site options from backend, falling back to cache/default', err);
+    }
+
+    try {
+        const cached = localStorage.getItem(SITE_OPTIONS_CACHE_KEY);
+        if (cached) {
+            const parsed = JSON.parse(cached);
+            if (typeof parsed?.isNewCollectionActive === 'boolean') {
+                inMemorySiteOptions = parsed;
+                return parsed;
+            }
+        }
+    } catch (err) {
+        console.warn('Failed to parse cached site options', err);
+    }
+
+    return { ...DEFAULT_SITE_OPTIONS };
+}
+
+async function updateSiteOptions(data: { isNewCollectionActive: boolean }): Promise<SiteOptions> {
+    const updated = await httpService.put<SiteOptions, { isNewCollectionActive: boolean }>('options/site', data);
+    inMemorySiteOptions = updated;
+    localStorage.setItem(SITE_OPTIONS_CACHE_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new CustomEvent('site-options-changed', { detail: updated }));
+    return updated;
 }

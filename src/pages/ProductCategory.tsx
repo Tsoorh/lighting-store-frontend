@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react"
-import { useParams, useSearchParams } from "react-router-dom"
+import { useParams, useSearchParams, useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { productService } from "../services/product.service"
+import { optionsService } from "../services/options.service"
 import { ProductList } from "../cmps/Product/ProductList"
 import { ProductFilter } from "../cmps/Product/ProductFilter"
 import { ContactSection } from "../cmps/ContactSection"
@@ -13,8 +14,22 @@ import type { Miniuser } from "../model/user.model"
 
 export const ProductCategory = () => {
     const { categoryName } = useParams()
+    const navigate = useNavigate()
     const [searchParams, setSearchParams] = useSearchParams()
     const { language } = useLanguage()
+
+    const { data: siteOptions } = useQuery({
+        queryKey: ['site-options'],
+        queryFn: () => optionsService.getSiteOptions(),
+        staleTime: 1000 * 60 * 5
+    })
+
+    useEffect(() => {
+        const catKey = categoryName?.toLowerCase() || ''
+        if (catKey.includes('new') && siteOptions && siteOptions.isNewCollectionActive === false) {
+            navigate('/product/category/all', { replace: true })
+        }
+    }, [categoryName, siteOptions, navigate])
 
     // Logged-in user state to conditionally enable price range filter
     const [user, setUser] = useState<Miniuser | null>(() => authService.getLoggedinUser())
@@ -58,6 +73,10 @@ export const ProductCategory = () => {
             if (!categoryName) return []
             if (categoryName.toLowerCase() === 'all') {
                 const res = await productService.query({})
+                return (res as FullProduct[]) || []
+            }
+            if (categoryName.toLowerCase() === 'new-collection' || categoryName.toLowerCase() === 'new') {
+                const res = await productService.query({ category: 'new-collection' })
                 return (res as FullProduct[]) || []
             }
             const dbCategory = categoryName.toLowerCase() === 'pendant' ? 'hanging' : categoryName
@@ -192,6 +211,10 @@ export const ProductCategory = () => {
         titleHe = 'כל גופי התאורה'
         titleEn = 'All Lighting Fixtures'
         imgName = null
+    } else if (categoryKey.includes('new')) {
+        titleHe = 'קולקציה חדשה'
+        titleEn = 'New Collection'
+        imgName = null
     } else if (categoryKey.includes('wall')) {
         titleHe = 'גופי תאורה לקיר'
         titleEn = 'Wall Lights'
@@ -228,10 +251,17 @@ export const ProductCategory = () => {
             // 2. Category Filter (for subcategories on All page or cross-selection)
             if (filters.category && filters.category.length > 0) {
                 const prodCats = (product.category || []).map(c => c.en.toLowerCase())
+                const isProdNew = Boolean(
+                    product.isNew || 
+                    product.category?.some(c => c.en?.toLowerCase().includes('new') || c.he?.includes('חדש'))
+                )
                 const hasCategory = filters.category.some(filterCat => {
                     const f = filterCat.toLowerCase()
                     if (f === 'hanging' || f === 'pendant') {
                         return prodCats.includes('hanging') || prodCats.includes('pendant')
+                    }
+                    if (f.includes('new')) {
+                        return isProdNew || prodCats.some(c => c.includes('new'))
                     }
                     return prodCats.includes(f)
                 })

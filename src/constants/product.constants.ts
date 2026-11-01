@@ -6,6 +6,7 @@ export const PRODUCT_OPTIONS = {
         { en: 'Oak/American walnut', he:'אלון/אגוז אמריקאי' }
     ],
     CATEGORIES: [
+        { en: 'New Collection', he: 'קולקציה חדשה' },
         { en: 'Hanging', he: 'תליה' },
         { en: 'Wall', he: 'קיר' },
         { en: 'Ceiling', he: 'תקרה' }

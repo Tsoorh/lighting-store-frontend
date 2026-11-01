@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { productService } from '../../services/product.service'
+import { optionsService } from '../../services/options.service'
 import type { FullProduct } from '../../model/product.model'
 import { useLanguage } from '../../hooks/useLanguage'
 import { AdminProductEdit } from './AdminProductEdit'
@@ -13,8 +14,44 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
     const [isLoading, setIsLoading] = useState(true)
     const [editingProduct, setEditingProduct] = useState<FullProduct | null | 'new'>(null)
     const [filterBy, setFilterBy] = useState({ txt: '' })
+    const [isNewCollectionActive, setIsNewCollectionActive] = useState<boolean>(true)
+    const [isUpdatingOptions, setIsUpdatingOptions] = useState<boolean>(false)
     const { language } = useLanguage()
     const isEn = language === 'en'
+
+    useEffect(() => {
+        async function loadOptions() {
+            try {
+                const opt = await optionsService.getSiteOptions()
+                setIsNewCollectionActive(opt.isNewCollectionActive !== false)
+            } catch (err) {
+                console.error('Failed to load site options', err)
+            }
+        }
+        loadOptions()
+
+        const onSiteOptionsChanged = (e: any) => {
+            if (e.detail && typeof e.detail.isNewCollectionActive === 'boolean') {
+                setIsNewCollectionActive(e.detail.isNewCollectionActive)
+            }
+        }
+        window.addEventListener('site-options-changed', onSiteOptionsChanged)
+        return () => window.removeEventListener('site-options-changed', onSiteOptionsChanged)
+    }, [])
+
+    async function onToggleNewCollectionVisibility() {
+        try {
+            setIsUpdatingOptions(true)
+            const nextState = !isNewCollectionActive
+            const updated = await optionsService.updateSiteOptions({ isNewCollectionActive: nextState })
+            setIsNewCollectionActive(updated.isNewCollectionActive)
+        } catch (err) {
+            console.error('Failed to toggle New Collection visibility', err)
+            alert(isEn ? 'Failed to update visibility' : 'עדכון ההגדרה נכשל')
+        } finally {
+            setIsUpdatingOptions(false)
+        }
+    }
 
     useEffect(() => {
         async function loadProducts() {
@@ -146,6 +183,67 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
                 </div>
             </header>
 
+            <div className="admin-category-visibility-card" style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '12px 18px',
+                background: '#fafafa',
+                border: '1px solid #e0e0e0',
+                borderRadius: '6px',
+                marginBottom: '20px',
+                gap: '16px',
+                flexWrap: 'wrap'
+            }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontWeight: 600, fontSize: '14px', color: '#1e1c19' }}>
+                            {isEn ? 'Category "New Collection"' : 'קטגוריית "קולקציה חדשה"'}
+                        </span>
+                        <span style={{
+                            display: 'inline-block',
+                            width: '8px',
+                            height: '8px',
+                            borderRadius: '50%',
+                            backgroundColor: isNewCollectionActive ? '#2e7d32' : '#9e9e9e'
+                        }} />
+                    </div>
+                    <span style={{ fontSize: '12px', color: '#666' }}>
+                        {isEn 
+                            ? 'Toggle whether "New Collection" appears in the navigation menu and filter toolbar on the website.' 
+                            : 'הגדרה זו קובעת האם קטגוריית "קולקציה חדשה" תוצג בתפריט הראשי ובסרגל הסינונים באתר.'}
+                    </span>
+                </div>
+                <button
+                    type="button"
+                    onClick={onToggleNewCollectionVisibility}
+                    disabled={isUpdatingOptions}
+                    style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '8px 18px',
+                        borderRadius: '20px',
+                        border: '1px solid ' + (isNewCollectionActive ? '#c8e6c9' : '#e0e0e0'),
+                        cursor: isUpdatingOptions ? 'wait' : 'pointer',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        backgroundColor: isNewCollectionActive ? '#e8f5e9' : '#f5f5f5',
+                        color: isNewCollectionActive ? '#2e7d32' : '#616161',
+                        transition: 'all 0.2s ease'
+                    }}
+                    title={isEn ? 'Click to show/hide category' : 'לחץ להצגה או הסתרה'}
+                >
+                    <span>
+                        {isUpdatingOptions 
+                            ? (isEn ? 'Updating...' : 'מעדכן...')
+                            : isNewCollectionActive 
+                                ? (isEn ? '✓ Active (Shown on site)' : '✓ פעיל (מוצג באתר)') 
+                                : (isEn ? '✕ Hidden from site' : '✕ מוסתר מהאתר')}
+                    </span>
+                </button>
+            </div>
+
             {isLoading ? (
                 <div className="admin-loader-container">
                     <div className="admin-loader"></div>
@@ -192,7 +290,28 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
                                                 </div>
                                             )}
                                         </td>
-                                        <td data-label={isEn ? 'Name' : 'שם'}>{isEn ? product.name.en : product.name.he}</td>
+                                        <td data-label={isEn ? 'Name' : 'שם'}>
+                                            <span>{isEn ? product.name.en : product.name.he}</span>
+                                            {Boolean(product.isNew || product.category?.some(c => c.en?.toLowerCase().includes('new') || c.he?.includes('חדש'))) && (
+                                                <span 
+                                                    dir={isEn ? "ltr" : "rtl"}
+                                                    style={{
+                                                        display: 'inline-block',
+                                                        fontSize: '10px',
+                                                        backgroundColor: '#1e1c19',
+                                                        color: '#ffffff',
+                                                        padding: '2px 6px',
+                                                        borderRadius: '2px',
+                                                        marginLeft: isEn ? '8px' : '0',
+                                                        marginRight: isEn ? '0' : '8px',
+                                                        fontWeight: 500,
+                                                        letterSpacing: '0.05em'
+                                                    }}
+                                                >
+                                                    {isEn ? 'NEW!' : 'חדש!'}
+                                                </span>
+                                            )}
+                                        </td>
                                         <td data-label={isEn ? 'Price' : 'מחיר'}>
                                             {(() => {
                                                 if (!product.price || !Array.isArray(product.price) || product.price.length === 0) return '-'

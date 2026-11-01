@@ -7,3 +7,9 @@ export interface SocketOptions {
     updatedAt?: string;
 }
 
+export interface SiteOptions {
+    _id?: string;
+    isNewCollectionActive: boolean;
+    updatedAt?: string;
+}
+

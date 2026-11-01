@@ -63,6 +63,13 @@ export const ProductIndex = ({ filterBy = {}, enableFiltering = true }: ProductI
                     if (f === 'hanging' || f === 'pendant') {
                         return prodCats.includes('hanging') || prodCats.includes('pendant')
                     }
+                    if (f.includes('new')) {
+                        const isProdNew = Boolean(
+                            product.isNew || 
+                            product.category?.some(c => c.en?.toLowerCase().includes('new') || c.he?.includes('חדש'))
+                        )
+                        return isProdNew || prodCats.some(c => c.includes('new'))
+                    }
                     return prodCats.includes(f)
                 })
                 if (!hasCategory) return false

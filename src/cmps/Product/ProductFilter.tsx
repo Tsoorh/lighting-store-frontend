@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import type { FullProduct, ProductFilterCriteria, hebrewEnglishObj } from '../../model/product.model'
 import { PRODUCT_OPTIONS } from '../../constants/product.constants'
 import { useLanguage } from '../../hooks/useLanguage'
@@ -165,6 +166,14 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
         const counts: Record<string, number> = {}
 
         products.forEach(p => {
+            const isProdNew = Boolean(
+                p.isNew || 
+                p.category?.some(c => c.en?.toLowerCase().includes('new') || c.he?.includes('חדש'))
+            )
+            if (isProdNew) {
+                counts['cat_new collection'] = (counts['cat_new collection'] || 0) + 1
+            }
+
             // Categories
             p.category?.forEach(c => {
                 const enKey = `cat_${c.en.toLowerCase()}`
@@ -221,15 +230,31 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
         if (key === 'hanging' || key === 'pendant') {
             return (facetCounts['cat_hanging'] || 0) + (facetCounts['cat_pendant'] || 0)
         }
+        if (key.includes('new')) {
+            return facetCounts['cat_new collection'] || facetCounts['cat_new'] || 0
+        }
         return facetCounts[`cat_${key}`] || 0
     }
 
     // Category options list for the "all" category view (Accessories removed!)
-    const categoryOptions: hebrewEnglishObj[] = [
-        { en: 'Hanging', he: 'גופי תאורה תלויים' },
-        { en: 'Wall', he: 'גופי תאורה לקיר' },
-        { en: 'Ceiling', he: 'גופי תאורה צמודי תקרה' }
-    ]
+    const { data: siteOptions } = useQuery({
+        queryKey: ['site-options'],
+        queryFn: () => optionsService.getSiteOptions(),
+        staleTime: 1000 * 60 * 5
+    })
+
+    const categoryOptions: hebrewEnglishObj[] = useMemo(() => {
+        const opts: hebrewEnglishObj[] = []
+        if (siteOptions?.isNewCollectionActive !== false) {
+            opts.push({ en: 'New Collection', he: 'קולקציה חדשה' })
+        }
+        opts.push(
+            { en: 'Hanging', he: 'גופי תאורה תלויים' },
+            { en: 'Wall', he: 'גופי תאורה לקיר' },
+            { en: 'Ceiling', he: 'גופי תאורה צמודי תקרה' }
+        )
+        return opts
+    }, [siteOptions?.isNewCollectionActive])
 
     const isAllCategory = currentCategory.toLowerCase() === 'all'
 

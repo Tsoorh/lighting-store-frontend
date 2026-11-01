@@ -102,6 +102,10 @@ export const ProductDetails = () => {
     if (!product) return <SkeletonProductDetails />
 
     const isEnglish = language === 'en'
+    const isNew = Boolean(
+        product.isNew || 
+        product.category?.some(c => c.en?.toLowerCase().includes('new') || c.he?.includes('חדש'))
+    )
     const nameLabel = isEnglish ? product.name.en : product.name.he
     const descriptionLabel = isEnglish ? product.description.en : product.description.he
     
@@ -362,6 +366,15 @@ export const ProductDetails = () => {
                 {/* LEFT SIDE: GALLERY */}
                 <div className="product-gallery-container">
                     <div className="gallery-top">
+                        {isNew && (
+                            <span 
+                                className={`product-details-new-badge ${isEnglish ? 'ltr' : 'rtl'}`} 
+                                dir={isEnglish ? "ltr" : "rtl"}
+                                aria-label={isEnglish ? "New Product!" : "מוצר חדש!"}
+                            >
+                                {isEnglish ? 'NEW!' : 'חדש!'}
+                            </span>
+                        )}
                         {mainImage ? (
                             <ImageWithSkeleton src={mainImage} alt={nameLabel} className="main-image" />
                         ) : (

@@ -5,6 +5,7 @@ export type FilterBy = {
     price?: number
     category?:string
     isActive?: boolean
+    isNew?: boolean
 }
 
 export type ProductFilterCriteria = {
@@ -35,6 +36,7 @@ export type Product = {
     description: hebrewEnglishObj
     price?: ProductPrice[]
     isActive?: boolean
+    isNew?: boolean
 }
 
 export type ProductParams = { productId: string }

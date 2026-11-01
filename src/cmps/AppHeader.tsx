@@ -12,6 +12,8 @@ import { Input } from '@mui/material';
 import { useDebounce } from '../hooks/useDebounce';
 import { productService } from '../services/product.service';
 import { authService } from '../services/auth.service';
+import { optionsService } from '../services/options.service';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Miniuser } from '../model/user.model';
 import { ImageWithSkeleton } from './Skeleton/ImageWithSkeleton';
 import '../assets/styles/cmps/AppHeader.css';
@@ -80,16 +82,45 @@ export const AppHeader = () => {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [isMenuOpen])
 
+    const queryClient = useQueryClient()
+    const { data: siteOptions } = useQuery({
+        queryKey: ['site-options'],
+        queryFn: () => optionsService.getSiteOptions(),
+        staleTime: 1000 * 60 * 5
+    })
+
+    useEffect(() => {
+        const onSiteOptionsChanged = () => {
+            queryClient.invalidateQueries({ queryKey: ['site-options'] })
+        }
+        window.addEventListener('site-options-changed', onSiteOptionsChanged)
+        return () => window.removeEventListener('site-options-changed', onSiteOptionsChanged)
+    }, [queryClient])
+
     const navbarProperties: NavbarProperties = useMemo(() => {
+        const lightingSubMenu: SubMenu = [
+            { title: { en: 'All Lighting Fixtures', he: 'כל גופי התאורה' }, address: '/product/category/all' }
+        ]
+
+        if (siteOptions?.isNewCollectionActive !== false) {
+            lightingSubMenu.push({
+                title: { en: 'New Collection', he: 'קולקציה חדשה' },
+                address: '/product/category/new-collection'
+            })
+        }
+
+        lightingSubMenu.push(
+            { title: { en: 'Wall', he: 'גופי תאורה לקיר' }, address: '/product/category/wall' },
+            { title: { en: 'Pendant', he: 'גופי תאורה תלויים' }, address: '/product/category/pendant' },
+            { title: { en: 'Ceiling', he: 'גופי תאורה צמודי תקרה' }, address: '/product/category/ceiling' }
+        )
+
         const props: NavbarProperties = [
             { title: { en: 'Home', he: 'בית' }, address: '/' },
             {
-                title: { en: 'Lighting', he: 'גופי תאורה' }, iconName: 'dropdown', subMenu: [
-                    { title: { en: 'All Lighting Fixtures', he: 'כל גופי התאורה' }, address: '/product/category/all' },
-                    { title: { en: 'Wall', he: 'גופי תאורה לקיר' }, address: '/product/category/wall' },
-                    { title: { en: 'Pendant', he: 'גופי תאורה תלויים' }, address: '/product/category/pendant' },
-                    { title: { en: 'Ceiling', he: 'גופי תאורה צמודי תקרה' }, address: '/product/category/ceiling' }
-                ]
+                title: { en: 'Lighting', he: 'גופי תאורה' },
+                iconName: 'dropdown',
+                subMenu: lightingSubMenu
             },
             { title: { en: 'About', he: 'אודות' }, address: '/about' },
             { title: { en: 'Contact', he: 'יצירת קשר' }, address: '/contact' }
@@ -100,7 +131,7 @@ export const AppHeader = () => {
         }
 
         return props
-    }, [user])
+    }, [user, siteOptions?.isNewCollectionActive])
 
     useEffect(() => {
         const onUserChanged = () => setUser(authService.getLoggedinUser())

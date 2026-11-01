@@ -26,6 +26,10 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
     }
 
     const isEnglish = language === "en"
+    const isNew = Boolean(
+        product?.isNew || 
+        product?.category?.some(c => c.en?.toLowerCase().includes('new') || c.he?.includes('חדש'))
+    )
 
     // מנקים תווים נסתרים, רווחים וירידות שורות מכל השמות
     const rawImgs = Array.isArray(product?.imgsUrl) ? product.imgsUrl : []
@@ -62,6 +66,15 @@ export const ProductPreview = ({ product }: ProductPreviewProp) => {
                     <button className="admin-edit-btn" onClick={onEditProduct} title={isEnglish ? 'Edit Product' : 'ערוך מוצר'}>
                         <Icons iconName="edit" />
                     </button>
+                )}
+                {isNew && (
+                    <span 
+                        className="product-new-badge" 
+                        dir={isEnglish ? "ltr" : "rtl"}
+                        aria-label={isEnglish ? "New Product!" : "מוצר חדש!"}
+                    >
+                        {isEnglish ? 'NEW!' : 'חדש!'}
+                    </span>
                 )}
                 <div className="product-preview-images">
                     <div className="ambient-light-bloom" aria-hidden="true" />
