@@ -201,6 +201,37 @@ html, body {
     }
 }
 
+.download-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.price-list-label {
+    font-family: 'Heebo', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(30, 28, 25, 0.85);
+    white-space: nowrap;
+}
+
+.download-actions .btn-download-price {
+    transition: all 0.2s ease;
+}
+
+.download-actions .btn-download-price:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.download-actions .btn-download-price.pdf:hover {
+    background-color: rgba(211, 47, 47, 0.08) !important;
+}
+
+.download-actions .btn-download-price.xlsx:hover {
+    background-color: rgba(46, 125, 50, 0.08) !important;
+}
+
 .works-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

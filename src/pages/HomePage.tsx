@@ -88,20 +88,25 @@ export const HomePage = () => {
 
             <div className="works-sec page-section" id="works-section">
                 <div className="section-title-container" style={{ width: '100%', maxWidth: '1280px', marginBottom: '40px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
                         <h2 className="section-title" style={{ width: 'auto', margin: 0 }}>{isEn ? 'Collection' : 'גופי התאורה'}</h2>
                         {canDownloadPriceList && (
-                            <div className="download-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                            <div className="download-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <span className="price-list-label" style={{ fontSize: '14px', fontWeight: 500, color: '#333', fontFamily: 'Heebo, sans-serif' }}>
+                                    {isEn ? 'Price List:' : 'מחירון:'}
+                                </span>
                                 <button 
                                     onClick={() => onDownloadPriceList('pdf')} 
-                                    style={{ background: 'none', cursor: 'pointer', textDecoration: 'none', color: '#d32f2f', fontWeight: 'bold', fontSize: '14px', border: '1px solid #d32f2f', padding: '4px 10px', borderRadius: '4px' }}
+                                    className="btn-download-price pdf"
+                                    style={{ background: 'none', cursor: 'pointer', textDecoration: 'none', color: '#d32f2f', fontWeight: 'bold', fontSize: '13px', border: '1px solid #d32f2f', padding: '3px 8px', borderRadius: '4px', transition: 'all 0.2s ease' }}
                                     title={isEn ? 'Download PDF Price List' : 'הורד מחירון PDF'}
                                 >
                                     PDF
                                 </button>
                                 <button 
                                     onClick={() => onDownloadPriceList('excel')} 
-                                    style={{ background: 'none', cursor: 'pointer', textDecoration: 'none', color: '#2e7d32', fontWeight: 'bold', fontSize: '14px', border: '1px solid #2e7d32', padding: '4px 10px', borderRadius: '4px' }}
+                                    className="btn-download-price xlsx"
+                                    style={{ background: 'none', cursor: 'pointer', textDecoration: 'none', color: '#2e7d32', fontWeight: 'bold', fontSize: '13px', border: '1px solid #2e7d32', padding: '3px 8px', borderRadius: '4px', transition: 'all 0.2s ease' }}
                                     title={isEn ? 'Download Excel Price List' : 'הורד מחירון Excel'}
                                 >
                                     XLSX
