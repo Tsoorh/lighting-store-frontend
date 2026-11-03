@@ -9,7 +9,7 @@ import { Icons } from "../Icons"
 import { ProductSuggestion } from "./ProductSuggestion"
 import { ContactSection } from "../ContactSection"
 import { authService } from "../../services/auth.service"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { ShareModal } from "./ShareModal"
 
 export const ProductDetails = () => {
@@ -19,6 +19,7 @@ export const ProductDetails = () => {
     const [selectedWoodEn, setSelectedWoodEn] = useState<string>('')
     const [selectedPriceIdx, setSelectedPriceIdx] = useState<number>(0)
     const [isSpecsOpen, setIsSpecsOpen] = useState<boolean>(false)
+    const [isDimensionsOpen, setIsDimensionsOpen] = useState<boolean>(false)
     type GalleryItem = {
         mainUrl: string
         thumbUrl: string
@@ -121,6 +122,45 @@ export const ProductDetails = () => {
     const nameLabel = isEnglish ? product.name.en : product.name.he
     const descriptionLabel = isEnglish ? product.description.en : product.description.he
 
+    const getCategoryBreadcrumb = () => {
+        if (!product.category || product.category.length === 0) {
+            return {
+                label: isEnglish ? 'All Lighting Fixtures' : 'כל גופי התאורה',
+                path: '/product/category/all'
+            }
+        }
+        const catEn = (product.category[0].en || '').toLowerCase()
+        if (catEn.includes('wall') || catEn.includes('קיר')) {
+            return {
+                label: isEnglish ? 'Wall Lights' : 'גופי תאורה לקיר',
+                path: '/product/category/wall'
+            }
+        }
+        if (catEn.includes('hanging') || catEn.includes('pendant') || catEn.includes('תלי')) {
+            return {
+                label: isEnglish ? 'Pendant Lights' : 'גופי תאורה תלויים',
+                path: '/product/category/pendant'
+            }
+        }
+        if (catEn.includes('ceiling') || catEn.includes('תקרה')) {
+            return {
+                label: isEnglish ? 'Ceiling Lights' : 'גופי תאורה צמודי תקרה',
+                path: '/product/category/ceiling'
+            }
+        }
+        if (catEn.includes('new') || catEn.includes('חדש')) {
+            return {
+                label: isEnglish ? 'New Collection' : 'קולקציה חדשה',
+                path: '/product/category/new-collection'
+            }
+        }
+        return {
+            label: isEnglish ? product.category[0].en : product.category[0].he,
+            path: `/product/category/${catEn.replace(/\s+/g, '-')}`
+        }
+    }
+    const categoryBreadcrumb = getCategoryBreadcrumb()
+
     const onShareProduct = async () => {
         const shareData = {
             title: `${nameLabel} | Tiran Lasry`,
@@ -201,6 +241,12 @@ export const ProductDetails = () => {
         setIsSpecsOpen(prev => !prev)
     }
 
+    const onToggleDimensions = (e: React.SyntheticEvent) => {
+        e.preventDefault()
+        ;(window as any).__disableHeaderScrollUntil = Date.now() + 1000
+        setIsDimensionsOpen(prev => !prev)
+    }
+
     return (
         <div className={`product-details-page ${isEnglish ? 'ltr' : 'rtl'}`} dir={isEnglish ? 'ltr' : 'rtl'}>
             
@@ -212,6 +258,20 @@ export const ProductDetails = () => {
                     <Icons iconName={isEnglish ? 'back' : 'next'} />
                     <span>{isEnglish ? 'Back' : 'חזרה'}</span>
                 </button>
+
+                <nav className="product-breadcrumbs" aria-label={isEnglish ? 'Breadcrumb' : 'נתיב ניווט'}>
+                    <Link to="/" className="breadcrumb-link">
+                        {isEnglish ? 'Home' : 'בית'}
+                    </Link>
+                    <span className="breadcrumb-separator" aria-hidden="true">/</span>
+                    <Link to={categoryBreadcrumb.path} className="breadcrumb-link">
+                        {categoryBreadcrumb.label}
+                    </Link>
+                    <span className="breadcrumb-separator" aria-hidden="true">/</span>
+                    <span className="breadcrumb-current" aria-current="page">
+                        {nameLabel}
+                    </span>
+                </nav>
             </div>
 
             <div className="product-top-section">
@@ -307,34 +367,50 @@ export const ProductDetails = () => {
                                 <p className="description">{descriptionLabel}</p>
                             </div>
 
-                            <div className="product-sec3">
-                                <h3>{sizeTitle}</h3>
-                                <ul className="sizes-list">
-                                    {product.size.map((s, idx) => {
-                                        const parts = []
-                                        if (isEnglish) {
-                                            if (s.upTo) parts.push(`Up to ${s.upTo} cm`)
-                                            if (s.diameter) parts.push(`Diameter ${s.diameter} cm`)
-                                            if (s.length) parts.push(`Length ${s.length} cm`)
-                                            if (s.width) parts.push(`Width ${s.width} cm`)
-                                            if (s.depth) parts.push(`Depth ${s.depth} cm`)
-                                            if (s.height) parts.push(`Height ${s.height} cm`)
-                                        } else {
-                                            if (s.upTo) parts.push(`עד ל- ${s.upTo} ס"מ`)
-                                            if (s.diameter) parts.push(`קוטר ${s.diameter} ס"מ`)
-                                            if (s.length) parts.push(`אורך ${s.length} ס"מ`)
-                                            if (s.width) parts.push(`רוחב ${s.width} ס"מ`)
-                                            if (s.depth) parts.push(`עומק ${s.depth} ס"מ`)
-                                            if (s.height) parts.push(`גובה ${s.height} ס"מ`)
-                                        }
-                                        return (
-                                            <li key={idx}>
-                                                {parts.join(', ')}
-                                            </li>
-                                        )
-                                    })}
-                                </ul>
-                            </div>
+                            {product.size && product.size.length > 0 && (
+                                <div className="product-sec3 drilldown">
+                                    <button 
+                                        type="button"
+                                        className="drilldown-toggle-btn"
+                                        onClick={onToggleDimensions}
+                                        aria-expanded={isDimensionsOpen}
+                                    >
+                                        <span className="drilldown-icon">
+                                            <Icons iconName="plus" />
+                                        </span>
+                                        <h3>{sizeTitle}</h3>
+                                    </button>
+                                    <div className={`drilldown-collapse ${isDimensionsOpen ? 'open' : ''}`}>
+                                        <div className="drilldown-inner">
+                                            <ul className="sizes-list">
+                                                {product.size.map((s, idx) => {
+                                                    const parts = []
+                                                    if (isEnglish) {
+                                                        if (s.upTo) parts.push(`Up to ${s.upTo} cm`)
+                                                        if (s.diameter) parts.push(`Diameter ${s.diameter} cm`)
+                                                        if (s.length) parts.push(`Length ${s.length} cm`)
+                                                        if (s.width) parts.push(`Width ${s.width} cm`)
+                                                        if (s.depth) parts.push(`Depth ${s.depth} cm`)
+                                                        if (s.height) parts.push(`Height ${s.height} cm`)
+                                                    } else {
+                                                        if (s.upTo) parts.push(`עד ל- ${s.upTo} ס"מ`)
+                                                        if (s.diameter) parts.push(`קוטר ${s.diameter} ס"מ`)
+                                                        if (s.length) parts.push(`אורך ${s.length} ס"מ`)
+                                                        if (s.width) parts.push(`רוחב ${s.width} ס"מ`)
+                                                        if (s.depth) parts.push(`עומק ${s.depth} ס"מ`)
+                                                        if (s.height) parts.push(`גובה ${s.height} ס"מ`)
+                                                    }
+                                                    return (
+                                                        <li key={idx}>
+                                                            {parts.join(', ')}
+                                                        </li>
+                                                    )
+                                                })}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="product-sec2 drilldown">
                                 <button 
@@ -357,23 +433,28 @@ export const ProductDetails = () => {
                                             {voltStr && <li>{isEnglish ? 'Wattage:' : 'הספק:'} {voltStr}</li>}
                                             {bulbStr && <li>{isEnglish ? 'Bulb Type:' : 'סוג נורה:'} {bulbStr}</li>}
                                         </ul>
-                                        {hasWood && (
-                                            <p className="natural-material-note">
-                                                {isEnglish 
-                                                    ? '* Slight variations in wood tone may occur due to the natural character of the material' 
-                                                    : '* ייתכנו שינויים קלים בגוון העץ בשל אופיו הטבעי של החומר'}
-                                            </p>
-                                        )}
-                                        {hasMetal && (
-                                            <p className="natural-material-note">
-                                                {isEnglish 
-                                                    ? '* Metal color is customizable' 
-                                                    : '* צבע המתכת ניתן לבחירה'}
-                                            </p>
-                                        )}
                                     </div>
                                 </div>
                             </div>
+
+                            {(hasWood || hasMetal) && (
+                                <div className="product-material-notes">
+                                    {hasWood && (
+                                        <p className="natural-material-note">
+                                            {isEnglish 
+                                                ? '* Slight variations in wood tone may occur due to the natural character of the material' 
+                                                : '* ייתכנו שינויים קלים בגוון העץ בשל אופיו הטבעי של החומר'}
+                                        </p>
+                                    )}
+                                    {hasMetal && (
+                                        <p className="natural-material-note">
+                                            {isEnglish 
+                                                ? '* Metal color is customizable' 
+                                                : '* צבע המתכת ניתן לבחירה'}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
 
                             {isSupplier && (
                                 <p className="supplier-vat-disclaimer">
