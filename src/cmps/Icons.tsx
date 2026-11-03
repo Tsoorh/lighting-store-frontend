@@ -18,6 +18,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import TuneIcon from '@mui/icons-material/Tune';
+import IosShareIcon from '@mui/icons-material/IosShare';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import CheckIcon from '@mui/icons-material/Check';
 
 type IconName = string;
 
@@ -50,7 +53,11 @@ export const Icons = ({ iconName }: IconsProps): JSX.Element | null => {
         plus: <AddIcon fontSize='small' aria-hidden='true'/>,
         minus: <RemoveIcon fontSize='small' aria-hidden='true'/>,
         filter: <TuneIcon fontSize='small' aria-hidden='true'/>,
-        tune: <TuneIcon fontSize='small' aria-hidden='true'/>
+        tune: <TuneIcon fontSize='small' aria-hidden='true'/>,
+        'share-box': <IosShareIcon fontSize='small' aria-hidden='true'/>,
+        share: <IosShareIcon fontSize='small' aria-hidden='true'/>,
+        copy: <ContentCopyIcon fontSize='small' aria-hidden='true'/>,
+        check: <CheckIcon fontSize='small' aria-hidden='true'/>
     };
 
     return icons[key] ?? null;

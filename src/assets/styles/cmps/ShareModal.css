@@ -1,0 +1,211 @@
+/* Share Modal Styles */
+.share-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(30, 28, 25, 0.45);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+    animation: fadeInModal 0.2s ease-out;
+}
+
+@keyframes fadeInModal {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.share-modal-content {
+    background: #ffffff;
+    width: 100%;
+    max-width: 440px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 24px;
+    box-sizing: border-box;
+    font-family: 'Heebo', sans-serif;
+    animation: slideUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpModal {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.share-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(30, 28, 25, 0.08);
+    padding-bottom: 12px;
+}
+
+.share-modal-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: #1e1c19;
+}
+
+.share-modal-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #7e8588;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.share-modal-close-btn:hover {
+    color: #1e1c19;
+    background-color: rgba(30, 28, 25, 0.05);
+}
+
+.share-modal-product-preview {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    background-color: #faf9f6;
+    border-radius: 6px;
+    margin-bottom: 22px;
+}
+
+.share-modal-thumbnail {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+}
+
+.share-modal-product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow: hidden;
+}
+
+.share-modal-product-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #1e1c19;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.share-modal-product-brand {
+    font-size: 0.8rem;
+    color: #7e8588;
+}
+
+.share-modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.share-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    border: none;
+    box-sizing: border-box;
+}
+
+.share-action-btn:active {
+    transform: scale(0.99);
+}
+
+.whatsapp-share-btn {
+    background-color: #25D366;
+    color: #ffffff;
+}
+
+.whatsapp-share-btn:hover {
+    background-color: #20ba59;
+}
+
+.whatsapp-icon {
+    display: flex;
+    align-items: center;
+}
+
+.share-link-copy-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(30, 28, 25, 0.15);
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #ffffff;
+    transition: border-color 0.2s ease;
+}
+
+.share-link-copy-container:focus-within {
+    border-color: #1e1c19;
+}
+
+.share-link-input {
+    flex: 1;
+    border: none;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    color: #4a4844;
+    background: transparent;
+    outline: none;
+    font-family: inherit;
+    direction: ltr;
+}
+
+.share-copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #1e1c19;
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.share-copy-btn:hover {
+    background-color: #383531;
+}
+
+.share-copy-btn.copied {
+    background-color: #1b873f;
+}
+

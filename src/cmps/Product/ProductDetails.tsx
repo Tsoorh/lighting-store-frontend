@@ -10,6 +10,7 @@ import { ProductSuggestion } from "./ProductSuggestion"
 import { ContactSection } from "../ContactSection"
 import { authService } from "../../services/auth.service"
 import { useNavigate } from "react-router-dom"
+import { ShareModal } from "./ShareModal"
 
 export const ProductDetails = () => {
     const { productId } = useParams()
@@ -25,6 +26,7 @@ export const ProductDetails = () => {
 
     const [gallery, setGallery] = useState<GalleryItem[]>([])
     const [mainImage, setMainImage] = useState<string>('')
+    const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false)
     const { language } = useLanguage()
     const user = authService.getLoggedinUser()
     const isAdmin = user?.role?.trim().toLowerCase() === 'admin'
@@ -99,6 +101,16 @@ export const ProductDetails = () => {
         loadProduct()
     }, [productId])
 
+    useEffect(() => {
+        if (product) {
+            const titleName = language === 'en' ? product.name.en : product.name.he
+            document.title = `${titleName} | Tiran Lasry`
+        }
+        return () => {
+            document.title = 'Tiran Lasry'
+        }
+    }, [product, language])
+
     if (!product) return <SkeletonProductDetails />
 
     const isEnglish = language === 'en'
@@ -108,6 +120,28 @@ export const ProductDetails = () => {
     )
     const nameLabel = isEnglish ? product.name.en : product.name.he
     const descriptionLabel = isEnglish ? product.description.en : product.description.he
+
+    const onShareProduct = async () => {
+        const shareData = {
+            title: `${nameLabel} | Tiran Lasry`,
+            text: isEnglish 
+                ? `Check out the "${nameLabel}" lighting fixture by Tiran Lasry:` 
+                : `כדאי לראות את גוף התאורה "${nameLabel}" של טירן לסרי:`,
+            url: window.location.href,
+        }
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData)
+            } catch (err: any) {
+                if (err?.name !== 'AbortError') {
+                    setIsShareModalOpen(true)
+                }
+            }
+        } else {
+            setIsShareModalOpen(true)
+        }
+    }
     
     // Texts
     const descTitle = isEnglish ? 'Description' : 'תיאור'
@@ -187,17 +221,28 @@ export const ProductDetails = () => {
                     <div className="product-info-content">
                         <div className="product-info-header">
                             <div className="product-title-wrapper">
-                                <div className="title-with-admin">
+                                <div className="title-row">
                                     <h1>{nameLabel}</h1>
-                                    {isAdmin && (
+                                    <div className="title-actions">
                                         <button 
-                                            className="admin-edit-btn-details" 
-                                            onClick={() => navigate(`/dashboard?edit=${product._id}`)}
-                                            title={isEnglish ? 'Edit Product' : 'ערוך מוצר'}
+                                            className="product-share-btn" 
+                                            onClick={onShareProduct}
+                                            title={isEnglish ? 'Share Product' : 'שתף מוצר'}
+                                            aria-label={isEnglish ? 'Share Product' : 'שתף מוצר'}
                                         >
-                                            <Icons iconName="edit" />
+                                            <span className="share-btn-text">{isEnglish ? 'Share' : 'שתף'}</span>
+                                            <Icons iconName="share-box" />
                                         </button>
-                                    )}
+                                        {isAdmin && (
+                                            <button 
+                                                className="admin-edit-btn-details" 
+                                                onClick={() => navigate(`/dashboard?edit=${product._id}`)}
+                                                title={isEnglish ? 'Edit Product' : 'ערוך מוצר'}
+                                            >
+                                                <Icons iconName="edit" />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                                 {activePrice?.amount !== undefined && (
                                     <h2 className="product-price">
@@ -356,9 +401,11 @@ export const ProductDetails = () => {
                             isEnglish 
                                 ? `Hi, I would like to request a quote for the lighting fixture "${nameLabel}".` 
                                 : `היי, אשמח לקבל הצעת מחיר עבור גוף התאורה "${nameLabel}".`
-                        )}`} target="_blank" rel="noopener noreferrer" className="quote-btn animated-link">
+                        )}`} target="_blank" rel="noopener noreferrer" className="quote-btn">
                             <span>{linkLabel}</span>
-                            <Icons iconName={isEnglish ? 'next' : 'back'} />
+                            <span className="quote-btn-icon">
+                                <Icons iconName={isEnglish ? 'next' : 'back'} />
+                            </span>
                         </a>
                     </div>
                 </div>
@@ -415,6 +462,14 @@ export const ProductDetails = () => {
             </div>
             
             <ContactSection />
+
+            <ShareModal 
+                isOpen={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+                productName={nameLabel}
+                productUrl={window.location.href}
+                productImage={mainImage}
+            />
         </div>
     )
 }

@@ -82,20 +82,41 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 100%;
 }
 
-.title-with-admin {
+.title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+}
+
+.title-row h1 {
+    font-family: 'Heebo', sans-serif;
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 110%;
+    margin: 0;
+    color: rgba(30, 28, 25, 1);
+    flex: 1;
+}
+
+.title-actions {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
+    flex-shrink: 0;
+    padding-top: 4px;
 }
 
 .admin-edit-btn-details {
     background: #f4f4f4;
     border: 1px solid #ddd;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -110,13 +131,33 @@
     color: #000;
 }
 
-.product-title-wrapper h1 {
+.product-share-btn {
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
     font-family: 'Heebo', sans-serif;
+    font-size: 15px;
     font-weight: 400;
-    font-size: 36px;
-    line-height: 100%;
-    margin: 0;
+    color: rgba(30, 28, 25, 0.65);
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.product-share-btn:hover {
     color: rgba(30, 28, 25, 1);
+    background-color: rgba(30, 28, 25, 0.05);
+}
+
+.product-share-btn svg {
+    font-size: 18px;
+}
+
+.share-btn-text {
+    line-height: 1;
 }
 
 .product-price {
@@ -343,12 +384,35 @@
     font-weight: 300;
     font-size: 18px;
     text-decoration: none;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
     margin-top: 0; /* space-between handles this now */
+    box-sizing: border-box;
+    transform: none !important;
+    opacity: 1 !important;
 }
 
 .quote-btn:hover {
-    background-color: rgba(90, 95, 98, 1);
+    background-color: rgba(45, 48, 50, 1);
+    box-shadow: 0 6px 20px rgba(30, 28, 25, 0.15);
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+/* Directional Arrow Slide on Hover */
+.quote-btn .quote-btn-icon {
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* In RTL (Hebrew): Arrow points left, slide 6px left */
+.product-details-page.rtl .quote-btn:hover .quote-btn-icon {
+    transform: translateX(-6px);
+}
+
+/* In LTR (English): Arrow points right, slide 6px right */
+.product-details-page.ltr .quote-btn:hover .quote-btn-icon {
+    transform: translateX(6px);
 }
 
 /* --- LEFT SIDE: GALLERY --- */
