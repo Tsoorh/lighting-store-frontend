@@ -1,5 +1,5 @@
 interface Env {
-    ASSETS: { fetch: typeof fetch };
+    ASSETS: { fetch: (request: Request | string | URL) => Promise<Response> };
 }
 
 function escapeHtml(str: string): string {
@@ -15,23 +15,20 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const { request, env, params } = context;
     const productId = params.productId as string;
 
-    // 1. Fetch static index.html template from Cloudflare assets
-    const response = await env.ASSETS.fetch(request);
-    const contentType = response.headers.get('content-type') || '';
-    if (!contentType.includes('text/html')) {
-        return response;
-    }
-
     try {
+        // 1. Fetch static index.html from root
+        const indexUrl = new URL('/', request.url);
+        const assetResponse = await env.ASSETS.fetch(new Request(indexUrl.toString(), request));
+
         // 2. Fetch product details from Railway backend API
         const apiRes = await fetch(`https://api.tiranlasry.com/api/product/${productId}`);
         if (!apiRes.ok) {
-            return response;
+            return assetResponse;
         }
 
         const product = await apiRes.json();
         if (!product) {
-            return response;
+            return assetResponse;
         }
 
         // 3. Resolve catalog card photo (C_ photo takes highest priority)
@@ -60,7 +57,6 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
                 ? nameWithout4G8A
                 : `4G8A${nameWithout4G8A}`;
             
-            // Format to high-compatibility JPEG, 1200x630 padded for social previews
             ogImage = `https://res.cloudinary.com/${cloudId}/image/upload/c_pad,b_white,w_1200,h_630,f_jpg,q_auto/${publicId}`;
         }
 
@@ -69,16 +65,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         const desc = product.description?.he || product.description?.en || 'גוף תאורה מעוצב בעבודת יד מבית טירן לסרי';
         const pageUrl = `https://tiranlasry.com/product/${productId}`;
 
-        // 4. Inject Open Graph and Twitter Card tags into HTML head
-        return new HTMLRewriter()
-            .on('title', {
-                element(e) {
-                    e.setInnerContent(escapeHtml(title));
-                }
-            })
-            .on('head', {
-                element(e) {
-                    e.append(`
+        const metaTags = `
+    <title>${escapeHtml(title)}</title>
     <meta property="og:site_name" content="טירן לסרי - אמנות התאורה" />
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(desc)}" />
@@ -93,12 +81,21 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(desc)}" />
     <meta name="twitter:image" content="${ogImage}" />
-`, { html: true });
-                }
-            })
-            .transform(response);
+`;
+
+        const rawHtml = await assetResponse.text();
+        const cleanHtml = rawHtml.replace(/<title>.*?<\/title>/i, '');
+        const enriched = cleanHtml.replace('</head>', `${metaTags}\n</head>`);
+
+        return new Response(enriched, {
+            status: 200,
+            headers: {
+                'content-type': 'text/html; charset=utf-8',
+                'cache-control': 'public, max-age=0, must-revalidate'
+            }
+        });
     } catch {
-        return response;
+        const indexUrl = new URL('/', request.url);
+        return env.ASSETS.fetch(new Request(indexUrl.toString(), request));
     }
 };
-
