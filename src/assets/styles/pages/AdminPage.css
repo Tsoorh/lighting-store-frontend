@@ -129,6 +129,23 @@
     text-align: right;
 }
 
+@keyframes highlight-product-row {
+    0% {
+        background-color: rgba(220, 180, 100, 0.32);
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+.admin-table tr.product-row-highlight {
+    animation: highlight-product-row 1.5s ease-out;
+}
+
+.admin-table tr.product-row-highlight td {
+    animation: highlight-product-row 1.5s ease-out;
+}
+
 @media (max-width: 600px) {
     .admin-table thead {
         display: none;

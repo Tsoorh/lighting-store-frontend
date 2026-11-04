@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useRef, useLayoutEffect } from 'react'
 import { productService } from '../../services/product.service'
 import { optionsService } from '../../services/options.service'
 import type { FullProduct } from '../../model/product.model'
@@ -9,6 +9,13 @@ interface AdminProductListProps {
     initialProductId?: string | null
 }
 
+interface TargetScrollInfo {
+    productId?: string
+    scrollY: number
+    offsetFromTop?: number
+    isNew?: boolean
+}
+
 export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProductId }) => {
     const [products, setProducts] = useState<FullProduct[]>([])
     const [isLoading, setIsLoading] = useState(true)
@@ -16,6 +23,7 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
     const [filterBy, setFilterBy] = useState({ txt: '' })
     const [isNewCollectionActive, setIsNewCollectionActive] = useState<boolean>(true)
     const [isUpdatingOptions, setIsUpdatingOptions] = useState<boolean>(false)
+    const targetScrollInfoRef = useRef<TargetScrollInfo | null>(null)
     const { language } = useLanguage()
     const isEn = language === 'en'
 
@@ -30,9 +38,10 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
         }
         loadOptions()
 
-        const onSiteOptionsChanged = (e: any) => {
-            if (e.detail && typeof e.detail.isNewCollectionActive === 'boolean') {
-                setIsNewCollectionActive(e.detail.isNewCollectionActive)
+        const onSiteOptionsChanged = (e: Event) => {
+            const customEvent = e as CustomEvent<{ isNewCollectionActive?: boolean }>
+            if (customEvent.detail && typeof customEvent.detail.isNewCollectionActive === 'boolean') {
+                setIsNewCollectionActive(customEvent.detail.isNewCollectionActive)
             }
         }
         window.addEventListener('site-options-changed', onSiteOptionsChanged)
@@ -106,17 +115,27 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
 
     async function onSaveProduct(productToSave: FullProduct) {
         try {
-            const savedProduct = productToSave._id 
+            const isEditingExisting = !!productToSave._id
+            const savedProduct = isEditingExisting 
                 ? await productService.update(productToSave)
                 : await productService.add(productToSave)
             
-            if (productToSave._id) {
+            if (isEditingExisting) {
                 setProducts(prev => prev.map(p => p._id === savedProduct._id ? savedProduct : p))
+                if (targetScrollInfoRef.current) {
+                    targetScrollInfoRef.current.productId = savedProduct._id
+                }
             } else {
                 setProducts(prev => [savedProduct, ...prev])
+                targetScrollInfoRef.current = {
+                    productId: savedProduct._id,
+                    scrollY: 0,
+                    offsetFromTop: undefined,
+                    isNew: false
+                }
             }
             
-            if (initialProductId) {
+            if (initialProductId && window.history.length > 1) {
                 window.history.back()
             } else {
                 setEditingProduct(null)
@@ -125,6 +144,53 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
             console.error('Failed to save product', err)
         }
     }
+
+    useLayoutEffect(() => {
+        if (editingProduct) {
+            window.scrollTo({ top: 0, behavior: 'instant' })
+            return
+        }
+
+        if (!editingProduct && targetScrollInfoRef.current) {
+            const { productId, scrollY, offsetFromTop, isNew } = targetScrollInfoRef.current
+
+            const restoreScroll = () => {
+                if (isNew) {
+                    if (scrollY !== undefined) {
+                        window.scrollTo({ top: scrollY, behavior: 'instant' })
+                    }
+                    return
+                }
+
+                const rowEl = productId ? document.getElementById(`product-row-${productId}`) : null
+                if (rowEl && offsetFromTop !== undefined) {
+                    const targetScrollY = window.scrollY + rowEl.getBoundingClientRect().top - offsetFromTop
+                    window.scrollTo({ top: Math.max(0, targetScrollY), behavior: 'instant' })
+                    rowEl.classList.add('product-row-highlight')
+                    setTimeout(() => {
+                        rowEl.classList.remove('product-row-highlight')
+                    }, 1600)
+                } else if (rowEl) {
+                    rowEl.scrollIntoView({ block: 'center', behavior: 'instant' })
+                    rowEl.classList.add('product-row-highlight')
+                    setTimeout(() => {
+                        rowEl.classList.remove('product-row-highlight')
+                    }, 1600)
+                } else if (scrollY !== undefined) {
+                    window.scrollTo({ top: scrollY, behavior: 'instant' })
+                }
+            }
+
+            restoreScroll()
+
+            const rafId = requestAnimationFrame(() => {
+                restoreScroll()
+                targetScrollInfoRef.current = null
+            })
+
+            return () => cancelAnimationFrame(rafId)
+        }
+    }, [editingProduct])
 
     const getImageUrl = (imgsUrl: string[]) => {
         if (!imgsUrl || imgsUrl.length === 0) return null
@@ -149,13 +215,21 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
         return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/4G8A${nameWithout4G8A}.webp`
     }
 
+    function onStartAddProduct() {
+        targetScrollInfoRef.current = {
+            scrollY: window.scrollY,
+            isNew: true
+        }
+        setEditingProduct('new')
+    }
+
     if (editingProduct) {
         return (
             <AdminProductEdit 
                 product={editingProduct === 'new' ? undefined : editingProduct} 
                 onSave={onSaveProduct} 
                 onCancel={() => {
-                    if (initialProductId) {
+                    if (initialProductId && window.history.length > 1) {
                         window.history.back()
                     } else {
                         setEditingProduct(null)
@@ -177,7 +251,7 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
                         onChange={(e) => setFilterBy({ txt: e.target.value })}
                         className="search-input"
                     />
-                    <button className="btn-add" onClick={() => setEditingProduct('new')}>
+                    <button className="btn-add" onClick={onStartAddProduct}>
                         {isEn ? 'Add Product' : 'הוסף מוצר'}
                     </button>
                 </div>
@@ -265,7 +339,7 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
                             {filteredProducts.map(product => {
                                 const imageUrl = getImageUrl(product.imgsUrl)
                                 return (
-                                    <tr key={product._id?.toString()}>
+                                    <tr key={product._id?.toString()} id={product._id ? `product-row-${product._id}` : undefined}>
                                         <td className="product-img-td">
                                             {imageUrl ? (
                                                 <img 
@@ -345,6 +419,13 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
     )
 
     function setEditingUserOrProduct(product: FullProduct) {
+        const rowEl = product._id ? document.getElementById(`product-row-${product._id}`) : null
+        targetScrollInfoRef.current = {
+            productId: product._id,
+            scrollY: window.scrollY,
+            offsetFromTop: rowEl ? rowEl.getBoundingClientRect().top : undefined,
+            isNew: false
+        }
         setEditingProduct(product)
     }
 }

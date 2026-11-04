@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useLayoutEffect } from 'react'
 import type { FullProduct, hebrewEnglishObj, ProductSize } from '../../model/product.model'
 import type { SocketOptions } from '../../model/options.model'
 import { useLanguage } from '../../hooks/useLanguage'
@@ -159,6 +159,10 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
     const [isAddingOption, setIsAddingOption] = useState(false)
     const [showManageOptions, setShowManageOptions] = useState(false)
     const [optionError, setOptionError] = useState<{ category: 'screw' | 'light'; message: string } | null>(null)
+
+    useLayoutEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' })
+    }, [])
 
     useEffect(() => {
         let isMounted = true
