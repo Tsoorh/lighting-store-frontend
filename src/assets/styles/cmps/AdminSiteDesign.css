@@ -872,3 +872,93 @@
 .cms-guidance-box li {
     margin-bottom: 4px;
 }
+
+/* Add Banner to Current Page Styles */
+.cms-add-banner-card {
+    background: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+    padding: 24px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    transition: all 0.2s ease;
+}
+
+.cms-add-banner-card:hover {
+    border-color: #94a3b8;
+    background: #f1f5f9;
+}
+
+.cms-add-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 260px;
+}
+
+.cms-add-banner-icon {
+    font-size: 2rem;
+    line-height: 1;
+    background: #e2e8f0;
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cms-add-banner-text h4 {
+    margin: 0 0 4px 0;
+    font-size: 1.05rem;
+    color: #1e293b;
+}
+
+.cms-add-banner-text p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.btn-add-banner-cta {
+    background: #0f172a;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-add-banner-cta:hover {
+    background: #1e293b;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+.btn-remove-banner {
+    background: #fff;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-remove-banner:hover {
+    background: #fef2f2;
+    border-color: #ef4444;
+}
