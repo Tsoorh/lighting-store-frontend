@@ -22,7 +22,11 @@ export default {
                 // 1. Fetch product metadata from Railway API
                 const apiRes = await fetch(`https://api.tiranlasry.com/api/product/${productId}`);
                 if (apiRes.ok) {
-                    const product: any = await apiRes.json();
+                    const product = await apiRes.json() as {
+                        name?: { he?: string; en?: string };
+                        description?: { he?: string; en?: string };
+                        imgsUrl?: string[];
+                    } | null;
                     if (product) {
                         // 2. Fetch the root index.html asset
                         const indexUrl = new URL('/', request.url);

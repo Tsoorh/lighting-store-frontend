@@ -1,5 +1,5 @@
 import React from 'react'
-import { useSiteMediaDraft } from '../../context/SiteMediaDraftContext'
+import { useSiteMediaDraft } from '../../hooks/useSiteMediaDraft'
 import { useLanguage } from '../../hooks/useLanguage'
 import { DEFAULT_FULL_WIDTH_BANNER } from '../../model/site-media.model'
 

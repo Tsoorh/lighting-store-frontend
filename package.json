@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@base-ui/react": "^1.0.0",
     "@emailjs/browser": "^4.4.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -19,13 +18,10 @@
     "@mui/material": "^7.3.6",
     "@tanstack/react-query": "^5.101.0",
     "axios": "^1.16.1",
-    "country-flags-svg": "^2.0.0-beta.1",
-    "emailjs": "^5.0.1",
     "framer-motion": "^12.25.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.22.3",
-    "react-select": "^5.10.2"
+    "react-router-dom": "^6.22.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

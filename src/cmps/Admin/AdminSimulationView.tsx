@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useSiteMediaDraft } from '../../context/SiteMediaDraftContext'
+import { useSiteMediaDraft } from '../../hooks/useSiteMediaDraft'
 import { useLanguage } from '../../hooks/useLanguage'
 
 interface AdminSimulationViewProps {

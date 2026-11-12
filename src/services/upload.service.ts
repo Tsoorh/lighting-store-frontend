@@ -1,4 +1,5 @@
 import type { UploadSignatureResponse } from './site-media.service'
+import { CLOUDINARY_CLOUD_ID } from '../utils/cloudinary'
 
 export interface CloudinaryUploadResult {
   secure_url: string
@@ -17,9 +18,8 @@ export const uploadService = {
 }
 
 async function uploadImg(file: File, publicId: string) {
-  const CLOUD_NAME = 'dhixlriwm'
-  const UPLOAD_PRESET = "tiran_preset" // User needs to create this in Cloudinary
-  const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`
+  const UPLOAD_PRESET = 'tiran_preset'
+  const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_ID}/image/upload`
 
   const formData = new FormData()
   formData.append('file', file)
@@ -43,23 +43,12 @@ async function uploadImg(file: File, publicId: string) {
   }
 }
 
-async function uploadDirectWithSignature(
-  file: File,
-  signatureData: UploadSignatureResponse,
+function _xhrUpload(
+  uploadUrl: string,
+  formData: FormData,
+  errorLabel: string,
   onProgress?: (percent: number) => void
 ): Promise<CloudinaryUploadResult> {
-  const isVideo = file.type.startsWith('video/')
-  const resourceType = isVideo ? 'video' : 'image'
-  const uploadUrl = `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/${resourceType}/upload`
-
-  const formData = new FormData()
-  formData.append('file', file)
-  formData.append('api_key', signatureData.apiKey)
-  formData.append('timestamp', signatureData.timestamp.toString())
-  formData.append('signature', signatureData.signature)
-  formData.append('public_id', signatureData.publicId)
-  formData.append('folder', signatureData.folder)
-
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
     xhr.open('POST', uploadUrl)
@@ -79,10 +68,10 @@ async function uploadDirectWithSignature(
         if (xhr.status >= 200 && xhr.status < 300) {
           resolve(data)
         } else {
-          console.error('Cloudinary signed upload failed:', data)
+          console.error(errorLabel, data)
           reject(new Error(data.error?.message || 'Upload to Cloudinary failed'))
         }
-      } catch (e) {
+      } catch {
         reject(new Error('Invalid response from Cloudinary'))
       }
     }
@@ -95,53 +84,38 @@ async function uploadDirectWithSignature(
   })
 }
 
+async function uploadDirectWithSignature(
+  file: File,
+  signatureData: UploadSignatureResponse,
+  onProgress?: (percent: number) => void
+): Promise<CloudinaryUploadResult> {
+  const resourceType = file.type.startsWith('video/') ? 'video' : 'image'
+  const uploadUrl = `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/${resourceType}/upload`
+
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('api_key', signatureData.apiKey)
+  formData.append('timestamp', signatureData.timestamp.toString())
+  formData.append('signature', signatureData.signature)
+  formData.append('public_id', signatureData.publicId)
+  formData.append('folder', signatureData.folder)
+
+  return _xhrUpload(uploadUrl, formData, 'Cloudinary signed upload failed:', onProgress)
+}
+
 async function uploadUnsignedDirect(
   file: File,
   publicId: string,
   onProgress?: (percent: number) => void
 ): Promise<CloudinaryUploadResult> {
-  const CLOUD_NAME = 'dhixlriwm'
   const UPLOAD_PRESET = 'tiran_preset'
-  const isVideo = file.type.startsWith('video/')
-  const resourceType = isVideo ? 'video' : 'image'
-  const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`
+  const resourceType = file.type.startsWith('video/') ? 'video' : 'image'
+  const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_ID}/${resourceType}/upload`
 
   const formData = new FormData()
   formData.append('file', file)
   formData.append('upload_preset', UPLOAD_PRESET)
   formData.append('public_id', publicId)
 
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest()
-    xhr.open('POST', uploadUrl)
-
-    if (onProgress && xhr.upload) {
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percent = Math.round((event.loaded / event.total) * 100)
-          onProgress(percent)
-        }
-      }
-    }
-
-    xhr.onload = () => {
-      try {
-        const data = JSON.parse(xhr.responseText)
-        if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(data)
-        } else {
-          console.error('Cloudinary direct unsigned upload failed:', data)
-          reject(new Error(data.error?.message || 'Upload to Cloudinary failed'))
-        }
-      } catch (e) {
-        reject(new Error('Invalid response from Cloudinary'))
-      }
-    }
-
-    xhr.onerror = () => {
-      reject(new Error('Network error during upload to Cloudinary'))
-    }
-
-    xhr.send(formData)
-  })
+  return _xhrUpload(uploadUrl, formData, 'Cloudinary direct unsigned upload failed:', onProgress)
 }

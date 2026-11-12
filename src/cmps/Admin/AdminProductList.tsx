@@ -4,6 +4,7 @@ import { optionsService } from '../../services/options.service'
 import type { FullProduct } from '../../model/product.model'
 import { useLanguage } from '../../hooks/useLanguage'
 import { AdminProductEdit } from './AdminProductEdit'
+import { buildCloudinaryImageUrl, pickPrimaryProductImage } from '../../utils/cloudinary'
 
 interface AdminProductListProps {
     initialProductId?: string | null
@@ -193,26 +194,8 @@ export const AdminProductList: React.FC<AdminProductListProps> = ({ initialProdu
     }, [editingProduct])
 
     const getImageUrl = (imgsUrl: string[]) => {
-        if (!imgsUrl || imgsUrl.length === 0) return null
-        
-        const cleanUrls = imgsUrl.map(url => url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, "").replace(/^4G8A/i, ""))
-        const filteredUrls = cleanUrls.filter(url => url !== 'coming-soon')
-        if (filteredUrls.length === 0) return null
-
-        const cPhoto = filteredUrls.find(url => url.toUpperCase().startsWith('C_'))
-        const hPhoto = filteredUrls.find(url => url.toUpperCase().startsWith('H_'))
-        const numPhoto = filteredUrls.find(url => !url.toUpperCase().startsWith('C_') && !url.toUpperCase().startsWith('H_') && !url.toUpperCase().startsWith('S_'))
-        const sPhoto = filteredUrls.find(url => url.toUpperCase().startsWith('S_'))
-        
-        const imgName = cPhoto || hPhoto || numPhoto || sPhoto
-        if (!imgName) return null
-
-        // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
-        const cloudId = 'dhixlriwm'
-        const nameWithout4G8A = imgName.replace(/^4G8A/i, '')
-        const upper = nameWithout4G8A.toUpperCase()
-        if (upper.startsWith('C_') || upper.startsWith('H_') || upper.startsWith('S_')) return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/${nameWithout4G8A}.webp`
-        return `https://res.cloudinary.com/${cloudId}/image/upload/w_50,h_50,c_fill,q_auto/4G8A${nameWithout4G8A}.webp`
+        const primary = pickPrimaryProductImage(imgsUrl)
+        return primary ? buildCloudinaryImageUrl(primary, 'w_50,h_50,c_fill,q_auto') : null
     }
 
     function onStartAddProduct() {

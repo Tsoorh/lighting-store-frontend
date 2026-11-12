@@ -16,6 +16,9 @@ import { optionsService } from '../services/options.service';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Miniuser } from '../model/user.model';
 import { ImageWithSkeleton } from './Skeleton/ImageWithSkeleton';
+import { buildCloudinaryImageUrl, pickPrimaryProductImage } from '../utils/cloudinary';
+import { formatProductPriceRange } from '../utils/product-filters';
+import { isHeaderScrollSuppressed } from '../utils/scroll-lock';
 import '../assets/styles/cmps/AppHeader.css';
 
 
@@ -57,7 +60,7 @@ export const AppHeader = () => {
             setIsScrolled(currentScrollY > 0)
 
             // Temporarily ignore scroll events triggered by accordion / drilldown layout shifts
-            if ((window as any).__disableHeaderScrollUntil && Date.now() < (window as any).__disableHeaderScrollUntil) {
+            if (isHeaderScrollSuppressed()) {
                 lastScrollY.current = currentScrollY
                 return
             }
@@ -285,30 +288,15 @@ export const AppHeader = () => {
                         {debouncedSearch?
                         <ul>
                             {resultProduct?.map(product => {
-                                const cleanUrls = product.imgsUrl.map(url => url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, "").replace(/^4G8A/i, ""))
-                                const filteredUrls = cleanUrls.filter(url => url !== 'coming-soon')
-                                const cPhoto = filteredUrls.find(url => url.toUpperCase().startsWith('C_'))
-                                const hPhoto = filteredUrls.find(url => url.toUpperCase().startsWith('H_'))
-                                const numPhoto = filteredUrls.find(url => !url.toUpperCase().startsWith('C_') && !url.toUpperCase().startsWith('H_') && !url.toUpperCase().startsWith('S_'))
-                                const sPhoto = filteredUrls.find(url => url.toUpperCase().startsWith('S_'))
-                                
-                                const displayPhoto = cPhoto || hPhoto || numPhoto || sPhoto
-                                
-                                const getImageUrl = (imgName: string) => {
-                                    // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
-                                    const cloudId = 'dhixlriwm'
-                                    const nameWithout4G8A = imgName.replace(/^4G8A/i, '')
-                                    const upper = nameWithout4G8A.toUpperCase()
-                                    if (upper.startsWith('C_') || upper.startsWith('H_') || upper.startsWith('S_')) return `https://res.cloudinary.com/${cloudId}/image/upload/${nameWithout4G8A}.webp`
-                                    return `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${nameWithout4G8A}.webp`
-                                }
+                                const displayPhoto = pickPrimaryProductImage(product.imgsUrl)
+                                const priceRange = user ? formatProductPriceRange(product.price) : null
 
                                 return (
                                     <li key={product._id} role="link" tabIndex={0} onClick={()=>navigateToProduct(product._id as string)} onKeyDown={(e)=> (e.key === 'Enter' || e.key === ' ') && navigateToProduct(product._id as string)}>
                                         <div>
                                             <div className="image-container">
                                                 {displayPhoto ? (
-                                                    <ImageWithSkeleton src={getImageUrl(displayPhoto)} alt={product.name.en} />
+                                                    <ImageWithSkeleton src={buildCloudinaryImageUrl(displayPhoto)} alt={product.name.en} />
                                                 ) : (
                                                     <div className="no-photo-placeholder-search" style={{ 
                                                         width: '100%', 
@@ -327,16 +315,8 @@ export const AppHeader = () => {
                                             </div>
                                             <p>{isEnglish ? product.name.en : product.name.he}</p>
                                         </div>
-                                        {user && product.price !== undefined && Array.isArray(product.price) && product.price.length > 0 && (
-                                            <b dir="ltr">
-                                                {(() => {
-                                                    const amounts = product.price.map(p => p.amount)
-                                                    const min = Math.min(...amounts)
-                                                    const max = Math.max(...amounts)
-                                                    if (min === max) return `₪${min}`
-                                                    return `₪${min} - ₪${max}`
-                                                })()}
-                                            </b>
+                                        {priceRange && (
+                                            <b dir="ltr">{priceRange}</b>
                                         )}
                                     </li>
                                 )

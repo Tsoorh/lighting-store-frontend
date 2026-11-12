@@ -64,8 +64,8 @@ async function ajax<TResponse, TData = undefined>(endpoint: string, method: Meth
 }
 
 type RefreshSubscriber = {
-    resolve: (value: any) => void
-    reject: (reason?: any) => void
+    resolve: (value: boolean) => void
+    reject: (reason?: unknown) => void
 }
 
 let isRefreshing = false
@@ -76,7 +76,7 @@ function onRefreshed() {
     refreshSubscribers = []
 }
 
-function onRefreshFailed(error: any) {
+function onRefreshFailed(error: unknown) {
     refreshSubscribers.forEach(sub => sub.reject(error))
     refreshSubscribers = []
 }
@@ -138,13 +138,14 @@ axios.interceptors.response.use(
                 onRefreshed()
                 // Token refreshed. Retrying original request...
                 return axios(originalRequest);
-            } catch (refreshErr: any) {
+            } catch (refreshErr: unknown) {
                 isRefreshing = false
                 onRefreshFailed(refreshErr)
 
                 // Only force logout if the backend explicitly rejected the session with 401.
                 // Transient network errors or timeouts should NOT log the user out!
-                const isSessionExpired = refreshErr.response?.status === 401;
+                const errObj = refreshErr as { response?: { status?: number } } | null
+                const isSessionExpired = errObj?.response?.status === 401;
 
                 if (!isDownload && isSessionExpired) {
                     localStorage.removeItem('loggedinUser')

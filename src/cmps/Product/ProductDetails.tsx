@@ -11,6 +11,8 @@ import { ContactSection } from "../ContactSection"
 import { authService } from "../../services/auth.service"
 import { useNavigate, Link } from "react-router-dom"
 import { ShareModal } from "./ShareModal"
+import { buildProductGallery, type ProductGalleryItem } from "../../utils/cloudinary"
+import { suppressHeaderScrollFor } from "../../utils/scroll-lock"
 
 export const ProductDetails = () => {
     const { productId } = useParams()
@@ -20,12 +22,7 @@ export const ProductDetails = () => {
     const [selectedPriceIdx, setSelectedPriceIdx] = useState<number>(0)
     const [isSpecsOpen, setIsSpecsOpen] = useState<boolean>(false)
     const [isDimensionsOpen, setIsDimensionsOpen] = useState<boolean>(false)
-    type GalleryItem = {
-        mainUrl: string
-        thumbUrl: string
-    }
-
-    const [gallery, setGallery] = useState<GalleryItem[]>([])
+    const [gallery, setGallery] = useState<ProductGalleryItem[]>([])
     const [mainImage, setMainImage] = useState<string>('')
     const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false)
     const { language } = useLanguage()
@@ -47,51 +44,7 @@ export const ProductDetails = () => {
                 }
 
                 if (productFromDb && productFromDb.imgsUrl) {
-                    const cleanUrls = productFromDb.imgsUrl.map((url: string) => 
-                        url.replace(/[\r\n\s]+/g, "").replace(/\.[^/.]+$/, "").replace(/^4G8A/i, "")
-                    );
-                    const filteredUrls = cleanUrls.filter((url: string) => url !== 'coming-soon');
-                    
-                    const hPhotos = filteredUrls.filter((url: string) => url.toUpperCase().startsWith('H_'));
-                    const sPhotos = filteredUrls.filter((url: string) => url.toUpperCase().startsWith('S_'));
-                    const otherPhotos = filteredUrls.filter((url: string) => !url.toUpperCase().startsWith('C_') && !url.toUpperCase().startsWith('H_') && !url.toUpperCase().startsWith('S_'));
-                    const cPhotos = filteredUrls.filter((url: string) => url.toUpperCase().startsWith('C_'));
-
-                    let nonScratchPhotos = [...hPhotos, ...otherPhotos];
-                    if (nonScratchPhotos.length === 0 && cPhotos.length > 0) {
-                        nonScratchPhotos = cPhotos;
-                    }
-
-                    const getImageUrls = (cleanName: string): GalleryItem => {
-                        // const cloudId = import.meta.env.VITE_CLOUDINARY_ID
-                        const cloudId = 'dhixlriwm'
-                        const nameWithout4G8A = cleanName.replace(/^4G8A/i, '')
-                        const upper = nameWithout4G8A.toUpperCase()
-                        if (upper.startsWith('S_')) {
-                            return {
-                                mainUrl: `https://res.cloudinary.com/${cloudId}/image/upload/${nameWithout4G8A}.webp`,
-                                thumbUrl: `https://res.cloudinary.com/${cloudId}/image/upload/w_250,c_limit,q_100,f_png/${nameWithout4G8A}.webp`
-                            }
-                        }
-                        if (upper.startsWith('H_') || upper.startsWith('C_')) {
-                            const url = `https://res.cloudinary.com/${cloudId}/image/upload/${nameWithout4G8A}.webp`
-                            return { mainUrl: url, thumbUrl: url }
-                        }
-                        const url = `https://res.cloudinary.com/${cloudId}/image/upload/4G8A${nameWithout4G8A}.webp`
-                        return { mainUrl: url, thumbUrl: url }
-                    }
-
-                    // Combine and take up to 5 photos (1 main + 4 thumbs), ensuring scratch photos are at the end
-                    let combinedPhotos: string[] = [];
-                    if (sPhotos.length > 0) {
-                        const maxNonScratch = Math.max(0, 5 - sPhotos.length);
-                        combinedPhotos = [...nonScratchPhotos.slice(0, maxNonScratch), ...sPhotos];
-                    } else {
-                        combinedPhotos = nonScratchPhotos.slice(0, 5);
-                    }
-
-                    const sortedPhotos = combinedPhotos.map(getImageUrls);
-                    
+                    const sortedPhotos = buildProductGallery(productFromDb.imgsUrl);
                     setGallery(sortedPhotos);
                     if (sortedPhotos.length > 0) setMainImage(sortedPhotos[0].mainUrl);
                 }
@@ -173,8 +126,8 @@ export const ProductDetails = () => {
         if (navigator.share) {
             try {
                 await navigator.share(shareData)
-            } catch (err: any) {
-                if (err?.name !== 'AbortError') {
+            } catch (err: unknown) {
+                if ((err as { name?: string })?.name !== 'AbortError') {
                     setIsShareModalOpen(true)
                 }
             }
@@ -237,13 +190,13 @@ export const ProductDetails = () => {
 
     const onToggleSpecs = (e: React.SyntheticEvent) => {
         e.preventDefault()
-        ;(window as any).__disableHeaderScrollUntil = Date.now() + 1000
+        suppressHeaderScrollFor(1000)
         setIsSpecsOpen(prev => !prev)
     }
 
     const onToggleDimensions = (e: React.SyntheticEvent) => {
         e.preventDefault()
-        ;(window as any).__disableHeaderScrollUntil = Date.now() + 1000
+        suppressHeaderScrollFor(1000)
         setIsDimensionsOpen(prev => !prev)
     }
 

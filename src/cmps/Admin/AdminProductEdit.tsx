@@ -1,10 +1,17 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react'
+import React, { useState, useLayoutEffect } from 'react'
 import type { FullProduct, hebrewEnglishObj, ProductSize } from '../../model/product.model'
-import type { SocketOptions } from '../../model/options.model'
-import { useLanguage } from '../../hooks/useLanguage'
-import { uploadService } from '../../services/upload.service'
-import { optionsService } from '../../services/options.service'
 import { PRODUCT_OPTIONS } from '../../constants/product.constants'
+import { useLanguage } from '../../hooks/useLanguage'
+import {
+    healHebrewEnglishArray,
+    healPriceArray,
+    matchesWood,
+    type DirtyProductPrice,
+    type ProductPrice
+} from '../../utils/product-healer'
+import { ProductPriceEditor } from './ProductPriceEditor'
+import { SocketOptionsEditor } from './SocketOptionsEditor'
+import { ProductImageUploader } from './ProductImageUploader'
 
 type Props = {
     product?: FullProduct
@@ -12,112 +19,20 @@ type Props = {
     onCancel: () => void
 }
 
+const DEFAULT_STANDARD_WOOD: hebrewEnglishObj = {
+    en: 'Standard / No wood',
+    he: 'מחיר כללי / ללא עץ'
+}
+
 export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel }) => {
-    type ProductPrice = NonNullable<FullProduct['price']>[number];
-    type DirtyProductPrice = { wood?: Partial<hebrewEnglishObj>; amount?: number; size?: string; sku?: string; };
-
-    // Helper to merge split objects like [{he: 'A'}, {en: 'B'}] into [{he: 'A', en: 'B'}]
-    function _healHebrewEnglishArray(arr: (Partial<hebrewEnglishObj> | null)[]): hebrewEnglishObj[] {
-        if (!arr) return []
-        
-        const healed: hebrewEnglishObj[] = []
-        let current: Partial<hebrewEnglishObj> = {}
-
-        arr.forEach(item => {
-            if (!item) return
-            
-            // If item has both, just add it
-            if (item.he && item.en) {
-                healed.push({ he: item.he, en: item.en })
-                return
-            }
-
-            // If it's a partial object, try to merge it
-            if (item.he) {
-                if (current.he) { // Already have a pending Hebrew, push it and start new
-                    healed.push({ he: current.he, en: current.en || '' })
-                    current = { he: item.he }
-                } else {
-                    current.he = item.he
-                }
-            } else if (item.en) {
-                if (current.en) { // Already have a pending English, push it and start new
-                    healed.push({ he: current.he || '', en: current.en })
-                    current = { en: item.en }
-                } else {
-                    current.en = item.en
-                }
-            }
-
-            // If we now have a complete pair, push it
-            if (current.he && current.en) {
-                healed.push({ he: current.he, en: current.en })
-                current = {}
-            }
-        })
-
-        // Push any remaining partial
-        if (current.he || current.en) {
-            healed.push({ he: current.he || '', en: current.en || '' })
-        }
-
-        return healed
-    }
-
-    // Helper to ensure price entries have both languages if one is missing or inconsistent
-    function _healPriceArray(prices: DirtyProductPrice[]): ProductPrice[] {
-        if (!prices) return []
-        const result: ProductPrice[] = []
-
-        prices.forEach(p => {
-            const woodNameEn = (p.wood?.en || '').trim()
-            const woodNameHe = (p.wood?.he || '').trim()
-            const amount = p.amount ?? 0
-            
-            // Handle "Oak/American walnut" mapping - expand to both so individual prices are editable
-            if (
-                woodNameEn.toLowerCase() === 'oak/american walnut' || 
-                woodNameHe === 'אלון/אגוז אמריקאי'
-            ) {
-                result.push({ ...p, amount, wood: { en: 'Oak', he: 'אלון' } })
-                result.push({ ...p, amount, wood: { en: 'American walnut', he: 'אגוז אמריקאי' } })
-                return
-            }
-
-            // Handle "Oak stained Walnut" mapping
-            if (
-                woodNameEn.toLowerCase() === 'oak stained walnut' || 
-                woodNameEn.toLowerCase() === 'oak stained as walnut' ||
-                woodNameHe === 'אלון מגוון לאגוז'
-            ) {
-                result.push({ ...p, amount, wood: { en: 'Oak stained Walnut', he: 'אלון מגוון לאגוז' } })
-                return
-            }
-
-            // Try to find a match in constants by either English or Hebrew name
-            const found = (PRODUCT_OPTIONS.WOOD_TYPES as unknown as hebrewEnglishObj[]).find(opt => 
-                (woodNameEn && opt.en.toLowerCase() === woodNameEn.toLowerCase()) || 
-                (woodNameHe && opt.he === woodNameHe)
-            ) || (woodNameEn.toLowerCase().includes('american') && woodNameEn.toLowerCase().includes('walnut') ? { en: 'American walnut', he: 'אגוז אמריקאי' } : null)
-              || (woodNameEn.toLowerCase() === 'oak' ? { en: 'Oak', he: 'אלון' } : null)
-
-            if (found) {
-                result.push({ ...p, amount, wood: found })
-            } else if (woodNameEn || woodNameHe) {
-                result.push({ ...p, amount, wood: { en: woodNameEn || woodNameHe, he: woodNameHe || woodNameEn } })
-            } else {
-                result.push({ ...p, amount, wood: { en: 'Standard / No wood', he: 'מחיר כללי / ללא עץ' } })
-            }
-        })
-
-        return result
-    }
+    const { language } = useLanguage()
+    const isEn = language === 'en'
 
     const [formData, setFormData] = useState<Partial<FullProduct>>(() => {
         const initialState = product || {
             name: { en: '', he: '' },
             description: { en: '', he: '' },
-            price: [{ wood: { he: 'מחיר כללי / ללא עץ', en: 'Standard / No wood' }, amount: 0 }],
+            price: [{ wood: DEFAULT_STANDARD_WOOD, amount: 0 }],
             isActive: true,
             isNew: false,
             category: [],
@@ -127,66 +42,31 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             size: [{}],
             socketType: { screwType: '', lightType: '' }
         }
-        
+
+        const rawPrices = (
+            initialState.price && Array.isArray(initialState.price) && initialState.price.length > 0
+                ? initialState.price
+                : [{ wood: DEFAULT_STANDARD_WOOD, amount: 0 }]
+        ) as DirtyProductPrice[]
+
         return {
             ...initialState,
             isActive: initialState.isActive !== false,
             isNew: !!initialState.isNew,
-            category: _healHebrewEnglishArray(initialState.category),
-            material: _healHebrewEnglishArray(initialState.material),
-            woodType: _healHebrewEnglishArray(initialState.woodType),
+            category: healHebrewEnglishArray(initialState.category),
+            material: healHebrewEnglishArray(initialState.material),
+            woodType: healHebrewEnglishArray(initialState.woodType),
             size: (initialState.size && initialState.size.length > 0) ? initialState.size : [{}],
             imgsUrl: initialState.imgsUrl || [],
-            socketType: initialState.socketType || { screwType: '', lightType: '' }, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            price: _healPriceArray((initialState.price && Array.isArray(initialState.price) && initialState.price.length > 0) ? initialState.price : [{ wood: { he: 'מחיר כללי / ללא עץ', en: 'Standard / No wood' }, amount: 0 }]),
+            socketType: initialState.socketType || { screwType: '', lightType: '' },
+            price: healPriceArray(rawPrices),
             name: initialState.name || { en: '', he: '' },
             description: initialState.description || { en: '', he: '' }
         }
     })
-    const [uploadConfig, setUploadConfig] = useState({
-        type: 'C' as 'C' | 'H' | 'S',
-        category: 'P' as 'P' | 'C' | 'W'
-    })
-    const [isUploading, setIsUploading] = useState(false)
-    const { language } = useLanguage()
-    const isEn = language === 'en'
-
-    // Dynamic socket options state
-    const [socketOptions, setSocketOptions] = useState<SocketOptions>(optionsService.getDefaultOptions())
-    const [inlineAddType, setInlineAddType] = useState<'screw' | 'light' | null>(null)
-    const [newOptionValue, setNewOptionValue] = useState('')
-    const [isAddingOption, setIsAddingOption] = useState(false)
-    const [showManageOptions, setShowManageOptions] = useState(false)
-    const [optionError, setOptionError] = useState<{ category: 'screw' | 'light'; message: string } | null>(null)
 
     useLayoutEffect(() => {
         window.scrollTo({ top: 0, behavior: 'instant' })
-    }, [])
-
-    useEffect(() => {
-        let isMounted = true
-        async function loadSocketOptions() {
-            try {
-                const opts = await optionsService.getSocketOptions()
-                if (isMounted) setSocketOptions(opts)
-            } catch (err) {
-                console.error('Failed to load socket options', err)
-            }
-        }
-        loadSocketOptions()
-
-        const onSocketOptionsChanged = (e: Event) => {
-            const detail = (e as CustomEvent).detail
-            if (detail && isMounted) {
-                setSocketOptions(detail)
-            }
-        }
-        window.addEventListener('socket-options-changed', onSocketOptionsChanged)
-        return () => {
-            isMounted = false
-            window.removeEventListener('socket-options-changed', onSocketOptionsChanged)
-        }
     }, [])
 
     function handleChange<K extends keyof FullProduct>(field: K, value: FullProduct[K]) {
@@ -212,24 +92,10 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             alert(isEn ? 'At least one price is required' : 'חובה להזין לפחות מחיר אחד')
             return
         }
-        const newPrices = currentPrices.filter((_, i) => i !== index)
-        setFormData(prev => ({ ...prev, price: newPrices }))
+        setFormData(prev => ({ ...prev, price: currentPrices.filter((_, i) => i !== index) }))
     }
 
-    function _matchesWood(w1?: { en?: string; he?: string }, w2?: { en?: string; he?: string }): boolean {
-        if (!w1 || !w2) return false
-        const en1 = (w1.en || '').trim().toLowerCase()
-        const en2 = (w2.en || '').trim().toLowerCase()
-        if (en1 && en2 && en1 === en2) return true
-
-        const he1 = (w1.he || '').trim()
-        const he2 = (w2.he || '').trim()
-        if (he1 && he2 && he1 === he2) return true
-
-        return false
-    }
-
-    function _getAvailablePriceOptions(): hebrewEnglishObj[] {
+    function getAvailablePriceOptions(): hebrewEnglishObj[] {
         const woodSpecs = formData.woodType || []
         const optionsMap = new Map<string, hebrewEnglishObj>()
 
@@ -241,30 +107,28 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             } else if (spec.en || spec.he) {
                 optionsMap.set((spec.en || spec.he).toLowerCase(), spec)
             }
-        });
+        })
 
-        // ALSO ensure any wood already existing in formData.price is present so it is never hidden!
-        const existingPrices = (formData.price || []) as ProductPrice[];
+        // Also ensure any wood already existing in formData.price is present so it is never hidden
+        const existingPrices = (formData.price || []) as ProductPrice[]
         existingPrices.forEach(p => {
-            if (p.wood) {
-                const en = (p.wood.en || '').trim()
-                const he = (p.wood.he || '').trim()
-                const enLower = en.toLowerCase()
-                if (enLower === 'oak/american walnut' || he === 'אלון/אגוז אמריקאי') {
-                    optionsMap.set('oak', { en: 'Oak', he: 'אלון' })
-                    optionsMap.set('american walnut', { en: 'American walnut', he: 'אגוז אמריקאי' })
-                } else if (en || he) {
-                    const key = (en || he).toLowerCase()
-                    if (!optionsMap.has(key)) {
-                        optionsMap.set(key, { en: en || he, he: he || en })
-                    }
+            if (!p.wood) return
+            const en = (p.wood.en || '').trim()
+            const he = (p.wood.he || '').trim()
+            const enLower = en.toLowerCase()
+            if (enLower === 'oak/american walnut' || he === 'אלון/אגוז אמריקאי') {
+                optionsMap.set('oak', { en: 'Oak', he: 'אלון' })
+                optionsMap.set('american walnut', { en: 'American walnut', he: 'אגוז אמריקאי' })
+            } else if (en || he) {
+                const key = (en || he).toLowerCase()
+                if (!optionsMap.has(key)) {
+                    optionsMap.set(key, { en: en || he, he: he || en })
                 }
             }
         })
 
-        // Fallback for products with no wood so prices are always editable
         if (optionsMap.size === 0) {
-            optionsMap.set('standard', { en: 'Standard / No wood', he: 'מחיר כללי / ללא עץ' })
+            optionsMap.set('standard', DEFAULT_STANDARD_WOOD)
         }
 
         return Array.from(optionsMap.values())
@@ -272,24 +136,26 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
 
     function toggleWoodPrice(woodOption: hebrewEnglishObj) {
         const currentPrices = [...(formData.price || [])]
-        const isCurrentlySelected = currentPrices.some(p => _matchesWood(p.wood, woodOption))
-        
+        const isCurrentlySelected = currentPrices.some(p => matchesWood(p.wood, woodOption))
+
         if (isCurrentlySelected) {
-            const remainingPrices = currentPrices.filter(p => !_matchesWood(p.wood, woodOption))
+            const remainingPrices = currentPrices.filter(p => !matchesWood(p.wood, woodOption))
             if (remainingPrices.length === 0) {
                 alert(isEn ? 'At least one price is required' : 'חובה להזין לפחות מחיר אחד')
                 return
             }
             setFormData(prev => ({ ...prev, price: remainingPrices }))
         } else {
-            const newPrices = [...currentPrices, { wood: woodOption, amount: 0, size: '', sku: '' }]
-            setFormData(prev => ({ ...prev, price: newPrices }))
+            setFormData(prev => ({
+                ...prev,
+                price: [...currentPrices, { wood: woodOption, amount: 0, size: '', sku: '' }]
+            }))
         }
     }
 
     function handleLangChange(field: 'name' | 'description', lang: 'en' | 'he', value: string) {
         setFormData(prev => {
-            const currentVal = prev[field] || { en: '', he: '' };
+            const currentVal = prev[field] || { en: '', he: '' }
             return {
                 ...prev,
                 [field]: { ...currentVal, [lang]: value }
@@ -299,28 +165,21 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
 
     function toggleOption(field: 'category' | 'material' | 'woodType', option: hebrewEnglishObj) {
         const currentList = formData[field] || []
-        
-        const isSelected = currentList.some(item => 
-            (item.en && item.en.toLowerCase() === option.en.toLowerCase()) || 
+        const isSelected = currentList.some(item =>
+            (item.en && item.en.toLowerCase() === option.en.toLowerCase()) ||
             (item.he && item.he === option.he)
         )
-        
-        let newList
-        let addedOption: hebrewEnglishObj | null = null
-        
-        if (isSelected) {
-            newList = currentList.filter(item => 
-                (item.en && item.en.toLowerCase() !== option.en.toLowerCase()) && 
+
+        const newList = isSelected
+            ? currentList.filter(item =>
+                (item.en && item.en.toLowerCase() !== option.en.toLowerCase()) &&
                 (item.he && item.he !== option.he)
             )
-        } else {
-            newList = [...currentList, option]
-            addedOption = option
-        }
+            : [...currentList, option]
 
-        const newFormData = { ...formData, [field]: newList }
-        
-        // If woodType changed, sync prices
+        const addedOption = isSelected ? null : option
+        const newFormData: Partial<FullProduct> = { ...formData, [field]: newList }
+
         if (field === 'woodType') {
             const availableOptions: string[] = []
             newList.forEach(spec => {
@@ -332,48 +191,47 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                 }
             })
 
-            // 1. Prune prices that are no longer available if wood types exist, otherwise preserve
-            const updatedPrices = (formData.price || []).filter(p => 
-                availableOptions.length === 0 || 
+            const updatedPrices = (formData.price || []).filter(p =>
+                availableOptions.length === 0 ||
                 availableOptions.some(opt => opt.toLowerCase() === (p.wood?.en || '').toLowerCase())
             )
-            
-            // 2. If an option was added, automatically add its corresponding price entries
+
             if (addedOption) {
                 const optionsToAdd: hebrewEnglishObj[] = []
                 const addedEnLower = (addedOption.en || '').toLowerCase()
                 if (addedEnLower === 'oak/american walnut' || addedOption.he === 'אלון/אגוז אמריקאי') {
-                    optionsToAdd.push({ en: 'Oak', he: 'אלון' })
-                    optionsToAdd.push({ en: 'American walnut', he: 'אגוז אמריקאי' })
-                } else if (addedEnLower === 'oak stained walnut' || addedEnLower === 'oak stained as walnut' || addedOption.he === 'אלון מגוון לאגוז') {
+                    optionsToAdd.push({ en: 'Oak', he: 'אלון' }, { en: 'American walnut', he: 'אגוז אמריקאי' })
+                } else if (
+                    addedEnLower === 'oak stained walnut' ||
+                    addedEnLower === 'oak stained as walnut' ||
+                    addedOption.he === 'אלון מגוון לאגוז'
+                ) {
                     optionsToAdd.push({ en: 'Oak stained Walnut', he: 'אלון מגוון לאגוז' })
                 } else {
                     optionsToAdd.push(addedOption)
                 }
-                
+
                 optionsToAdd.forEach(opt => {
-                    if (!updatedPrices.some(p => _matchesWood(p.wood, opt))) {
+                    if (!updatedPrices.some(p => matchesWood(p.wood, opt))) {
                         updatedPrices.push({ wood: opt, amount: 0 })
                     }
                 })
             }
 
-            // 3. Safety: If we have wood types but no prices, add the first available
             if (updatedPrices.length === 0 && availableOptions.length > 0) {
                 const firstOpt = (newList[0].en?.toLowerCase() === 'oak/american walnut' || newList[0].he === 'אלון/אגוז אמריקאי')
                     ? { en: 'Oak', he: 'אלון' }
                     : newList[0]
                 updatedPrices.push({ wood: firstOpt, amount: 0 })
             } else if (updatedPrices.length === 0) {
-                updatedPrices.push({ wood: { en: 'Standard / No wood', he: 'מחיר כללי / ללא עץ' }, amount: 0 })
+                updatedPrices.push({ wood: DEFAULT_STANDARD_WOOD, amount: 0 })
             }
             newFormData.price = updatedPrices
         }
-        
+
         setFormData(newFormData)
     }
 
-    // Size handler
     function handleSizeChange(index: number, field: keyof ProductSize, value: number | boolean) {
         const newSize = [...(formData.size || [])]
         newSize[index] = { ...newSize[index], [field]: value }
@@ -394,7 +252,6 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         }))
     }
 
-    // SocketType handler
     function handleSocketChange(field: 'screwType' | 'lightType', value: string) {
         setFormData(prev => ({
             ...prev,
@@ -402,86 +259,13 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
         }))
     }
 
-    async function onSaveNewOption(category: 'screw' | 'light') {
-        const trimmed = newOptionValue.trim()
-        if (!trimmed) return
-        setIsAddingOption(true)
-        setOptionError(null)
-        try {
-            const updated = await optionsService.addSocketOption(category, trimmed)
-            setSocketOptions(updated)
-            handleSocketChange(category === 'screw' ? 'screwType' : 'lightType', trimmed)
-            setInlineAddType(null)
-            setNewOptionValue('')
-        } catch (err: unknown) {
-            console.error('Failed to add socket option', err)
-            setOptionError({
-                category,
-                message: isEn ? 'Failed to add option' : 'שגיאה בהוספת האפשרות'
-            })
-        } finally {
-            setIsAddingOption(false)
-        }
-    }
-
-    async function onRemoveOption(category: 'screw' | 'light', value: string) {
-        const confirmMsg = isEn 
-            ? `Remove "${value}" from available ${category === 'screw' ? 'screw' : 'light'} options?` 
-            : `האם להסיר את "${value}" מאפשרויות ה${category === 'screw' ? 'הברגה' : 'נורה'}?`
-        if (!window.confirm(confirmMsg)) return
-
-        try {
-            const updated = await optionsService.removeSocketOption(category, value)
-            setSocketOptions(updated)
-        } catch (err) {
-            console.error('Failed to remove socket option', err)
-            alert(isEn ? 'Failed to remove option' : 'שגיאה בהסרת האפשרות')
-        }
-    }
-
-    async function onUploadImg(e: React.ChangeEvent<HTMLInputElement>) {
-        const file = e.target.files?.[0]
-        if (!file) return
-
-        setIsUploading(true)
-        try {
-            const timestamp = Date.now()
-            const randomSalt = Math.random().toString(36).substring(2, 8).toUpperCase()
-            const publicId = `${uploadConfig.type}_${uploadConfig.category}_${timestamp}_${randomSalt}`
-            
-            const res = await uploadService.uploadImg(file, publicId)
-            const newImgUrl = res.public_id
-            
-            if (newImgUrl) {
-                setFormData(prev => ({
-                    ...prev,
-                    imgsUrl: [...(prev.imgsUrl || []), newImgUrl]
-                }))
-            } else {
-                throw new Error('No public_id returned from Cloudinary')
-            }
-        } catch (err) {
-            console.error('Failed to upload image', err)
-            alert(isEn ? 'Upload failed' : 'העלאה נכשלה')
-        } finally {
-            setIsUploading(false)
-        }
-    }
-
-    function onRemoveImg(imgUrl: string) {
-        setFormData(prev => ({
-            ...prev,
-            imgsUrl: prev.imgsUrl?.filter(url => url !== imgUrl)
-        }))
-    }
-
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
         const productToSave = {
             ...formData,
-            category: _healHebrewEnglishArray(formData.category || []),
-            material: _healHebrewEnglishArray(formData.material || []),
-            woodType: _healHebrewEnglishArray(formData.woodType || [])
+            category: healHebrewEnglishArray(formData.category || []),
+            material: healHebrewEnglishArray(formData.material || []),
+            woodType: healHebrewEnglishArray(formData.woodType || [])
         }
         onSave(productToSave as FullProduct)
     }
@@ -491,15 +275,15 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
             <h4>{label}</h4>
             <div className="options-grid">
                 {options.map(option => {
-                    const isSelected = (formData[field] || []).some(item => 
-                        (item.en && item.en.toLowerCase() === option.en.toLowerCase()) || 
+                    const isSelected = (formData[field] || []).some(item =>
+                        (item.en && item.en.toLowerCase() === option.en.toLowerCase()) ||
                         (item.he && item.he === option.he)
                     )
                     return (
                         <label key={option.en} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
-                            <input 
-                                type="checkbox" 
-                                checked={isSelected} 
+                            <input
+                                type="checkbox"
+                                checked={isSelected}
                                 onChange={() => toggleOption(field, option)}
                                 style={{ width: '18px', height: '18px' }}
                             />
@@ -518,336 +302,55 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                 <div className="main-info">
                     <div className="form-group">
                         <label>{isEn ? 'Name (EN)' : 'שם (אנגלית)'}</label>
-                        <input 
-                            type="text" 
-                            value={formData.name?.en || ''} 
-                            onChange={(e) => handleLangChange('name', 'en', e.target.value)} 
-                            required 
+                        <input
+                            type="text"
+                            value={formData.name?.en || ''}
+                            onChange={(e) => handleLangChange('name', 'en', e.target.value)}
+                            required
                         />
                     </div>
                     <div className="form-group">
                         <label>{isEn ? 'Name (HE)' : 'שם (עברית)'}</label>
-                        <input 
-                            type="text" 
-                            value={formData.name?.he || ''} 
-                            onChange={(e) => handleLangChange('name', 'he', e.target.value)} 
-                            required 
+                        <input
+                            type="text"
+                            value={formData.name?.he || ''}
+                            onChange={(e) => handleLangChange('name', 'he', e.target.value)}
+                            required
                         />
                     </div>
                     <div className="form-group">
                         <label>{isEn ? 'Description (EN)' : 'תיאור (אנגלית)'}</label>
-                        <textarea 
-                            value={formData.description?.en || ''} 
-                            onChange={(e) => handleLangChange('description', 'en', e.target.value)} 
+                        <textarea
+                            value={formData.description?.en || ''}
+                            onChange={(e) => handleLangChange('description', 'en', e.target.value)}
                             rows={3}
                         />
                     </div>
                     <div className="form-group">
                         <label>{isEn ? 'Description (HE)' : 'תיאור (עברית)'}</label>
-                        <textarea 
-                            value={formData.description?.he || ''} 
-                            onChange={(e) => handleLangChange('description', 'he', e.target.value)} 
+                        <textarea
+                            value={formData.description?.he || ''}
+                            onChange={(e) => handleLangChange('description', 'he', e.target.value)}
                             rows={3}
                         />
                     </div>
-                    
-                    <div className="form-section">
-                        <h4>{isEn ? 'Prices by Wood Type' : 'מחירים לפי סוג עץ'}</h4>
-                        <div className="wood-price-toggles">
-                            {_getAvailablePriceOptions().map(wood => {
-                                const isSelected = (formData.price || []).some(p => _matchesWood(p.wood, wood))
-                                return (
-                                    <label key={wood.en} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', padding: '8px', background: isSelected ? '#f0f7ff' : '#f9f9f9', borderRadius: '4px', border: `1px solid ${isSelected ? '#007bff' : '#ddd'}` }}>
-                                        <input 
-                                            type="checkbox" 
-                                            checked={isSelected} 
-                                            onChange={() => toggleWoodPrice(wood)}
-                                            style={{ width: '18px', height: '18px' }}
-                                        />
-                                        {isEn ? wood.en : wood.he}
-                                    </label>
-                                )
-                            })}
-                        </div>
 
-                        {_getAvailablePriceOptions().filter(wood => (formData.price || []).some(p => _matchesWood(p.wood, wood))).map(wood => {
-                            const woodPrices = (formData.price || []).map((p, originalIdx) => ({...p, originalIdx})).filter(p => _matchesWood(p.wood, wood))
-                            
-                            return (
-                                <div key={wood.en} className="wood-group" style={{ marginBottom: '20px', padding: '15px', background: '#fcfcfc', border: '1px solid #eee', borderRadius: '8px' }}>
-                                    <h5 style={{ marginTop: 0, marginBottom: '15px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>{isEn ? wood.en : wood.he}</h5>
-                                    {woodPrices.map((p) => (
-                                        <div key={p.originalIdx} className="price-row-grid">
-                                            <div className="form-group" style={{ marginBottom: 0 }}>
-                                                <label style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{isEn ? 'SKU / מקט (Optional)' : 'מקט / SKU (אופציונלי)'}</label>
-                                                <input 
-                                                    type="text" 
-                                                    value={p.sku || ''} 
-                                                    onChange={(e) => handlePriceChange(p.originalIdx, 'sku', e.target.value)}
-                                                    placeholder={isEn ? 'e.g. TL-101' : 'למשל TL-101'}
-                                                />
-                                            </div>
-                                            <div className="form-group" style={{ marginBottom: 0 }}>
-                                                <label style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{isEn ? 'Size Label (Optional)' : 'תווית מידה (אופציונלי)'}</label>
-                                                <input 
-                                                    type="text" 
-                                                    value={p.size || ''} 
-                                                    onChange={(e) => handlePriceChange(p.originalIdx, 'size', e.target.value)}
-                                                    placeholder={isEn ? 'e.g. 12cm' : 'למשל 12 ס"מ'}
-                                                />
-                                            </div>
-                                            <div className="form-group" style={{ marginBottom: 0 }}>
-                                                <label style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{isEn ? 'Amount' : 'מחיר'}</label>
-                                                <input 
-                                                    type="number" 
-                                                    value={p.amount !== undefined && p.amount !== null ? p.amount : ''} 
-                                                    onChange={(e) => handlePriceChange(p.originalIdx, 'amount', e.target.value === '' ? 0 : +e.target.value)} 
-                                                />
-                                            </div>
-                                            <button 
-                                                type="button" 
-                                                onClick={() => removePriceVariant(p.originalIdx)} 
-                                                style={{ padding: '8px 12px', background: '#fff', color: '#ff4444', border: '1px solid #ff4444', borderRadius: '4px', cursor: 'pointer' }}
-                                                title={isEn ? 'Remove Variant' : 'הסר גרסה'}
-                                            >
-                                                ✕
-                                            </button>
-                                        </div>
-                                    ))}
-                                    <button 
-                                        type="button" 
-                                        onClick={() => addPriceVariant(wood)} 
-                                        style={{ background: 'none', border: '1px dashed #ccc', color: '#666', padding: '8px', borderRadius: '4px', cursor: 'pointer', width: '100%', fontSize: '0.85rem' }}
-                                    >
-                                        + {isEn ? 'Add another size for ' : 'הוסף מידה נוספת ל-'}{isEn ? wood.en : wood.he}
-                                    </button>
-                                </div>
-                            )
-                        })}
+                    <ProductPriceEditor
+                        prices={(formData.price || []) as ProductPrice[]}
+                        availableWoodOptions={getAvailablePriceOptions()}
+                        isEn={isEn}
+                        onToggleWoodPrice={toggleWoodPrice}
+                        onPriceChange={handlePriceChange}
+                        onAddVariant={addPriceVariant}
+                        onRemoveVariant={removePriceVariant}
+                    />
 
-                        {_getAvailablePriceOptions().length === 0 && (
-                            <p style={{ fontSize: '0.8rem', color: '#888', fontStyle: 'italic' }}>
-                                {isEn ? 'Select wood types in "Wood Types" section first' : 'בחר סוגי עץ במקטע "סוגי עץ" תחילה'}
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="form-section socket-type-form-section">
-                        <div className="section-header-with-action">
-                            <h4>{isEn ? 'Socket Type' : 'סוג הברגה/נורה'}</h4>
-                            <button
-                                type="button"
-                                className={`btn-manage-options ${showManageOptions ? 'active' : ''}`}
-                                onClick={() => setShowManageOptions(prev => !prev)}
-                            >
-                                {showManageOptions 
-                                    ? (isEn ? 'Done Managing' : 'סיום ניהול אפשרויות') 
-                                    : (isEn ? 'Manage Options' : 'ניהול אפשרויות')}
-                            </button>
-                        </div>
-
-                        {showManageOptions && (
-                            <div className="socket-options-manager">
-                                <p className="socket-options-manager-help">
-                                    {isEn 
-                                        ? 'Click × on any option to remove it from future selections. Existing products will retain their values.' 
-                                        : 'לחץ על × כדי להסיר אפשרות מרשימת הבחירה בעתיד. מוצרים קיימים ישמרו על ערכיהם.'}
-                                </p>
-                                
-                                <div className="socket-options-chips-section">
-                                    <h5>{isEn ? 'Available Screw Types' : 'סוגי הברגה קיימים'}:</h5>
-                                    <div className="socket-chips-list">
-                                        {socketOptions.screwTypes.map(type => (
-                                            <span key={type} className="socket-chip">
-                                                <span>{type}</span>
-                                                <button
-                                                    type="button"
-                                                    className="chip-remove-btn"
-                                                    onClick={() => onRemoveOption('screw', type)}
-                                                    title={isEn ? `Remove "${type}"` : `הסר את "${type}"`}
-                                                >
-                                                    ×
-                                                </button>
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="socket-options-chips-section">
-                                    <h5>{isEn ? 'Available Light Types' : 'סוגי נורה קיימים'}:</h5>
-                                    <div className="socket-chips-list">
-                                        {socketOptions.lightTypes.map(type => (
-                                            <span key={type} className="socket-chip">
-                                                <span>{type}</span>
-                                                <button
-                                                    type="button"
-                                                    className="chip-remove-btn"
-                                                    onClick={() => onRemoveOption('light', type)}
-                                                    title={isEn ? `Remove "${type}"` : `הסר את "${type}"`}
-                                                >
-                                                    ×
-                                                </button>
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="stacked-fields">
-                            <div className="form-group">
-                                <label>{isEn ? 'Screw Type' : 'סוג הברגה'}</label>
-                                <select 
-                                    value={inlineAddType === 'screw' ? '__ADD_NEW__' : (formData.socketType?.screwType || '')} 
-                                    onChange={(e) => {
-                                        if (e.target.value === '__ADD_NEW__') {
-                                            setInlineAddType('screw')
-                                            setNewOptionValue('')
-                                            setOptionError(null)
-                                        } else {
-                                            setInlineAddType(null)
-                                            setOptionError(null)
-                                            handleSocketChange('screwType', e.target.value)
-                                        }
-                                    }}
-                                >
-                                    <option value="">{isEn ? '-- Select --' : '-- בחר --'}</option>
-                                    {formData.socketType?.screwType && !socketOptions.screwTypes.includes(formData.socketType.screwType) && (
-                                        <option value={formData.socketType.screwType}>
-                                            {formData.socketType.screwType} {isEn ? '(Saved)' : '(שמור)'}
-                                        </option>
-                                    )}
-                                    {socketOptions.screwTypes.map(type => (
-                                        <option key={type} value={type}>{type}</option>
-                                    ))}
-                                    <option value="__ADD_NEW__">
-                                        {isEn ? '+ Add new screw type...' : '+ הוסף סוג הברגה חדש...'}
-                                    </option>
-                                </select>
-
-                                {inlineAddType === 'screw' && (
-                                    <div className="socket-option-inline-add">
-                                        <input
-                                            type="text"
-                                            placeholder={isEn ? "e.g. E14, GU5.3" : 'לדוגמה: E14, GU5.3'}
-                                            value={newOptionValue}
-                                            onChange={(e) => setNewOptionValue(e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault()
-                                                    onSaveNewOption('screw')
-                                                } else if (e.key === 'Escape') {
-                                                    setInlineAddType(null)
-                                                    setOptionError(null)
-                                                }
-                                            }}
-                                            autoFocus
-                                        />
-                                        <div className="inline-add-actions">
-                                            <button
-                                                type="button"
-                                                className="btn-save-option"
-                                                disabled={isAddingOption || !newOptionValue.trim()}
-                                                onClick={() => onSaveNewOption('screw')}
-                                            >
-                                                {isAddingOption ? (isEn ? 'Adding...' : 'מוסיף...') : (isEn ? 'Add' : 'הוסף')}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="btn-cancel-option"
-                                                onClick={() => {
-                                                    setInlineAddType(null)
-                                                    setNewOptionValue('')
-                                                    setOptionError(null)
-                                                }}
-                                            >
-                                                {isEn ? 'Cancel' : 'ביטול'}
-                                            </button>
-                                        </div>
-                                        {optionError?.category === 'screw' && (
-                                            <span className="socket-option-error">{optionError.message}</span>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="form-group">
-                                <label>{isEn ? 'Light Type' : 'סוג נורה'}</label>
-                                <select 
-                                    value={inlineAddType === 'light' ? '__ADD_NEW__' : (formData.socketType?.lightType || '')} 
-                                    onChange={(e) => {
-                                        if (e.target.value === '__ADD_NEW__') {
-                                            setInlineAddType('light')
-                                            setNewOptionValue('')
-                                            setOptionError(null)
-                                        } else {
-                                            setInlineAddType(null)
-                                            setOptionError(null)
-                                            handleSocketChange('lightType', e.target.value)
-                                        }
-                                    }}
-                                >
-                                    <option value="">{isEn ? '-- Select --' : '-- בחר --'}</option>
-                                    {formData.socketType?.lightType && !socketOptions.lightTypes.includes(formData.socketType.lightType) && (
-                                        <option value={formData.socketType.lightType}>
-                                            {formData.socketType.lightType} {isEn ? '(Saved)' : '(שמור)'}
-                                        </option>
-                                    )}
-                                    {socketOptions.lightTypes.map(type => (
-                                        <option key={type} value={type}>{type}</option>
-                                    ))}
-                                    <option value="__ADD_NEW__">
-                                        {isEn ? '+ Add new light type...' : '+ הוסף סוג נורה חדש...'}
-                                    </option>
-                                </select>
-
-                                {inlineAddType === 'light' && (
-                                    <div className="socket-option-inline-add">
-                                        <input
-                                            type="text"
-                                            placeholder={isEn ? "e.g. LED - Max 12W" : 'לדוגמה: LED - Max 12W'}
-                                            value={newOptionValue}
-                                            onChange={(e) => setNewOptionValue(e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault()
-                                                    onSaveNewOption('light')
-                                                } else if (e.key === 'Escape') {
-                                                    setInlineAddType(null)
-                                                    setOptionError(null)
-                                                }
-                                            }}
-                                            autoFocus
-                                        />
-                                        <div className="inline-add-actions">
-                                            <button
-                                                type="button"
-                                                className="btn-save-option"
-                                                disabled={isAddingOption || !newOptionValue.trim()}
-                                                onClick={() => onSaveNewOption('light')}
-                                            >
-                                                {isAddingOption ? (isEn ? 'Adding...' : 'מוסיף...') : (isEn ? 'Add' : 'הוסף')}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="btn-cancel-option"
-                                                onClick={() => {
-                                                    setInlineAddType(null)
-                                                    setNewOptionValue('')
-                                                    setOptionError(null)
-                                                }}
-                                            >
-                                                {isEn ? 'Cancel' : 'ביטול'}
-                                            </button>
-                                        </div>
-                                        {optionError?.category === 'light' && (
-                                            <span className="socket-option-error">{optionError.message}</span>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+                    <SocketOptionsEditor
+                        screwType={formData.socketType?.screwType || ''}
+                        lightType={formData.socketType?.lightType || ''}
+                        isEn={isEn}
+                        onSocketChange={handleSocketChange}
+                    />
 
                     <div className="form-section">
                         <h4>{isEn ? 'Sizes' : 'מידות'}</h4>
@@ -858,28 +361,24 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                                     <input type="number" step="any" value={s.upTo || ''} onChange={(e) => handleSizeChange(index, 'upTo', +e.target.value)} />
                                 </div>
                                 <div className="size-row-grid">
-                                    <div className="form-group">
-                                        <label>{isEn ? 'Diameter' : 'קוטר'}</label>
-                                        <input type="number" step="any" value={s.diameter || ''} onChange={(e) => handleSizeChange(index, 'diameter', +e.target.value)} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>{isEn ? 'Length' : 'אורך'}</label>
-                                        <input type="number" step="any" value={s.length || ''} onChange={(e) => handleSizeChange(index, 'length', +e.target.value)} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>{isEn ? 'Width' : 'רוחב'}</label>
-                                        <input type="number" step="any" value={s.width || ''} onChange={(e) => handleSizeChange(index, 'width', +e.target.value)} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>{isEn ? 'Depth' : 'עומק'}</label>
-                                        <input type="number" step="any" value={s.depth || ''} onChange={(e) => handleSizeChange(index, 'depth', +e.target.value)} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>{isEn ? 'Height' : 'גובה'}</label>
-                                        <input type="number" step="any" value={s.height || ''} onChange={(e) => handleSizeChange(index, 'height', +e.target.value)} />
-                                    </div>
+                                    {(['diameter', 'length', 'width', 'depth', 'height'] as const).map(dim => (
+                                        <div key={dim} className="form-group">
+                                            <label>
+                                                {isEn
+                                                    ? dim.charAt(0).toUpperCase() + dim.slice(1)
+                                                    : { diameter: 'קוטר', length: 'אורך', width: 'רוחב', depth: 'עומק', height: 'גובה' }[dim]}
+                                            </label>
+                                            <input type="number" step="any" value={s[dim] || ''} onChange={(e) => handleSizeChange(index, dim, +e.target.value)} />
+                                        </div>
+                                    ))}
                                 </div>
-                                <button type="button" onClick={() => removeSize(index)} style={{ background: '#ff4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '5px 15px', width: '100%', marginTop: '10px' }}>{isEn ? 'Remove Size' : 'הסר מידה'}</button>
+                                <button
+                                    type="button"
+                                    onClick={() => removeSize(index)}
+                                    style={{ background: '#ff4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '5px 15px', width: '100%', marginTop: '10px' }}
+                                >
+                                    {isEn ? 'Remove Size' : 'הסר מידה'}
+                                </button>
                             </div>
                         ))}
                         <button type="button" onClick={addSize} className="btn-add-secondary">+ Add Size</button>
@@ -891,96 +390,20 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                     {renderSelectionList('material', isEn ? 'Materials' : 'חומרים', PRODUCT_OPTIONS.MATERIALS as unknown as hebrewEnglishObj[])}
                     {renderSelectionList('woodType', isEn ? 'Wood Types' : 'סוגי עץ', PRODUCT_OPTIONS.WOOD_TYPES as unknown as hebrewEnglishObj[])}
 
-                    <div className="image-upload-section" style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '5px', marginBottom: '20px' }}>
-                        <h4>{isEn ? 'Product Images' : 'תמונות מוצר'}</h4>
-                        
-                        <div className="image-upload-flex">
-                            <div className="form-group" style={{ flex: 1 }}>
-                                <label>{isEn ? 'Type' : 'סוג'}</label>
-                                <select 
-                                    value={uploadConfig.type} 
-                                    onChange={(e) => setUploadConfig(prev => ({ ...prev, type: e.target.value as 'C' | 'H' | 'S' }))}
-                                >
-                                    <option value="C">{isEn ? 'Card' : 'כרטיס (C)'}</option>
-                                    <option value="H">{isEn ? 'Hero' : 'ראשי (H)'}</option>
-                                    <option value="S">{isEn ? 'Scratch' : 'שרטוט (S)'}</option>
-                                </select>
-                            </div>
-                            <div className="form-group" style={{ flex: 1 }}>
-                                <label>{isEn ? 'Category' : 'קטגוריה'}</label>
-                                <select 
-                                    value={uploadConfig.category} 
-                                    onChange={(e) => setUploadConfig(prev => ({ ...prev, category: e.target.value as 'P' | 'C' | 'W' }))}
-                                >
-                                    <option value="P">{isEn ? 'Pendant' : 'תלייה (P)'}</option>
-                                    <option value="C">{isEn ? 'Ceiling' : 'צמוד תקרה (C)'}</option>
-                                    <option value="W">{isEn ? 'Wall' : 'קיר (W)'}</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="form-group">
-                            <label>{isEn ? 'Upload New Image' : 'העלה תמונה חדשה'}</label>
-                            <input 
-                                type="file" 
-                                accept="image/*" 
-                                onChange={onUploadImg} 
-                                disabled={isUploading}
-                            />
-                            {isUploading && <span style={{ fontSize: '12px', color: '#666' }}>{isEn ? 'Uploading...' : 'מעלה...'}</span>}
-                        </div>
-
-                        <div className="images-preview" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px', maxHeight: '200px', overflowY: 'auto' }}>
-                            {formData.imgsUrl?.map(url => {
-                                if (!url) return null
-                                const clean = url.replace(/[\r\n\s]+/g, '').replace(/\.[^/.]+$/, "").replace(/^4G8A/i, "")
-                                const upper = clean.toUpperCase()
-                                const isDirectUpload = upper.startsWith('C_') || upper.startsWith('H_') || upper.startsWith('S_')
-                                return (
-                                    <div key={url} className="img-preview-item" style={{ position: 'relative' }}>
-                                        <img 
-                                            src={isDirectUpload 
-                                                ? `https://res.cloudinary.com/dhixlriwm/image/upload/${clean}.webp`
-                                                : `https://res.cloudinary.com/dhixlriwm/image/upload/4G8A${clean}.webp`
-                                            } 
-                                            alt="preview" 
-                                            style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
-                                        />
-                                        {url.startsWith('S_') && (
-                                            <span style={{ 
-                                                position: 'absolute', 
-                                                bottom: '2px', 
-                                                left: '2px', 
-                                                background: 'rgba(0,0,0,0.7)', 
-                                                color: 'white', 
-                                                fontSize: '9px', 
-                                                padding: '1px 3px', 
-                                                borderRadius: '2px',
-                                                pointerEvents: 'none'
-                                            }}>
-                                                {isEn ? 'Scratch' : 'שרטוט'}
-                                            </span>
-                                        )}
-                                        <button 
-                                            type="button" 
-                                            onClick={() => onRemoveImg(url)}
-                                            style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '18px', height: '18px', cursor: 'pointer', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                        >
-                                            X
-                                        </button>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
+                    <ProductImageUploader
+                        imgsUrl={formData.imgsUrl || []}
+                        isEn={isEn}
+                        onAddImage={(publicId) => setFormData(prev => ({ ...prev, imgsUrl: [...(prev.imgsUrl || []), publicId] }))}
+                        onRemoveImage={(url) => setFormData(prev => ({ ...prev, imgsUrl: prev.imgsUrl?.filter(item => item !== url) }))}
+                    />
 
                     <div style={{ display: 'flex', gap: '24px', alignItems: 'center', margin: '15px 0', flexWrap: 'wrap' }}>
                         <div className="form-group checkbox" style={{ margin: 0 }}>
                             <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-                                <input 
-                                    type="checkbox" 
-                                    checked={formData.isActive !== false} 
-                                    onChange={(e) => handleChange('isActive', e.target.checked)} 
+                                <input
+                                    type="checkbox"
+                                    checked={formData.isActive !== false}
+                                    onChange={(e) => handleChange('isActive', e.target.checked)}
                                     style={{ width: '18px', height: '18px' }}
                                 />
                                 {isEn ? 'Active' : 'פעיל'}
@@ -988,10 +411,10 @@ export const AdminProductEdit: React.FC<Props> = ({ product, onSave, onCancel })
                         </div>
                         <div className="form-group checkbox" style={{ margin: 0 }}>
                             <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-                                <input 
-                                    type="checkbox" 
-                                    checked={!!formData.isNew} 
-                                    onChange={(e) => handleChange('isNew', e.target.checked)} 
+                                <input
+                                    type="checkbox"
+                                    checked={!!formData.isNew}
+                                    onChange={(e) => handleChange('isNew', e.target.checked)}
                                     style={{ width: '18px', height: '18px' }}
                                 />
                                 {isEn ? 'New Product (חדש / New)' : 'מוצר חדש (חדש / New)'}

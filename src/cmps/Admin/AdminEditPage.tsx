@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useSiteMediaDraft } from '../../context/SiteMediaDraftContext'
+import { useSiteMediaDraft } from '../../hooks/useSiteMediaDraft'
 import { useLanguage } from '../../hooks/useLanguage'
 import { AdminTopBar } from './AdminTopBar'
 import { AdminSimulationView } from './AdminSimulationView'
@@ -36,7 +36,7 @@ export const AdminEditPage: React.FC = () => {
         if (activeSubTab === 'history') {
             loadHistory()
         }
-    }, [activeSubTab, historySlotFilter, historyActionFilter])
+    }, [activeSubTab, loadHistory])
 
     if (isLoading) {
         return (
@@ -218,155 +218,61 @@ export const AdminEditPage: React.FC = () => {
                         </div>
 
                         <div className="cms-gallery-editor-grid">
-                            {/* Slot 1: Wide */}
-                            <div className={`cms-slot-card ${isSlotModified('slot_1') ? 'modified' : ''}`}>
-                                <div className="cms-slot-header">
-                                    <span className="cms-slot-title">{isEn ? draftConfig.gallery.slot_1.title.en : draftConfig.gallery.slot_1.title.he}</span>
-                                    <span className="cms-slot-ratio-badge">Wide (2.11:1) • 1724×816</span>
-                                </div>
-                                <div className="cms-slot-preview-box wide">
-                                    <img
-                                        src={draftConfig.gallery.slot_1.url}
-                                        alt="Slot 1"
-                                        style={{
-                                            objectPosition: `${draftConfig.gallery.slot_1.objectPosition.x}% ${draftConfig.gallery.slot_1.objectPosition.y}%`
-                                        }}
-                                    />
-                                </div>
-                                <div className="cms-slot-actions">
-                                    <button type="button" className="btn-slot-replace" onClick={() => onOpenReplaceModal('slot_1')}>
-                                        {isEn ? 'Replace / Focus' : 'החלף / מיקוד'}
-                                    </button>
-                                    {isSlotModified('slot_1') && (
-                                        <button type="button" className="btn-slot-undo" onClick={() => onUndoSlot('slot_1')}>
-                                            {isEn ? 'Undo' : 'בטל'}
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
+                            {([
+                                { type: 'slot', id: 'slot_1', alt: 'Slot 1', variant: 'wide', badge: 'Wide (2.11:1) • 1724×816' },
+                                { type: 'about' },
+                                { type: 'slot', id: 'slot_3', alt: 'Slot 3', variant: 'square', badge: 'Square (1:1) • 816×816' },
+                                { type: 'slot', id: 'slot_4', alt: 'Slot 4', variant: 'wide', badge: 'Wide (2.11:1) • 1724×816' },
+                                { type: 'slot', id: 'slot_5', alt: 'Slot 5', variant: 'wide', badge: 'Wide (2.11:1) • 1724×816' },
+                                { type: 'slot', id: 'slot_6', alt: 'Slot 6', variant: 'square', badge: 'Square (1:1) • 816×816' }
+                            ] as const).map(entry => {
+                                if (entry.type === 'about') {
+                                    return (
+                                        <div key="slot_2" className="cms-slot-card">
+                                            <div className="cms-slot-header">
+                                                <span className="cms-slot-title">{isEn ? 'Slot 2 (Fixed Design Element)' : 'משבצת 2 (אלמנט עיצוב קבוע)'}</span>
+                                                <span className="cms-locked-pill">🔒 {isEn ? 'Fixed / Non-editable' : 'קבוע / לא לעריכה'}</span>
+                                            </div>
+                                            <div className="cms-slot-about-card">
+                                                <h4>{isEn ? <>Second generation in lighting.<br />Choosing art.</> : <>דור שני לתאורה.<br />בחירה באמנות.</>}</h4>
+                                                <span style={{ fontSize: '0.8rem', color: '#bbb' }}>{isEn ? 'About Me Link Card' : 'כרטיסיית אודותיי'}</span>
+                                            </div>
+                                            <div style={{ fontSize: '0.8rem', color: '#777' }}>
+                                                {isEn ? 'Preserves signature Figma brand layout.' : 'שומר על יציבות המבנה המקורי.'}
+                                            </div>
+                                        </div>
+                                    )
+                                }
 
-                            {/* Slot 2: Fixed About Card */}
-                            <div className="cms-slot-card">
-                                <div className="cms-slot-header">
-                                    <span className="cms-slot-title">{isEn ? 'Slot 2 (Fixed Design Element)' : 'משבצת 2 (אלמנט עיצוב קבוע)'}</span>
-                                    <span className="cms-locked-pill">🔒 {isEn ? 'Fixed / Non-editable' : 'קבוע / לא לעריכה'}</span>
-                                </div>
-                                <div className="cms-slot-about-card">
-                                    <h4>{isEn ? <>Second generation in lighting.<br />Choosing art.</> : <>דור שני לתאורה.<br />בחירה באמנות.</>}</h4>
-                                    <span style={{ fontSize: '0.8rem', color: '#bbb' }}>{isEn ? 'About Me Link Card' : 'כרטיסיית אודותיי'}</span>
-                                </div>
-                                <div style={{ fontSize: '0.8rem', color: '#777' }}>
-                                    {isEn ? 'Preserves signature Figma brand layout.' : 'שומר על יציבות המבנה המקורי.'}
-                                </div>
-                            </div>
-
-                            {/* Slot 3: Square */}
-                            <div className={`cms-slot-card ${isSlotModified('slot_3') ? 'modified' : ''}`}>
-                                <div className="cms-slot-header">
-                                    <span className="cms-slot-title">{isEn ? draftConfig.gallery.slot_3.title.en : draftConfig.gallery.slot_3.title.he}</span>
-                                    <span className="cms-slot-ratio-badge">Square (1:1) • 816×816</span>
-                                </div>
-                                <div className="cms-slot-preview-box square">
-                                    <img
-                                        src={draftConfig.gallery.slot_3.url}
-                                        alt="Slot 3"
-                                        style={{
-                                            objectPosition: `${draftConfig.gallery.slot_3.objectPosition.x}% ${draftConfig.gallery.slot_3.objectPosition.y}%`
-                                        }}
-                                    />
-                                </div>
-                                <div className="cms-slot-actions">
-                                    <button type="button" className="btn-slot-replace" onClick={() => onOpenReplaceModal('slot_3')}>
-                                        {isEn ? 'Replace / Focus' : 'החלף / מיקוד'}
-                                    </button>
-                                    {isSlotModified('slot_3') && (
-                                        <button type="button" className="btn-slot-undo" onClick={() => onUndoSlot('slot_3')}>
-                                            {isEn ? 'Undo' : 'בטל'}
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Slot 4: Wide */}
-                            <div className={`cms-slot-card ${isSlotModified('slot_4') ? 'modified' : ''}`}>
-                                <div className="cms-slot-header">
-                                    <span className="cms-slot-title">{isEn ? draftConfig.gallery.slot_4.title.en : draftConfig.gallery.slot_4.title.he}</span>
-                                    <span className="cms-slot-ratio-badge">Wide (2.11:1) • 1724×816</span>
-                                </div>
-                                <div className="cms-slot-preview-box wide">
-                                    <img
-                                        src={draftConfig.gallery.slot_4.url}
-                                        alt="Slot 4"
-                                        style={{
-                                            objectPosition: `${draftConfig.gallery.slot_4.objectPosition.x}% ${draftConfig.gallery.slot_4.objectPosition.y}%`
-                                        }}
-                                    />
-                                </div>
-                                <div className="cms-slot-actions">
-                                    <button type="button" className="btn-slot-replace" onClick={() => onOpenReplaceModal('slot_4')}>
-                                        {isEn ? 'Replace / Focus' : 'החלף / מיקוד'}
-                                    </button>
-                                    {isSlotModified('slot_4') && (
-                                        <button type="button" className="btn-slot-undo" onClick={() => onUndoSlot('slot_4')}>
-                                            {isEn ? 'Undo' : 'בטל'}
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Slot 5: Wide */}
-                            <div className={`cms-slot-card ${isSlotModified('slot_5') ? 'modified' : ''}`}>
-                                <div className="cms-slot-header">
-                                    <span className="cms-slot-title">{isEn ? draftConfig.gallery.slot_5.title.en : draftConfig.gallery.slot_5.title.he}</span>
-                                    <span className="cms-slot-ratio-badge">Wide (2.11:1) • 1724×816</span>
-                                </div>
-                                <div className="cms-slot-preview-box wide">
-                                    <img
-                                        src={draftConfig.gallery.slot_5.url}
-                                        alt="Slot 5"
-                                        style={{
-                                            objectPosition: `${draftConfig.gallery.slot_5.objectPosition.x}% ${draftConfig.gallery.slot_5.objectPosition.y}%`
-                                        }}
-                                    />
-                                </div>
-                                <div className="cms-slot-actions">
-                                    <button type="button" className="btn-slot-replace" onClick={() => onOpenReplaceModal('slot_5')}>
-                                        {isEn ? 'Replace / Focus' : 'החלף / מיקוד'}
-                                    </button>
-                                    {isSlotModified('slot_5') && (
-                                        <button type="button" className="btn-slot-undo" onClick={() => onUndoSlot('slot_5')}>
-                                            {isEn ? 'Undo' : 'בטל'}
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Slot 6: Square */}
-                            <div className={`cms-slot-card ${isSlotModified('slot_6') ? 'modified' : ''}`}>
-                                <div className="cms-slot-header">
-                                    <span className="cms-slot-title">{isEn ? draftConfig.gallery.slot_6.title.en : draftConfig.gallery.slot_6.title.he}</span>
-                                    <span className="cms-slot-ratio-badge">Square (1:1) • 816×816</span>
-                                </div>
-                                <div className="cms-slot-preview-box square">
-                                    <img
-                                        src={draftConfig.gallery.slot_6.url}
-                                        alt="Slot 6"
-                                        style={{
-                                            objectPosition: `${draftConfig.gallery.slot_6.objectPosition.x}% ${draftConfig.gallery.slot_6.objectPosition.y}%`
-                                        }}
-                                    />
-                                </div>
-                                <div className="cms-slot-actions">
-                                    <button type="button" className="btn-slot-replace" onClick={() => onOpenReplaceModal('slot_6')}>
-                                        {isEn ? 'Replace / Focus' : 'החלף / מיקוד'}
-                                    </button>
-                                    {isSlotModified('slot_6') && (
-                                        <button type="button" className="btn-slot-undo" onClick={() => onUndoSlot('slot_6')}>
-                                            {isEn ? 'Undo' : 'בטל'}
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
+                                const slot = draftConfig.gallery[entry.id]
+                                return (
+                                    <div key={entry.id} className={`cms-slot-card ${isSlotModified(entry.id) ? 'modified' : ''}`}>
+                                        <div className="cms-slot-header">
+                                            <span className="cms-slot-title">{isEn ? slot.title.en : slot.title.he}</span>
+                                            <span className="cms-slot-ratio-badge">{entry.badge}</span>
+                                        </div>
+                                        <div className={`cms-slot-preview-box ${entry.variant}`}>
+                                            <img
+                                                src={slot.url}
+                                                alt={entry.alt}
+                                                style={{
+                                                    objectPosition: `${slot.objectPosition.x}% ${slot.objectPosition.y}%`
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="cms-slot-actions">
+                                            <button type="button" className="btn-slot-replace" onClick={() => onOpenReplaceModal(entry.id)}>
+                                                {isEn ? 'Replace / Focus' : 'החלף / מיקוד'}
+                                            </button>
+                                            {isSlotModified(entry.id) && (
+                                                <button type="button" className="btn-slot-undo" onClick={() => onUndoSlot(entry.id)}>
+                                                    {isEn ? 'Undo' : 'בטל'}
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                )
+                            })}
                         </div>
                     </div>
                 </div>

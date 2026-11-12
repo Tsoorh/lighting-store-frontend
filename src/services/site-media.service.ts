@@ -103,6 +103,6 @@ async function getMediaLog(params: { slotId?: string; actionType?: string; limit
 }
 
 async function auditOrphans() {
-    return httpService.get<any>('site-media/orphan-audit')
+    return httpService.get<Record<string, unknown>>('site-media/orphan-audit')
 }
 

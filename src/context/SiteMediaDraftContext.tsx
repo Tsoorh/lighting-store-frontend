@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useMemo } from 'react'
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import {
     type SiteMediaConfig,
     DEFAULT_SITE_MEDIA,
@@ -10,57 +10,7 @@ import {
 import { siteMediaService } from '../services/site-media.service'
 import { uploadService, type CloudinaryUploadResult } from '../services/upload.service'
 import { useLanguage } from '../hooks/useLanguage'
-
-export interface SiteMediaDraftContextType {
-    publishedConfig: SiteMediaConfig
-    draftConfig: SiteMediaConfig
-    isLoading: boolean
-    isDirty: boolean
-    isPublishing: boolean
-    statusMessage: { type: 'success' | 'error' | 'info'; text: string } | null
-    setStatusMessage: (msg: { type: 'success' | 'error' | 'info'; text: string } | null) => void
-    isSlotModified: (slotId: CanonicalSlotId | 'hero_video' | 'full_width_banner') => boolean
-    onOpenReplaceModal: (slotId: CanonicalSlotId | 'hero_video' | 'full_width_banner') => void
-    onCloseModal: () => void
-    onUndoSlot: (slotId: CanonicalSlotId | 'hero_video' | 'full_width_banner') => void
-    onDiscardAll: () => void
-    onPublish: () => Promise<void>
-    // Banner handlers
-    onToggleBannerEnabled: (enabled: boolean) => void
-    onMoveBanner: (direction: 'up' | 'down') => void
-    onUpdateBannerField: (field: 'linkUrl' | 'altEn' | 'altHe', val: string) => void
-    // Modal states
-    activeModalSlot: CanonicalSlotId | 'hero_video' | 'full_width_banner' | null
-    tempPosition: ObjectPosition
-    setTempPosition: React.Dispatch<React.SetStateAction<ObjectPosition>>
-    uploadProgress: number | null
-    aspectRatioWarning: string | null
-    previewFileUrl: string | null
-    onFileSelected: (e: React.ChangeEvent<HTMLInputElement>) => void
-    onConfirmUploadAndStaging: () => Promise<void>
-    // History
-    historyItems: SiteMediaLogEntry[]
-    historyTotal: number
-    historySlotFilter: string
-    setHistorySlotFilter: (val: string) => void
-    historyActionFilter: string
-    setHistoryActionFilter: (val: string) => void
-    loadHistory: () => Promise<void>
-    onRestoreToDraft: (logEntry: SiteMediaLogEntry) => void
-    // Simulation sync
-    iframeRef: React.RefObject<HTMLIFrameElement>
-    syncDraftToIframe: () => void
-}
-
-const SiteMediaDraftContext = createContext<SiteMediaDraftContextType | null>(null)
-
-export const useSiteMediaDraft = () => {
-    const context = useContext(SiteMediaDraftContext)
-    if (!context) {
-        throw new Error('useSiteMediaDraft must be used within a SiteMediaDraftProvider')
-    }
-    return context
-}
+import { SiteMediaDraftContext, type SiteMediaDraftContextType } from './site-media-draft'
 
 export const SiteMediaDraftProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { language } = useLanguage()
@@ -109,7 +59,7 @@ export const SiteMediaDraftProvider: React.FC<{ children: React.ReactNode }> = (
         loadConfig()
     }, [isEn])
 
-    async function loadHistory() {
+    const loadHistory = useCallback(async () => {
         try {
             const res = await siteMediaService.getMediaLog({
                 slotId: historySlotFilter,
@@ -121,7 +71,7 @@ export const SiteMediaDraftProvider: React.FC<{ children: React.ReactNode }> = (
         } catch (err) {
             console.error('Failed to load history logs', err)
         }
-    }
+    }, [historySlotFilter, historyActionFilter])
 
     // Determine if draft has unsaved differences
     const isDirty = useMemo(() => {
@@ -152,18 +102,18 @@ export const SiteMediaDraftProvider: React.FC<{ children: React.ReactNode }> = (
     }, [isDirty])
 
     // Synchronize draft state to simulation iframe
-    const syncDraftToIframe = () => {
+    const syncDraftToIframe = useCallback(() => {
         if (iframeRef.current && iframeRef.current.contentWindow) {
             iframeRef.current.contentWindow.postMessage(
                 { type: 'TL_PREVIEW_DRAFT_UPDATE', payload: draftConfig },
                 window.location.origin
             )
         }
-    }
+    }, [draftConfig])
 
     useEffect(() => {
         syncDraftToIframe()
-    }, [draftConfig])
+    }, [syncDraftToIframe])
 
     // Handle iframe ready message
     useEffect(() => {
@@ -175,7 +125,7 @@ export const SiteMediaDraftProvider: React.FC<{ children: React.ReactNode }> = (
         }
         window.addEventListener('message', handleFrameMessage)
         return () => window.removeEventListener('message', handleFrameMessage)
-    }, [draftConfig])
+    }, [syncDraftToIframe])
 
     // Open file selection / replace modal
     function onOpenReplaceModal(slotId: CanonicalSlotId | 'hero_video' | 'full_width_banner') {
@@ -253,7 +203,7 @@ export const SiteMediaDraftProvider: React.FC<{ children: React.ReactNode }> = (
                     uploadRes = await uploadService.uploadDirectWithSignature(pendingFile, sig, (pct) => {
                         setUploadProgress(Math.min(95, 30 + Math.round(pct * 0.65)))
                     })
-                } catch (sigErr: any) {
+                } catch (sigErr: unknown) {
                     console.warn('Backend upload signature endpoint unavailable, using direct Cloudinary upload:', sigErr)
                     try {
                         setUploadProgress(30)
@@ -265,7 +215,7 @@ export const SiteMediaDraftProvider: React.FC<{ children: React.ReactNode }> = (
                         uploadRes = await uploadService.uploadUnsignedDirect(pendingFile, publicId, (pct) => {
                             setUploadProgress(Math.min(95, 30 + Math.round(pct * 0.65)))
                         })
-                    } catch (directErr: any) {
+                    } catch (directErr: unknown) {
                         console.warn('Direct Cloudinary upload failed, staging locally in draft with blob URL:', directErr)
                         const localBlobUrl = URL.createObjectURL(pendingFile)
                         uploadRes = {
@@ -318,9 +268,10 @@ export const SiteMediaDraftProvider: React.FC<{ children: React.ReactNode }> = (
                 text: isEn ? 'Change staged in draft. Review in simulation before publishing.' : 'השינוי עודכן בטיוטה. מומלץ לבדוק בהדמיה לפני פרסום.'
             })
             onCloseModal()
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const errMsg = err instanceof Error ? err.message : String(err)
             console.error('Failed to upload/stage media', err)
-            alert(isEn ? `Upload failed: ${err.message}` : `ההעלאה נכשלה: ${err.message}`)
+            alert(isEn ? `Upload failed: ${errMsg}` : `ההעלאה נכשלה: ${errMsg}`)
         } finally {
             setUploadProgress(null)
         }
@@ -420,16 +371,21 @@ export const SiteMediaDraftProvider: React.FC<{ children: React.ReactNode }> = (
                     ? `Successfully published changes to live site! (Version ${res.version})`
                     : `השינויים פורסמו בהצלחה באתר החי! (גרסה ${res.version})`
             })
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to publish site media', err)
-            if (err?.response?.status === 409 || err?.isConflict) {
+            const typedErr = err as {
+                isConflict?: boolean
+                message?: string
+                response?: { status?: number; data?: string | { error?: string } }
+            }
+            if (typedErr?.response?.status === 409 || typedErr?.isConflict) {
                 setStatusMessage({
                     type: 'error',
                     text: isEn
                         ? 'Conflict: Another administrator has published changes. Please refresh to load latest version.'
                         : 'התנגשות גרסאות: מנהל אחר פרסם שינויים במקביל. יש לרענן את העמוד לקבלת הגרסה העדכנית.'
                 })
-            } else if (err?.response?.status === 404 || err?.message?.includes('404')) {
+            } else if (typedErr?.response?.status === 404 || typedErr?.message?.includes('404')) {
                 try {
                     localStorage.setItem('tl_site_media_cache', JSON.stringify(draftConfig))
                 } catch (e) {
@@ -443,9 +399,9 @@ export const SiteMediaDraftProvider: React.FC<{ children: React.ReactNode }> = (
                         : 'השינויים נשמרו בדפדפן! שים לב: השרת החזיר 404 מכיוון שקוד ה-backend החדש עדיין לא נפרס ל-api.tiranlasry.com. יש לפרוס את ה-backend או להריץ שרת מקומי בפורט 3000.'
                 })
             } else {
-                const serverErrMsg = typeof err?.response?.data === 'string'
-                    ? err.response.data
-                    : err?.response?.data?.error || err?.message || ''
+                const serverErrMsg = typeof typedErr?.response?.data === 'string'
+                    ? typedErr.response.data
+                    : typedErr?.response?.data?.error || typedErr?.message || ''
                 setStatusMessage({
                     type: 'error',
                     text: isEn
