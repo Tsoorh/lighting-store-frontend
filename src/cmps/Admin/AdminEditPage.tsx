@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useSiteMediaDraft } from '../../hooks/useSiteMediaDraft'
 import { useLanguage } from '../../hooks/useLanguage'
+import { optionsService } from '../../services/options.service'
 import { AdminTopBar } from './AdminTopBar'
 import { AdminSimulationView } from './AdminSimulationView'
 import { AdminMediaModal } from './AdminMediaModal'
 import { AdminBannerSection } from './AdminBannerSection'
+import { AdminGalleryEditor } from './AdminGalleryEditor'
 import '../../assets/styles/cmps/AdminSiteDesign.css'
 
 export const AdminEditPage: React.FC = () => {
@@ -28,17 +31,24 @@ export const AdminEditPage: React.FC = () => {
         onRestoreToDraft
     } = useSiteMediaDraft()
 
-    // Page selector: 'home' is active now, expandable to other pages later
-    const [selectedPage, setSelectedPage] = useState<'home'>('home')
+    // Page selector: 'home' | 'gallery'
+    const [selectedPage, setSelectedPage] = useState<'home' | 'gallery'>('home')
     const [activeSubTab, setActiveSubTab] = useState<'editor' | 'simulation' | 'history'>('editor')
 
+    const { data: siteOptions } = useQuery({
+        queryKey: ['site-options'],
+        queryFn: () => optionsService.getSiteOptions(),
+        staleTime: 1000 * 60 * 5,
+    })
+    const isGalleryActive = siteOptions?.isGalleryActive === true
+
     useEffect(() => {
-        if (activeSubTab === 'history') {
+        if (selectedPage === 'home' && activeSubTab === 'history') {
             loadHistory()
         }
-    }, [activeSubTab, loadHistory])
+    }, [selectedPage, activeSubTab, loadHistory])
 
-    if (isLoading) {
+    if (selectedPage === 'home' && isLoading) {
         return (
             <div style={{ padding: '40px', textAlign: 'center' }}>
                 <p>{isEn ? 'Loading Page Editor...' : 'טוען עורך עמוד...'}</p>
@@ -50,7 +60,7 @@ export const AdminEditPage: React.FC = () => {
 
     return (
         <section className="admin-site-design" dir={isEn ? 'ltr' : 'rtl'}>
-            <AdminTopBar />
+            {selectedPage === 'home' && <AdminTopBar />}
 
             {/* Page Selection Bar */}
             <div style={{
@@ -90,39 +100,74 @@ export const AdminEditPage: React.FC = () => {
                     >
                         🏠 {isEn ? 'Home Page' : 'דף הבית'}
                     </button>
-                </div>
 
-                {/* Banner Status & Quick Add Button */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {isBannerOnPage ? (
-                        <span style={{
-                            fontSize: '0.82rem',
-                            fontWeight: 600,
-                            color: '#2e7d32',
-                            background: '#e8f5e9',
-                            border: '1px solid #a5d6a7',
-                            padding: '4px 10px',
-                            borderRadius: '16px',
+                    <button
+                        type="button"
+                        style={{
+                            padding: '6px 16px',
+                            borderRadius: '20px',
+                            border: selectedPage === 'gallery' ? '2px solid #000' : '1px solid #ddd',
+                            background: selectedPage === 'gallery' ? '#000' : '#fff',
+                            color: selectedPage === 'gallery' ? '#fff' : '#333',
+                            fontWeight: selectedPage === 'gallery' ? 700 : 500,
+                            cursor: 'pointer',
+                            fontSize: '0.9rem',
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '6px'
-                        }}>
-                            🖼️ {isEn ? 'Banner active on page' : 'באנר פעיל בעמוד'}
-                        </span>
-                    ) : (
-                        <button
-                            type="button"
-                            className="btn-add-banner-cta"
-                            style={{ padding: '6px 14px', fontSize: '0.85rem' }}
-                            onClick={() => {
-                                onToggleBannerEnabled(true)
-                                setActiveSubTab('editor')
-                            }}
-                        >
-                            + {isEn ? 'Add Banner to Page' : 'הוסף באנר לעמוד'}
-                        </button>
-                    )}
+                            gap: '8px',
+                            transition: 'all 0.2s'
+                        }}
+                        onClick={() => setSelectedPage('gallery')}
+                    >
+                        <span>🖼️ {isEn ? 'Gallery Page' : 'עמוד גלריה'}</span>
+                        {!isGalleryActive && (
+                            <span style={{
+                                fontSize: '0.72rem',
+                                padding: '2px 7px',
+                                borderRadius: '10px',
+                                background: selectedPage === 'gallery' ? '#ffe082' : '#fff3e0',
+                                color: '#795548',
+                                fontWeight: 700,
+                            }}>
+                                {isEn ? 'Hidden' : 'מוסתר'}
+                            </span>
+                        )}
+                    </button>
                 </div>
+
+                {/* Banner Status & Quick Add Button (Home Page only) */}
+                {selectedPage === 'home' && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        {isBannerOnPage ? (
+                            <span style={{
+                                fontSize: '0.82rem',
+                                fontWeight: 600,
+                                color: '#2e7d32',
+                                background: '#e8f5e9',
+                                border: '1px solid #a5d6a7',
+                                padding: '4px 10px',
+                                borderRadius: '16px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px'
+                            }}>
+                                🖼️ {isEn ? 'Banner active on page' : 'באנר פעיל בעמוד'}
+                            </span>
+                        ) : (
+                            <button
+                                type="button"
+                                className="btn-add-banner-cta"
+                                style={{ padding: '6px 14px', fontSize: '0.85rem' }}
+                                onClick={() => {
+                                    onToggleBannerEnabled(true)
+                                    setActiveSubTab('editor')
+                                }}
+                            >
+                                + {isEn ? 'Add Banner to Page' : 'הוסף באנר לעמוד'}
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Subnav for Home Page */}
@@ -413,7 +458,9 @@ export const AdminEditPage: React.FC = () => {
                 </div>
             )}
 
-            <AdminMediaModal />
+            {selectedPage === 'gallery' && <AdminGalleryEditor isGalleryActive={isGalleryActive} />}
+
+            {selectedPage === 'home' && <AdminMediaModal />}
         </section>
     )
 }

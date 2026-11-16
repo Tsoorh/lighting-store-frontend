@@ -962,3 +962,20 @@
     background: #fef2f2;
     border-color: #ef4444;
 }
+
+.admin-gallery-item-card {
+    display: grid;
+    grid-template-columns: 140px 1fr auto;
+    gap: 16px;
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    align-items: start;
+}
+
+@media (max-width: 768px) {
+    .admin-gallery-item-card {
+        grid-template-columns: 1fr;
+    }
+}

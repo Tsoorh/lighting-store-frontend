@@ -5,16 +5,19 @@ import { AdminProductList } from '../cmps/Admin/AdminProductList'
 import { AdminUserList } from '../cmps/Admin/AdminUserList'
 import { AdminPriceSettings } from '../cmps/Admin/AdminPriceSettings'
 import { AdminEditPage } from '../cmps/Admin/AdminEditPage'
+import { AdminCategoriesAndPages } from '../cmps/Admin/AdminCategoriesAndPages'
 import { SiteMediaDraftProvider } from '../context/SiteMediaDraftContext'
 import { useLanguage } from '../hooks/useLanguage'
 import '../assets/styles/pages/AdminPage.css'
 
+type AdminTab = 'products' | 'users' | 'settings' | 'edit-page' | 'categories-pages'
+
 export const AdminPage: React.FC = () => {
     const [searchParams] = useSearchParams()
     const editProductId = searchParams.get('edit')
-    const initialTabParam = searchParams.get('tab') as 'products' | 'users' | 'settings' | 'edit-page' | null
+    const initialTabParam = searchParams.get('tab') as AdminTab | null
     
-    const [activeTab, setActiveTab] = useState<'products' | 'users' | 'settings' | 'edit-page'>(
+    const [activeTab, setActiveTab] = useState<AdminTab>(
         initialTabParam || (editProductId ? 'products' : 'products')
     )
     const [user, setUser] = useState(authService.getLoggedinUser())
@@ -69,6 +72,12 @@ export const AdminPage: React.FC = () => {
                         >
                             {isEn ? 'Edit Page' : 'עריכת עמוד'}
                         </button>
+                        <button 
+                            className={activeTab === 'categories-pages' ? 'active' : ''} 
+                            onClick={() => setActiveTab('categories-pages')}
+                        >
+                            {isEn ? 'Categories & Pages' : 'קטגוריות ועמודים'}
+                        </button>
                     </nav>
                 </header>
 
@@ -77,6 +86,7 @@ export const AdminPage: React.FC = () => {
                     {activeTab === 'users' && <AdminUserList />}
                     {activeTab === 'settings' && <AdminPriceSettings />}
                     {activeTab === 'edit-page' && <AdminEditPage />}
+                    {activeTab === 'categories-pages' && <AdminCategoriesAndPages />}
                 </main>
             </div>
         </SiteMediaDraftProvider>

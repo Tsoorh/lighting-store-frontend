@@ -5,6 +5,7 @@ import { AppFooter } from './cmps/AppFooter'
 import { AppHeader } from './cmps/AppHeader'
 import { HomePage } from './pages/HomePage'
 import { About } from './pages/About'
+import { Gallery } from './pages/Gallery'
 import { Contact } from './pages/Contact'
 import { ProductDetails } from './cmps/Product/ProductDetails'
 import { ProductCategory } from './pages/ProductCategory'
@@ -48,6 +49,7 @@ function App() {
                   <Route path="/login" element={<LoginRegister />} />
                   <Route path="/dashboard" element={<AdminPage />} />
                   <Route path="/contact" element={<Contact />} />
+                  <Route path="/gallery" element={<Gallery />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/product/:productId" element={<ProductDetailsWrapper />} />
                   <Route path="/product/category/:categoryName" element={<ProductCategory/>} />

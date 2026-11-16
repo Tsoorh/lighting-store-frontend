@@ -125,6 +125,9 @@ export const AppHeader = () => {
                 iconName: 'dropdown',
                 subMenu: lightingSubMenu
             },
+            ...(siteOptions?.isGalleryActive
+                ? [{ title: { en: 'Gallery', he: 'גלריה' }, address: '/gallery' }]
+                : []),
             { title: { en: 'About', he: 'אודות' }, address: '/about' },
             { title: { en: 'Contact', he: 'יצירת קשר' }, address: '/contact' }
         ]
@@ -134,7 +137,7 @@ export const AppHeader = () => {
         }
 
         return props
-    }, [user, siteOptions?.isNewCollectionActive])
+    }, [user, siteOptions?.isNewCollectionActive, siteOptions?.isGalleryActive])
 
     useEffect(() => {
         const onUserChanged = () => setUser(authService.getLoggedinUser())

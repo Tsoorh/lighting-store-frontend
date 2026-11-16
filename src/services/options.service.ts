@@ -13,7 +13,8 @@ const DEFAULT_OPTIONS: SocketOptions = {
 
 const DEFAULT_SITE_OPTIONS: SiteOptions = {
     _id: 'site_options',
-    isNewCollectionActive: true
+    isNewCollectionActive: true,
+    isGalleryActive: false
 };
 
 let inMemoryOptions: SocketOptions | null = null;
@@ -113,6 +114,15 @@ async function removeSocketOption(category: SocketOptionCategory, value: string)
     }
 }
 
+function _normalizeSiteOptions(raw: Partial<SiteOptions> | null | undefined): SiteOptions {
+    return {
+        _id: raw?._id || 'site_options',
+        isNewCollectionActive: raw?.isNewCollectionActive !== false,
+        isGalleryActive: raw?.isGalleryActive === true,
+        updatedAt: raw?.updatedAt
+    };
+}
+
 async function getSiteOptions(forceRefresh = false): Promise<SiteOptions> {
     if (!forceRefresh && inMemorySiteOptions) {
         return inMemorySiteOptions;
@@ -121,9 +131,10 @@ async function getSiteOptions(forceRefresh = false): Promise<SiteOptions> {
     try {
         const siteOptions = await httpService.get<SiteOptions>('options/site');
         if (siteOptions && typeof siteOptions.isNewCollectionActive === 'boolean') {
-            inMemorySiteOptions = siteOptions;
-            localStorage.setItem(SITE_OPTIONS_CACHE_KEY, JSON.stringify(siteOptions));
-            return siteOptions;
+            const normalized = _normalizeSiteOptions(siteOptions);
+            inMemorySiteOptions = normalized;
+            localStorage.setItem(SITE_OPTIONS_CACHE_KEY, JSON.stringify(normalized));
+            return normalized;
         }
     } catch (err) {
         console.warn('Failed to fetch site options from backend, falling back to cache/default', err);
@@ -132,10 +143,11 @@ async function getSiteOptions(forceRefresh = false): Promise<SiteOptions> {
     try {
         const cached = localStorage.getItem(SITE_OPTIONS_CACHE_KEY);
         if (cached) {
-            const parsed = JSON.parse(cached);
+            const parsed = JSON.parse(cached) as Partial<SiteOptions>;
             if (typeof parsed?.isNewCollectionActive === 'boolean') {
-                inMemorySiteOptions = parsed;
-                return parsed;
+                const normalized = _normalizeSiteOptions(parsed);
+                inMemorySiteOptions = normalized;
+                return normalized;
             }
         }
     } catch (err) {
@@ -145,8 +157,15 @@ async function getSiteOptions(forceRefresh = false): Promise<SiteOptions> {
     return { ...DEFAULT_SITE_OPTIONS };
 }
 
-async function updateSiteOptions(data: { isNewCollectionActive: boolean }): Promise<SiteOptions> {
-    const updated = await httpService.put<SiteOptions, { isNewCollectionActive: boolean }>('options/site', data);
+async function updateSiteOptions(
+    data: Partial<Pick<SiteOptions, 'isNewCollectionActive' | 'isGalleryActive'>>
+): Promise<SiteOptions> {
+    const updated = _normalizeSiteOptions(
+        await httpService.put<SiteOptions, Partial<Pick<SiteOptions, 'isNewCollectionActive' | 'isGalleryActive'>>>(
+            'options/site',
+            data
+        )
+    );
     inMemorySiteOptions = updated;
     localStorage.setItem(SITE_OPTIONS_CACHE_KEY, JSON.stringify(updated));
     window.dispatchEvent(new CustomEvent('site-options-changed', { detail: updated }));

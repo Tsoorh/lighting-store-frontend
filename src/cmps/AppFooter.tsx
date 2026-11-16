@@ -12,11 +12,16 @@ export const AppFooter = () => {
                     ? '© All rights reserved to Tiran Lasry' 
                     : '© כל הזכויות שמורות לטירן לסרי'}
             </span>
-            <span>
-                {isEn 
-                    ? 'Built by Tsoor Hartuv' 
-                    : 'האתר נבנה ע״י צור הרטוב'}
-            </span>
+            <a
+                href="https://www.tsoorhartov.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-credit-link"
+                title={isEn ? 'Tsoor Hartov - Website Building & Development' : 'צור הרטוב - בניית אתרים ופיתוח'}
+            >
+                <span>{isEn ? 'Built by Tsoor Hartov' : 'האתר נבנה ע״י צור הרטוב'}</span>
+                <span className="footer-credit-arrow" aria-hidden="true">↗</span>
+            </a>
         </footer>
     );
 };

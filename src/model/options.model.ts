@@ -10,6 +10,7 @@ export interface SocketOptions {
 export interface SiteOptions {
     _id?: string;
     isNewCollectionActive: boolean;
+    isGalleryActive: boolean;
     updatedAt?: string;
 }
 
