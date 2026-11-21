@@ -421,8 +421,75 @@
     margin: 0;
 }
 
-/* CTA Button */
+/* CTA Button & Cart Notice */
+.product-cart-cta-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.product-cart-notice {
+    padding: 12px 14px;
+    background: rgba(30, 28, 25, 0.04);
+    border: 1px solid rgba(30, 28, 25, 0.14);
+    border-radius: 3px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: rgba(30, 28, 25, 0.88);
+}
+
+.product-cart-notice p {
+    margin: 0;
+}
+
+.product-cart-actions {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+}
+
+.product-qty-picker {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgba(30, 28, 25, 0.28);
+    background: var(--header-bgc);
+    height: 53px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.product-qty-picker button {
+    width: 38px;
+    height: 100%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 18px;
+    color: rgba(30, 28, 25, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.product-qty-picker button:hover {
+    background-color: rgba(30, 28, 25, 0.06);
+}
+
+.product-qty-picker span {
+    min-width: 34px;
+    text-align: center;
+    font-family: 'Heebo', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(30, 28, 25, 1);
+}
+
 .quote-btn {
+    flex: 1;
     width: 100%;
     height: 53px;
     background: rgba(126, 133, 136, 1);

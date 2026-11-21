@@ -19,6 +19,7 @@ import { ImageWithSkeleton } from './Skeleton/ImageWithSkeleton';
 import { buildCloudinaryImageUrl, pickPrimaryProductImage } from '../utils/cloudinary';
 import { formatProductPriceRange } from '../utils/product-filters';
 import { isHeaderScrollSuppressed } from '../utils/scroll-lock';
+import { useCart } from '../hooks/useCart';
 import '../assets/styles/cmps/AppHeader.css';
 
 
@@ -49,6 +50,7 @@ export const AppHeader = () => {
     const debouncedSearch = useDebounce(inputSearch, 500);
     const [resultProduct, setResultProduct] = useState<FullProductsOrNull>(null)
     const [user, setUser] = useState<Miniuser | null>(authService.getLoggedinUser())
+    const { totalCount, openCart } = useCart()
 
     const isMobile = width <= 768;
 
@@ -203,8 +205,46 @@ export const AppHeader = () => {
     }
 
     const isEnglish = language === 'en'
+    const cartButton = (
+        <button
+            type="button"
+            className="cart-header-btn"
+            onClick={openCart}
+            aria-label={isEnglish ? `Cart (${totalCount})` : `סל מוצרים (${totalCount})`}
+            title={isEnglish ? 'Product Cart' : 'סל מוצרים'}
+        >
+            <Icons iconName="cart" />
+            {totalCount > 0 && (
+                <span className="cart-header-badge" aria-hidden="true">
+                    {totalCount}
+                </span>
+            )}
+        </button>
+    )
+
     return (
         <header className={`app-header ${isEnglish?`en-dir`:`he-dir`} ${!isVisible ? 'header-hidden' : ''} ${isScrolled ? 'scrolled' : ''}`}>
+            {isMobile && (
+                <div className="mobile-header-start" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button
+                        className={`menu-icon ${isMenuOpen ? `active` : ``}`}
+                        onClick={handleOpenMenu}
+                        aria-expanded={isMenuOpen}
+                        aria-label={isEnglish ? 'Menu' : 'תפריט'}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: 'inherit' }}
+                    >
+                        <Icons iconName="menu" />
+                    </button>
+                    <button
+                        className="search-btn-mobile"
+                        onClick={handleSearch}
+                        aria-label={isEnglish ? 'Search' : 'חיפוש'}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: 'inherit' }}
+                    >
+                        <Icons iconName="search" />
+                    </button>
+                </div>
+            )}
             <div 
                 className="logo" 
                 role="link"
@@ -217,35 +257,28 @@ export const AppHeader = () => {
             </div>
             <nav className="nav-bar">
                 {user && !isMobile ? (
-                    <div className="user-logged-in" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginInlineEnd: isMobile ? '12px' : '24px', fontSize: '14px', fontFamily: 'Heebo, sans-serif' }}>
+                    <div className="user-logged-in" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginInlineEnd: '20px', fontSize: '14px', fontFamily: 'Heebo, sans-serif' }}>
                         <span style={{ color: 'rgba(126, 133, 136, 1)' }}>{isEnglish ? `Hi, ${user.fullname}` : `שלום, ${user.fullname}`}</span>
                         <button onClick={onLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', color: 'inherit', fontFamily: 'inherit' }}>
                             {isEnglish ? 'Logout' : 'התנתק'}
                         </button>
                     </div>
-                ) : !user ? (
+                ) : !user && !isMobile ? (
                     <button 
                         className="user-btn" 
                         onClick={() => navigate('/login')} 
                         aria-label={isEnglish ? 'Login' : 'התחברות'} 
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginInlineEnd: isMobile ? '12px' : '24px', display: 'flex', alignItems: 'center', color: 'inherit' }}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginInlineEnd: '20px', display: 'flex', alignItems: 'center', color: 'inherit' }}
                     >
                         <Icons iconName="user" />
                     </button>
                 ) : null}
-                {isMobile && (
-                    <button 
-                        className="search-btn-mobile" 
-                        onClick={handleSearch} 
-                        aria-label={isEnglish ? 'Search' : 'חיפוש'} 
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginInlineEnd: '12px', display: 'flex', alignItems: 'center', color: 'inherit' }}
-                    >
-                        <Icons iconName="search" />
-                    </button>
-                )}
-                {isMobile ? <button className={`menu-icon ${isMenuOpen ? `active` : ``}`} onClick={handleOpenMenu} aria-expanded={isMenuOpen} aria-label={isEnglish ? 'Menu' : 'תפריט'} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}> <Icons iconName="menu" /> </button> :
+                {!isMobile && cartButton}
+                {isMobile ? (
+                    cartButton
+                ) : (
                     <NavigationList navLinks={navbarProperties} handleSearch={handleSearch} />
-                }
+                )}
             </nav>
 
             {/* Side sub-menu on mobile */}
@@ -255,12 +288,28 @@ export const AppHeader = () => {
                     <h1>{isEnglish ? 'Menu' : 'תפריט'}</h1>
                     <NavigationList navLinks={navbarProperties} closeMenu={handleOpenMenu} />
                     
-                    {isMobile && user && (
-                        <div className="mobile-user-actions" style={{ marginTop: 'auto', padding: '20px', borderTop: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                            <span style={{ color: 'rgba(126, 133, 136, 1)', fontSize: '16px' }}>{isEnglish ? `Hi, ${user.fullname}` : `שלום, ${user.fullname}`}</span>
-                            <button onClick={onLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 0', textDecoration: 'underline', color: '#d32f2f', textAlign: 'inherit', fontSize: '16px', fontFamily: 'inherit' }}>
-                                {isEnglish ? 'Logout' : 'התנתק'}
-                            </button>
+                    {isMobile && (
+                        <div className="mobile-user-actions">
+                            {user ? (
+                                <>
+                                    <span style={{ color: 'rgba(126, 133, 136, 1)', fontSize: '16px' }}>{isEnglish ? `Hi, ${user.fullname}` : `שלום, ${user.fullname}`}</span>
+                                    <button onClick={onLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 0', textDecoration: 'underline', color: '#d32f2f', textAlign: 'inherit', fontSize: '16px', fontFamily: 'inherit' }}>
+                                        {isEnglish ? 'Logout' : 'התנתק'}
+                                    </button>
+                                </>
+                            ) : (
+                                <button
+                                    type="button"
+                                    className="mobile-login-btn"
+                                    onClick={() => {
+                                        setIsMenuOpen(false)
+                                        navigate('/login')
+                                    }}
+                                >
+                                    <Icons iconName="user" />
+                                    <span>{isEnglish ? 'Login' : 'התחברות'}</span>
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>

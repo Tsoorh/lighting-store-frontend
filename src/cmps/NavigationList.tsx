@@ -52,11 +52,16 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
     return (
         <ul className="nav-links " style={!isMobile ? { flexDirection: isEnglish ? 'row-reverse' : 'row-reverse' } : { alignItems: isEnglish ? 'start' : '' }}>
             {navLinks.map(link => {
+                const isSubMenuOpen = Boolean(
+                    link.subMenu && (isMobile ? isMenuOpen : subMenuDetails === link.subMenu)
+                )
                 return (
                     <Fragment key={link.title.en}>
                         <li
                             role="menuitem"
                             tabIndex={0}
+                            aria-expanded={link.subMenu ? isSubMenuOpen : undefined}
+                            className={isSubMenuOpen ? 'submenu-parent-open' : undefined}
                             onClick={() => (onHandleClick(link?.address, link?.subMenu, isMobile))}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === ' ') {
@@ -69,29 +74,40 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
                         >
                             {isMobile ? (
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '8px' }}>
-                                    {isEnglish ? link.title.en : link.title.he}
-                                    {link?.iconName && <Icons iconName={link.iconName} />}
+                                    <span>{isEnglish ? link.title.en : link.title.he}</span>
+                                    {link.subMenu ? (
+                                        <span className={`nav-plus-minus-icon ${isSubMenuOpen ? 'open' : ''}`} aria-hidden="true" />
+                                    ) : (
+                                        link?.iconName && <Icons iconName={link.iconName} />
+                                    )}
                                 </div>
                             ) : (
-                                <>
-                                    {isEnglish ? link.title.en : link.title.he}
-                                    {link?.iconName && <Icons iconName={link.iconName} />}
-                                </>
+                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                    <span>{isEnglish ? link.title.en : link.title.he}</span>
+                                    {link.subMenu ? (
+                                        <span className={`nav-chevron-icon ${isSubMenuOpen ? 'open' : ''}`} aria-hidden="true">
+                                            <Icons iconName="dropdown" />
+                                        </span>
+                                    ) : (
+                                        link?.iconName && <Icons iconName={link.iconName} />
+                                    )}
+                                </div>
                             )}
 
                             {/* DESKTOP SUBMENU */}
-                            {link.subMenu && subMenuDetails && !isMobile &&
+                            {link.subMenu && !isMobile && (
                                 <div
-                                    className={`sub-menu ${isEnglish?`en`:`he`}`}
+                                    className={`sub-menu ${isEnglish ? 'en' : 'he'} ${isSubMenuOpen ? 'open' : ''}`}
+                                    aria-hidden={!isSubMenuOpen}
                                     onMouseEnter={() => onEnter(link.subMenu)}
                                     onMouseLeave={onLeave}
                                 >
                                     <ul>
-                                        {subMenuDetails.map(child => (
+                                        {link.subMenu.map(child => (
                                             <li
                                                 key={child.title.en}
                                                 role="menuitem"
-                                                tabIndex={0}
+                                                tabIndex={isSubMenuOpen ? 0 : -1}
                                                 onClick={(e) => {
                                                     e.stopPropagation()
                                                     navigate(child.address)
@@ -104,45 +120,52 @@ export const NavigationList = ({ navLinks, closeMenu , handleSearch}: NavLinks) 
                                                         setSubMenuDetails(null)
                                                     }
                                                 }}
-                                            style={{ textAlign: isEnglish ? 'left' : 'right' }}
+                                                style={{ textAlign: isEnglish ? 'left' : 'right' }}
                                             >
                                                 {isEnglish ? child.title.en : child.title.he}
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
-                            }
+                            )}
 
                         </li>
                         {/* MOBILE SUBMENU */}
-                        {link.subMenu && subMenuDetails && isMobile && isMenuOpen &&
-                            <li className="sub-menu-small" style={{ flexDirection: isEnglish ? 'row' : 'row-reverse' }}>
-                                <ul>
-                                    {subMenuDetails.map(child => (
-                                        <li
-                                            key={child.title.en}
-                                            role="menuitem"
-                                            tabIndex={0}
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                navigate(child.address)
-                                                if (closeMenu) closeMenu()
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter' || e.key === ' ') {
-                                                    e.stopPropagation()
-                                                    navigate(child.address)
-                                                    if (closeMenu) closeMenu()
-                                                }
-                                            }}
-                                style={{ textAlign: isEnglish ? 'left' : 'right' }}
-                                        >
-                                            {isEnglish ? child.title.en : child.title.he}
-                                        </li>
-                                    ))}
-                                </ul>
+                        {link.subMenu && isMobile && (
+                            <li
+                                className={`sub-menu-small-wrapper ${isSubMenuOpen ? 'open' : ''}`}
+                                aria-hidden={!isSubMenuOpen}
+                            >
+                                <div className="sub-menu-small-inner">
+                                    <div className="sub-menu-small" style={{ flexDirection: isEnglish ? 'row' : 'row-reverse' }}>
+                                        <ul>
+                                            {link.subMenu.map(child => (
+                                                <li
+                                                    key={child.title.en}
+                                                    role="menuitem"
+                                                    tabIndex={isSubMenuOpen ? 0 : -1}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        navigate(child.address)
+                                                        if (closeMenu) closeMenu()
+                                                    }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === ' ') {
+                                                            e.stopPropagation()
+                                                            navigate(child.address)
+                                                            if (closeMenu) closeMenu()
+                                                        }
+                                                    }}
+                                                    style={{ textAlign: isEnglish ? 'left' : 'right' }}
+                                                >
+                                                    {isEnglish ? child.title.en : child.title.he}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
                             </li>
-                        }
+                        )}
                     </Fragment>
                 )
             })}

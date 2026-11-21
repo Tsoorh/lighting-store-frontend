@@ -15,7 +15,10 @@ import { AccessibilityStatement } from './pages/AccessibilityStatement'
 import { LoginRegister } from './pages/LoginRegister'
 import { AdminPage } from './pages/AdminPage'
 import { PreviewHomePage } from './pages/PreviewHomePage'
+import { CartPage } from './pages/CartPage'
 import { FloatingWhatsApp } from './cmps/FloatingWhatsApp'
+import { CartProvider } from './context/CartContext'
+import { CartDrawer } from './cmps/Cart/CartDrawer'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,33 +40,37 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/preview-homepage" element={<PreviewHomePage />} />
-          <Route path="*" element={
-            <div className='home-grid'>
-              <AppHeader />
-              <main>
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/login" element={<LoginRegister />} />
-                  <Route path="/dashboard" element={<AdminPage />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/gallery" element={<Gallery />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/product/:productId" element={<ProductDetailsWrapper />} />
-                  <Route path="/product/category/:categoryName" element={<ProductCategory/>} />
-                  <Route path="/terms" element={<TermsOfUse />} />
-                  <Route path="/privacy" element={<PrivacyPolicy />} />
-                  <Route path="/accessibility" element={<AccessibilityStatement />} />
-                </Routes>
-              </main>
-              <AppFooter />
-              <FloatingWhatsApp />
-            </div>
-          } />
-        </Routes>
-      </BrowserRouter>
+      <CartProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/preview-homepage" element={<PreviewHomePage />} />
+            <Route path="*" element={
+              <div className='home-grid'>
+                <AppHeader />
+                <CartDrawer />
+                <main>
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/login" element={<LoginRegister />} />
+                    <Route path="/dashboard" element={<AdminPage />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/gallery" element={<Gallery />} />
+                    <Route path="/cart" element={<CartPage />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/product/:productId" element={<ProductDetailsWrapper />} />
+                    <Route path="/product/category/:categoryName" element={<ProductCategory/>} />
+                    <Route path="/terms" element={<TermsOfUse />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/accessibility" element={<AccessibilityStatement />} />
+                  </Routes>
+                </main>
+                <AppFooter />
+                <FloatingWhatsApp />
+              </div>
+            } />
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
     </QueryClientProvider>
   )
 }

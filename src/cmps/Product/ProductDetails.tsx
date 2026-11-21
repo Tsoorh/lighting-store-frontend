@@ -11,8 +11,9 @@ import { ContactSection } from "../ContactSection"
 import { authService } from "../../services/auth.service"
 import { useNavigate, Link } from "react-router-dom"
 import { ShareModal } from "./ShareModal"
-import { buildProductGallery, type ProductGalleryItem } from "../../utils/cloudinary"
+import { buildCloudinaryImageUrl, buildProductGallery, pickPrimaryProductImage, type ProductGalleryItem } from "../../utils/cloudinary"
 import { suppressHeaderScrollFor } from "../../utils/scroll-lock"
+import { useCart } from "../../hooks/useCart"
 
 export const ProductDetails = () => {
     const { productId } = useParams()
@@ -20,12 +21,14 @@ export const ProductDetails = () => {
     const [product, setProduct] = useState<FullProduct | null>(null)
     const [selectedWoodEn, setSelectedWoodEn] = useState<string>('')
     const [selectedPriceIdx, setSelectedPriceIdx] = useState<number>(0)
+    const [quantity, setQuantity] = useState<number>(1)
     const [isSpecsOpen, setIsSpecsOpen] = useState<boolean>(false)
     const [isDimensionsOpen, setIsDimensionsOpen] = useState<boolean>(false)
     const [gallery, setGallery] = useState<ProductGalleryItem[]>([])
     const [mainImage, setMainImage] = useState<string>('')
     const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false)
     const { language } = useLanguage()
+    const { addItem } = useCart()
     const user = authService.getLoggedinUser()
     const isAdmin = user?.role?.trim().toLowerCase() === 'admin'
     const isSupplier = user?.role?.trim().toLowerCase() === 'supplier'
@@ -140,7 +143,7 @@ export const ProductDetails = () => {
     const descTitle = isEnglish ? 'Description' : 'תיאור'
     const specsTitle = isEnglish ? 'Technical Specifications' : 'מפרט טכני'
     const sizeTitle = isEnglish ? 'Dimensions' : 'מידות'
-    const linkLabel = isEnglish ? 'Request a Quote' : 'בקשה להצעת מחיר'
+    const linkLabel = isEnglish ? 'Add to Cart' : 'הוספה לסל'
 
     const materialsStr = product.material.map(m => isEnglish ? m.en : m.he).join(', ')
     const hasMetal = product.material.some(m => m.en.toLowerCase() === 'metal')
@@ -264,7 +267,7 @@ export const ProductDetails = () => {
                                 )}
                             </div>
 
-                            {user && (
+                            {(uniqueWoodTypes.length > 1 || availablePricesForWood.length > 1 || Boolean(activePrice?.size)) && (
                                 <div className="variant-selectors">
                                     {uniqueWoodTypes.length > 1 && (
                                         <div className="wood-selector-details">
@@ -431,16 +434,62 @@ export const ProductDetails = () => {
                             </div>
                         </div>
 
-                        <a href={`https://wa.me/972547513434?text=${encodeURIComponent(
-                            isEnglish 
-                                ? `Hi, I would like to request a quote for the lighting fixture "${nameLabel}".` 
-                                : `היי, אשמח לקבל הצעת מחיר עבור גוף התאורה "${nameLabel}".`
-                        )}`} target="_blank" rel="noopener noreferrer" className="quote-btn">
-                            <span>{linkLabel}</span>
-                            <span className="quote-btn-icon">
-                                <Icons iconName={isEnglish ? 'next' : 'back'} />
-                            </span>
-                        </a>
+                        <div className="product-cart-cta-block">
+                            <div className="product-cart-notice">
+                                <p>
+                                    <strong>{isEnglish ? 'Please Note:' : 'שימו לב:'}</strong>{' '}
+                                    {isEnglish
+                                        ? 'Direct online purchasing is not available. For your convenience, all items added to the cart are compiled for a price quote prior to placing your order with the business.'
+                                        : 'לא ניתן לרכוש ישירות באתר. לנוחיותכם, כל המוצרים המתווספים לסל המוצרים הינם לצורך קבלת הצעת מחיר לפני ביצוע ההזמנה מול העסק.'}
+                                </p>
+                            </div>
+
+                            <div className="product-cart-actions">
+                                <div className="product-qty-picker" aria-label={isEnglish ? 'Quantity' : 'כמות'}>
+                                    <button
+                                        type="button"
+                                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                                        aria-label={isEnglish ? 'Decrease quantity' : 'הפחת כמות'}
+                                    >
+                                        −
+                                    </button>
+                                    <span>{quantity}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setQuantity((q) => q + 1)}
+                                        aria-label={isEnglish ? 'Increase quantity' : 'הוסף כמות'}
+                                    >
+                                        +
+                                    </button>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="quote-btn"
+                                    onClick={() => {
+                                        const primaryImg = pickPrimaryProductImage(product.imgsUrl)
+                                        const thumbUrl =
+                                            mainImage ||
+                                            (primaryImg ? buildCloudinaryImageUrl(primaryImg) : '')
+                                        addItem({
+                                            productId: String(product._id || productId || ''),
+                                            name: product.name,
+                                            image: thumbUrl,
+                                            wood: activePrice?.wood,
+                                            size: activePrice?.size,
+                                            sku: activePrice?.sku,
+                                            quantity,
+                                            unitPrice: activePrice?.amount,
+                                        })
+                                    }}
+                                >
+                                    <span>{linkLabel}</span>
+                                    <span className="quote-btn-icon">
+                                        <Icons iconName={isEnglish ? 'next' : 'back'} />
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

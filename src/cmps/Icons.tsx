@@ -21,6 +21,8 @@ import TuneIcon from '@mui/icons-material/Tune';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
+import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 type IconName = string;
 
@@ -57,7 +59,10 @@ export const Icons = ({ iconName }: IconsProps): JSX.Element | null => {
         'share-box': <IosShareIcon fontSize='small' aria-hidden='true'/>,
         share: <IosShareIcon fontSize='small' aria-hidden='true'/>,
         copy: <ContentCopyIcon fontSize='small' aria-hidden='true'/>,
-        check: <CheckIcon fontSize='small' aria-hidden='true'/>
+        check: <CheckIcon fontSize='small' aria-hidden='true'/>,
+        cart: <ShoppingBagOutlinedIcon aria-hidden='true'/>,
+        bag: <ShoppingBagOutlinedIcon aria-hidden='true'/>,
+        trash: <DeleteOutlineIcon fontSize='small' aria-hidden='true'/>
     };
 
     return icons[key] ?? null;

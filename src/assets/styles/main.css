@@ -17,9 +17,11 @@
 @import "./cmps/ProductDetails.css";
 @import "./cmps/MenuModal.css";
 @import "./cmps/AppFooter.css";
+@import "./cmps/CartDrawer.css";
 
 
 /* pages */
 @import "./pages/ProductCategory.css";
 @import "./pages/AdminPage.css";
 @import "./pages/GalleryPage.css";
+@import "./pages/CartPage.css";
